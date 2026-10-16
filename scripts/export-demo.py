@@ -8,6 +8,8 @@ page = (p / 'index.html').read_text()
 images = ['data:image/svg+xml;base64,' + base64.b64encode((p / f'room-{i}.svg').read_bytes()).decode() for i in range(6)]
 for i, image in enumerate(images):
     page = page.replace(f'/room-{i}.svg', image)
+logo = 'data:image/png;base64,' + base64.b64encode((p / 'logo.png').read_bytes()).decode()
+page = page.replace('/logo.png', logo)
 script = (p / 'app.js').read_text().replace('`/room-${(h.id-1)%6}.svg`', 'demoImages[(h.id-1)%6]')
 script = 'const demoImages=' + json.dumps(images) + ';\n' + script
 page = page.replace('<link rel="stylesheet" href="/styles.css">', '<style>' + (p / 'styles.css').read_text() + '</style>')
