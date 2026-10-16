@@ -1,0 +1,289 @@
+{
+  "version": "1.0",
+  "slug": "nguon-cho-thue-ha-noi",
+  "intensity_level": 2,
+  "source_layout": "public/index.html",
+  "anchor": {
+    "audience": "Người đi làm, cặp đôi và gia đình cần thuê nhà tại Hà Nội; giả định để viết bản demo, chưa phỏng vấn khách.",
+    "needs": [
+      "Khu vực thuận tiện đi làm, đi học",
+      "Tổng chi phí phù hợp ngân sách",
+      "Biết thông tin cần xác nhận trước khi xem nhà"
+    ],
+    "pain_status": "Giả thuyết viết nội dung, không phải trích lời khách hàng hay kết quả nghiên cứu.",
+    "mechanism": "3 Rõ: khu vực, ngân sách, nhu cầu",
+    "primary_cta": "Nhận tư vấn nhà phù hợp",
+    "proof": [
+      "Tên thương hiệu do người dùng cung cấp",
+      "Số liên hệ 0906215365 do người dùng xác nhận",
+      "Bộ lọc và form demo đã có trong sản phẩm"
+    ],
+    "limits": [
+      "Chưa có tin thật, ảnh thật, địa chỉ văn phòng hoặc đánh giá xác minh",
+      "Không cam kết thời gian tìm nhà, tình trạng trống, miễn phí hay lợi nhuận",
+      "Không có số liệu chứng minh tăng chuyển đổi; variants là đề xuất chưa thử nghiệm"
+    ]
+  },
+  "voice": {
+    "pronoun": "anh/chị",
+    "register": "respectful-direct"
+  },
+  "hero": {
+    "primary": {
+      "id": "B",
+      "type": "readiness",
+      "headline": "Thuê nhà Hà Nội. Đúng nhu cầu. Vừa ngân sách.",
+      "subheading": "Anh/chị cần studio, căn hộ hay nhà cho cả gia đình? Bắt đầu từ khu vực, mức thuê và ngày dự kiến chuyển vào.",
+      "value_prop": [
+        "Lọc khu vực",
+        "Lọc ngân sách",
+        "Chuẩn bị nhu cầu tư vấn"
+      ],
+      "credibility": "Bộ lọc chạy được; số liên hệ 0906215365 do chủ trang xác nhận. Tin đang là minh họa.",
+      "cta": "Nhận tư vấn nhà phù hợp",
+      "when_to_use": "Tìm kiếm tự nhiên hoặc khách đã xác định nhu cầu; chọn làm bản chính.",
+      "tone_signal": "Rõ ràng, bình tĩnh.",
+      "resistance": "Lo không có căn phù hợp: không khẳng định nguồn nhà sẵn có."
+    },
+    "variants": [
+      {
+        "id": "A",
+        "type": "frustration",
+        "headline": "Xem nhiều tin. Vẫn chưa chọn được nhà?",
+        "subheading": "Làm rõ khu vực, tổng ngân sách và nhu cầu trước khi hẹn xem nhà tại Hà Nội.",
+        "value_prop": [
+          "Rõ khu vực đi lại",
+          "Rõ tổng chi phí cần hỏi",
+          "Rõ điều kiện trước khi cọc"
+        ],
+        "credibility": "Liên hệ do chủ trang cung cấp: 0906215365. Dữ liệu trên trang là minh họa.",
+        "cta": "Nhận tư vấn nhà phù hợp",
+        "when_to_use": "Quảng cáo cho người đang tìm nhà nhưng chưa có tiêu chí rõ.",
+        "tone_signal": "Thấu hiểu, trực tiếp.",
+        "resistance": "Lo chất lượng tin: phải hiển thị nhà thật và tình trạng xác minh khi vận hành."
+      },
+      {
+        "id": "B",
+        "type": "readiness",
+        "headline": "Thuê nhà Hà Nội. Đúng nhu cầu. Vừa ngân sách.",
+        "subheading": "Anh/chị cần studio, căn hộ hay nhà cho cả gia đình? Bắt đầu từ khu vực, mức thuê và ngày dự kiến chuyển vào.",
+        "value_prop": [
+          "Lọc khu vực",
+          "Lọc ngân sách",
+          "Chuẩn bị nhu cầu tư vấn"
+        ],
+        "credibility": "Bộ lọc chạy được; số liên hệ 0906215365 do chủ trang xác nhận. Tin đang là minh họa.",
+        "cta": "Nhận tư vấn nhà phù hợp",
+        "when_to_use": "Tìm kiếm tự nhiên hoặc khách đã xác định nhu cầu; chọn làm bản chính.",
+        "tone_signal": "Rõ ràng, bình tĩnh.",
+        "resistance": "Lo không có căn phù hợp: không khẳng định nguồn nhà sẵn có."
+      },
+      {
+        "id": "C",
+        "type": "specific_process",
+        "headline": "3 tiêu chí rõ. Một danh sách dễ chọn hơn.",
+        "subheading": "Khu vực, ngân sách, nhu cầu: lọc các căn minh họa tại Hà Nội rồi chuẩn bị nội dung để trao đổi trực tiếp.",
+        "value_prop": [
+          "3 tiêu chí lựa chọn",
+          "Thông tin cần hỏi trước khi xem",
+          "Số liên hệ trực tiếp"
+        ],
+        "credibility": "Quy trình thể hiện trong bộ lọc; không có số liệu kết quả thuê nhà.",
+        "cta": "Nhận tư vấn nhà phù hợp",
+        "when_to_use": "Khách so sánh cách tìm nhà, ưu tiên quy trình cụ thể.",
+        "tone_signal": "Thực tế, có trình tự.",
+        "resistance": "Đây là quy trình gợi ý, không bảo đảm tìm được nhà trong thời hạn."
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "hero_headline",
+      "text": "Thuê nhà Hà Nội.<br>Đúng nhu cầu.<br><em>Vừa ngân sách.</em>",
+      "reason": "Nêu địa phương và nhu cầu ngay ở đầu trang; bỏ câu khẩu hiệu chưa giải thích dịch vụ."
+    },
+    {
+      "id": "hero_subheading",
+      "text": "Anh/chị cần studio, căn hộ hay nhà cho cả gia đình?<br>Bắt đầu từ khu vực, mức thuê và ngày dự kiến chuyển vào.",
+      "reason": "Nêu 3 thông tin để khách biết cách bắt đầu, không hứa thời hạn tìm được nhà."
+    },
+    {
+      "id": "hero_cta",
+      "text": "Nhận tư vấn nhà phù hợp",
+      "reason": "Đồng nhất lời mời liên hệ theo mục tiêu tư vấn."
+    },
+    {
+      "id": "hero_eyebrow",
+      "text": "NGUỒN CHO THUÊ HÀ NỘI · 0906 215 365",
+      "reason": "Dùng thông tin thương hiệu và liên hệ do chủ trang cung cấp."
+    },
+    {
+      "id": "hero_note",
+      "text": "KHU VỰC RÕ · NGÂN SÁCH RÕ · NHU CẦU RÕ",
+      "reason": "Tóm tắt quy trình 3 Rõ, không tự nhận nguồn tin đã xác minh."
+    },
+    {
+      "id": "listing_title",
+      "text": "Chọn khu vực.<br><em>Thu hẹp lựa chọn.</em>",
+      "reason": "Giải thích đúng công dụng của bộ lọc."
+    },
+    {
+      "id": "listing_intro",
+      "text": "Lọc theo loại nhà và ngân sách anh/chị dự kiến.<br>Các căn bên dưới là dữ liệu minh họa để trải nghiệm.",
+      "reason": "Nêu chức năng đã chạy được và phân biệt dữ liệu demo."
+    },
+    {
+      "id": "benefit_intro",
+      "text": "Một căn nhà phù hợp cần hơn một mức giá vừa túi tiền. Hãy làm rõ tổng chi phí, thời gian di chuyển và điều kiện thuê trước khi chọn lịch xem.",
+      "reason": "Lợi ích gắn với quyết định thực tế, không khẳng định năng lực chưa có bằng chứng."
+    },
+    {
+      "id": "benefit_1",
+      "text": "Biết khoản nào cần hỏi trước",
+      "reason": "FEP: nêu việc cần làm và lợi ích trực tiếp."
+    },
+    {
+      "id": "benefit_1_body",
+      "text": "Giá thuê, phí dịch vụ, điện nước, tiền cọc: hỏi đủ để dự tính tổng chi phí mỗi tháng.",
+      "reason": "Giúp khách tránh hiểu nhầm giá thuê là tất cả chi phí."
+    },
+    {
+      "id": "benefit_2",
+      "text": "Chọn căn trước, hẹn xem sau",
+      "reason": "FEP: giải thích chức năng chọn căn của demo."
+    },
+    {
+      "id": "benefit_2_body",
+      "text": "Lưu những căn quan tâm, chọn ngày mong muốn rồi liên hệ để xác nhận nhà còn trống và lịch xem.",
+      "reason": "Phân biệt ngày mong muốn với cuộc hẹn đã được xác nhận."
+    },
+    {
+      "id": "benefit_3",
+      "text": "Kiểm tra kỹ trước khi đặt cọc",
+      "reason": "Lợi ích thực dụng, không dùng cam kết pháp lý không có căn cứ."
+    },
+    {
+      "id": "benefit_3_body",
+      "text": "Đối chiếu hiện trạng, người cho thuê và điều khoản hợp đồng trước khi chuyển tiền.",
+      "reason": "Nêu cách giảm rủi ro trong quyết định thuê."
+    },
+    {
+      "id": "mechanism",
+      "text": "Tìm nhà theo <em>3 Rõ.</em>",
+      "reason": "Tên quy trình ngắn, gắn với thao tác thực tế."
+    },
+    {
+      "id": "step_1",
+      "text": "Rõ khu vực",
+      "reason": "Bước 1 có nội dung cụ thể."
+    },
+    {
+      "id": "step_1_body",
+      "text": "Chọn nơi thuận tiện đi làm, đi học. Ghi thêm khoảng cách hoặc tuyến đường anh/chị ưu tiên.",
+      "reason": "Giúp khách mô tả khu vực theo nhu cầu sử dụng."
+    },
+    {
+      "id": "step_2",
+      "text": "Rõ ngân sách",
+      "reason": "Bước 2 nêu tiêu chí so sánh."
+    },
+    {
+      "id": "step_2_body",
+      "text": "Xác định mức thuê và tổng chi phí có thể chi mỗi tháng. Lọc những căn nằm trong khoảng phù hợp.",
+      "reason": "Kết nối với chức năng ngân sách."
+    },
+    {
+      "id": "step_3",
+      "text": "Rõ nhu cầu",
+      "reason": "Bước 3 hướng đến yêu cầu liên hệ có thông tin."
+    },
+    {
+      "id": "step_3_body",
+      "text": "Chốt số phòng, nội thất, ngày chuyển vào. Liên hệ để trao đổi căn thực tế và xác nhận lịch xem.",
+      "reason": "Không nhận định demo đã đặt được lịch thật."
+    },
+    {
+      "id": "final_headline",
+      "text": "Cần nhà ở khu nào?<br><em>Bắt đầu từ nhu cầu thật.</em>",
+      "reason": "Final CTA: cụ thể và dễ trả lời."
+    },
+    {
+      "id": "final_body",
+      "text": "Chuẩn bị khu vực, ngân sách và ngày chuyển vào.<br>Gọi 0906 215 365 để trao đổi trực tiếp.",
+      "reason": "Một hành động tiếp theo có thể thực hiện; không tạo hứa hẹn phản hồi."
+    },
+    {
+      "id": "form_button",
+      "text": "Kiểm tra nhu cầu tư vấn",
+      "reason": "Mô tả đúng hành động hiện tại của form demo."
+    }
+  ],
+  "cta_variants": [
+    {
+      "id": "A",
+      "text": "Nhận tư vấn nhà phù hợp",
+      "hypothesis": "Lời mời trực tiếp, dùng bản chính."
+    },
+    {
+      "id": "B",
+      "text": "Trao đổi nhu cầu thuê nhà",
+      "hypothesis": "Giảm cảm giác cam kết, cùng mục tiêu tư vấn."
+    },
+    {
+      "id": "C",
+      "text": "Cùng tìm hướng thuê phù hợp",
+      "hypothesis": "Mềm hơn cho khách mới tìm hiểu, cùng mục tiêu tư vấn."
+    }
+  ],
+  "final_cta_variants": [
+    {
+      "id": "A",
+      "headline": "Đã rõ khu vực và ngân sách? Trao đổi bước tiếp theo.",
+      "bullets": [
+        "Chuẩn bị khu vực ưu tiên",
+        "Ghi mức thuê và ngày chuyển vào",
+        "Gọi để xác nhận thông tin thực tế"
+      ],
+      "ps": "Chỉ hẹn xem khi đã xác nhận nhà còn trống.",
+      "pps": "Không có thời hạn ưu đãi hoặc số lượng giới hạn.",
+      "when_to_use": "Khách đã có tiêu chí, kết thúc trực tiếp thay vì thúc ép bằng khan hiếm."
+    },
+    {
+      "id": "B",
+      "headline": "Một nơi ở phù hợp bắt đầu từ nhu cầu của anh/chị.",
+      "bullets": [
+        "Quãng đường thuận tiện hơn",
+        "Không gian hợp sinh hoạt",
+        "Ngân sách có thể duy trì"
+      ],
+      "ps": "Chia sẻ điều anh/chị ưu tiên nhất khi chọn nhà.",
+      "pps": "Trang minh họa chưa nhận yêu cầu trực tuyến.",
+      "when_to_use": "Khách mới tìm hiểu, cần hình dung tiêu chí sống."
+    },
+    {
+      "id": "C",
+      "headline": "Làm rõ chi phí và điều kiện trước khi chọn căn.",
+      "bullets": [
+        "Tiền thuê và phí hằng tháng",
+        "Tiền cọc và hoàn cọc",
+        "Nội thất và thời hạn hợp đồng"
+      ],
+      "ps": "Gọi 0906215365 để trao đổi trực tiếp.",
+      "pps": "Chỉ chuyển tiền sau khi xác minh và đọc hợp đồng.",
+      "when_to_use": "Khách quan tâm chi phí, giảm bất định bằng checklist."
+    }
+  ],
+  "formulas_applied": {
+    "pain": "PAR",
+    "solution": "BAB",
+    "benefit": "FEP",
+    "faq": "OARE",
+    "final": "PVEN"
+  },
+  "not_applied": [
+    "SCH: no verified testimonials",
+    "Scarcity: no verified deadline",
+    "Guarantee: no confirmed policy"
+  ],
+  "experiments_status": "proposed_not_run"
+}

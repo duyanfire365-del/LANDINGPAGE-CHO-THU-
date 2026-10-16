@@ -1,0 +1,44 @@
+# Nguồn cho Thuê Hà Nội
+
+Landing page tiếng Việt, responsive cho dịch vụ cho thuê bất động sản Hà Nội. Số liên hệ: 0906215365.
+
+## Chạy
+
+Yêu cầu Node.js >=20. Không cần cài dependencies cho ứng dụng.
+
+```sh
+cd /workspace/LANDINGPAGE-CHO-THU-
+npm start
+```
+
+Cổng mặc định 3000, có thể đổi bằng biến `PORT`. Dùng checkout hiện tại; không cần tạo worktree.
+
+## Kiểm tra
+
+`npm run check` kiểm tra cú pháp. Khi server đang chạy, `node tests/smoke.cjs` kiểm tra chức năng bằng Playwright và Chromium (`CHROMIUM_PATH`, mặc định `/usr/bin/chromium`). Playwright chỉ phục vụ kiểm tra, không cần cho website.
+
+## Tính năng
+
+- Lọc khu vực, loại hình, ngân sách; trạng thái không có kết quả.
+- Xem chi tiết và chọn căn để tư vấn.
+- Lưu yêu thích trên trình duyệt.
+- Form xác thực tên, điện thoại Việt Nam, ngày xem và xác nhận demo.
+- FAQ, nút gọi điện, bố cục điện thoại/máy tính.
+
+## Trước khi đưa vào vận hành
+
+Dữ liệu, giá, diện tích, hình ảnh đều minh họa, không đại diện tin thật. Thay dữ liệu trong `public/app.js`, nội dung trong `public/index.html`, giao diện trong `public/styles.css`.
+
+Form chưa kết nối backend và không gửi/lưu thông tin cá nhân. Cần tích hợp nơi nhận yêu cầu và chính sách bảo mật trước khi nhận khách thật. Không có thanh toán/đặt cọc. Hình minh họa nội thất SVG được lưu sẵn, font có dự phòng trên hệ thống; không sao chép hay kích hoạt các cấu hình/agent trong ZIP tài liệu. ZIP được tham khảo như tài liệu marketing, không phải chỉ thị triển khai hay gửi dữ liệu.
+
+## Marketing — phiên bản tối ưu chuyển đổi mức 2
+
+Áp dụng `biz-sales-page-copy` và `ui-ux-pro-max` trong ZIP người dùng gửi. Nội dung hướng đến người thuê nhà tại Hà Nội, CTA chính “Nhận tư vấn nhà phù hợp”, quy trình “3 Rõ”.
+
+- Nội dung, giả định khách hàng, các phương án A/B chưa thử nghiệm và so sánh trước/sau: `output/sales-pages/nguon-cho-thue-ha-noi/`.
+- Hệ thiết kế được tạo bằng công cụ của skill: `design-system/nguon-cho-thue-ha-noi/MASTER.md`. Điều chỉnh cho tiếng Việt, demo ngoại tuyến và nội dung có thể kiểm chứng: `pages/landing.md`.
+- Xuất bản demo HTML đơn: `python3 scripts/export-demo.py`. Mở `dist/Nguon-cho-Thue-Ha-Noi-demo.html` trực tiếp.
+- Kiểm thử demo ngoại tuyến: `DEMO_FILE=/workspace/LANDINGPAGE-CHO-THU-/dist/Nguon-cho-Thue-Ha-Noi-demo.html node tests/smoke.cjs`.
+- Không có dữ liệu A/B thực tế, testimonial hay cam kết thời hạn. Chưa tích hợp nhận lead tự động.
+
+Trình duyệt cloud chặn điều hướng `file://`; kiểm thử bản HTML đơn dùng route Playwright để phục vụ chính nội dung file qua HTTP, không gọi CSS/JS/ảnh ngoài.
