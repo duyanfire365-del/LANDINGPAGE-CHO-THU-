@@ -9,3 +9,4 @@
 @media(max-width:700px){header{padding:14px 16px;gap:12px}header .logo{max-width:225px;font-size:16px;gap:10px}.logo .brand-logo{width:56px;height:56px}header .small{max-width:115px;font-size:12px;padding:8px 10px}footer .logo .brand-logo{width:72px;height:72px}}
 .filter-note{margin:16px 0 0;color:var(--muted);font-size:13px;line-height:1.6}.filter-note span+span{margin-left:8px}#search select{width:100%;text-overflow:ellipsis}.tabs{min-width:0}.tabs button{white-space:nowrap}
 @media(max-width:700px){.tabs{display:flex;flex-wrap:wrap;gap:7px}.tabs button{flex:1 0 auto;padding:8px 12px}.filter-note span{display:block}.filter-note span+span{margin-left:0}.listing-toolbar{min-width:0}}
+.hero-slogan{margin:0 0 24px;color:var(--primary);font-size:clamp(14px,1.2vw,17px);font-weight:700;line-height:1.65;letter-spacing:.35px;text-wrap:balance}.hero h1{margin-bottom:16px;text-wrap:balance}
