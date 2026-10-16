@@ -42,3 +42,11 @@ Form chưa kết nối backend và không gửi/lưu thông tin cá nhân. Cần
 - Không có dữ liệu A/B thực tế, testimonial hay cam kết thời hạn. Chưa tích hợp nhận lead tự động.
 
 Trình duyệt cloud chặn điều hướng `file://`; kiểm thử bản HTML đơn dùng route Playwright để phục vụ chính nội dung file qua HTTP, không gọi CSS/JS/ảnh ngoài.
+
+## Bộ lọc bất động sản cho thuê
+
+Khu vực gồm đủ 12 quận, 17 huyện và thị xã Sơn Tây theo địa giới cũ của Hà Nội. Bộ lọc và biểu mẫu tư vấn dùng cùng danh sách khu vực, loại bất động sản và sáu mức ngân sách.
+
+Giá tính bằng triệu đồng/tháng: dưới 5 là `<5`, dưới 10 là `<10`; 10–20 là `[10,20)`, 20–30 là `[20,30)`, 30–50 là `[30,50]`, trên 50 là `>50`. Hai lựa chọn “dưới” có chủ ý bao phủ chồng nhau. Tin minh họa hiện chỉ có căn hộ chung cư, căn hộ dịch vụ và nhà nguyên căn; các khu vực/loại khác chưa có tin sẽ hiển thị trạng thái không có kết quả.
+
+Kiểm tra bộ lọc: khi server đang chạy, `DEMO_URL=http://127.0.0.1:3001 node tests/filters.cjs` (đổi cổng theo server).

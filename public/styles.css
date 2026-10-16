@@ -7,3 +7,5 @@
 /* Original brand artwork, kept uncropped at every screen size. */
 .logo .brand-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0;border-radius:8px;background:#000}header .logo{max-width:340px;gap:14px}footer .logo .brand-logo{width:80px;height:80px}footer .logo{gap:14px}
 @media(max-width:700px){header{padding:14px 16px;gap:12px}header .logo{max-width:225px;font-size:16px;gap:10px}.logo .brand-logo{width:56px;height:56px}header .small{max-width:115px;font-size:12px;padding:8px 10px}footer .logo .brand-logo{width:72px;height:72px}}
+.filter-note{margin:16px 0 0;color:var(--muted);font-size:13px;line-height:1.6}.filter-note span+span{margin-left:8px}#search select{width:100%;text-overflow:ellipsis}.tabs{min-width:0}.tabs button{white-space:nowrap}
+@media(max-width:700px){.tabs{display:flex;flex-wrap:wrap;gap:7px}.tabs button{flex:1 0 auto;padding:8px 12px}.filter-note span{display:block}.filter-note span+span{margin-left:0}.listing-toolbar{min-width:0}}
