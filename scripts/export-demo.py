@@ -15,14 +15,15 @@ banner = 'data:image/png;base64,' + base64.b64encode((p / 'banner.png').read_byt
 page = page.replace('/banner.png', banner)
 script = 'window.RENTAL_LISTINGS=' + json.dumps(records, ensure_ascii=False).replace('<', '\\u003c') + ';\n'
 script += (p / 'sharing.js').read_text() + '\n;' + (p / 'app.js').read_text()
-for name in ['listings-data.js', 'sharing.js']:
+for name in ['listings-data.js', 'sharing.js', 'catalog.js', 'navigation.js']:
     page = page.replace(f'<script src="/{name}" defer></script>', '')
 page = page.replace('<link rel="stylesheet" href="/listings.css">', '<style>' + (p / 'listings.css').read_text() + '</style>')
 page = page.replace('<link rel="stylesheet" href="/styles.css">', '<style>' + (p / 'styles.css').read_text() + '</style>')
 page = page.replace('<script src="/app.js" defer></script>', '')
 page = page.replace('<script src="/chatbot.js" defer></script>', '')
 page = page.replace('<link rel="stylesheet" href="/chatbot.css">', '<style>' + (p / 'chatbot.css').read_text() + '</style>')
-script += '\n;' + (p / 'chatbot.js').read_text()
+script += '\n;' + (p / 'chatbot.js').read_text() + '\n;' + (p / 'navigation.js').read_text()
+page = page.replace('<link rel="stylesheet" href="/portal.css">', '<style>' + (p / 'portal.css').read_text() + '</style>')
 page = page.replace('</body>', '<script>' + script + '</script></body>')
 out = root / 'dist' / 'Nguon-cho-Thue-Ha-Noi-demo.html'
 out.parent.mkdir(exist_ok=True)

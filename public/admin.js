@@ -2,7 +2,7 @@
  const $=s=>document.querySelector(s),esc=RentalSharing.escape;
  const publicRows=window.RENTAL_LISTINGS;
  let privateRows=[];
- function clear(){privateRows=[];window.RENTAL_LISTINGS=publicRows;$('#admin-records').replaceChildren();$('#admin-query').value='';$('#admin-count').textContent='';$('#admin-workspace').hidden=true;$('#admin-login').hidden=false}
+ function clear(){privateRows=[];window.RENTAL_LISTINGS=publicRows;$('#admin-records').replaceChildren();$('#admin-query').value='';$('#admin-count').textContent='';$('#admin-workspace').hidden=true;$('#admin-login').hidden=false;window.dispatchEvent(new CustomEvent('admin-session',{detail:false}))}
  function render(){
   const query=$('#admin-query').value.trim().toLocaleLowerCase('vi');
   const rows=privateRows.filter(r=>`${r.code} ${r.title} ${r.address}`.toLocaleLowerCase('vi').includes(query));
@@ -14,7 +14,7 @@
    const response=await fetch('/api/admin',{cache:'no-store',credentials:'same-origin'}),data=await response.json();
    if(!response.ok){clear();$('#admin-status').textContent=response.status===401?'Vui lòng đăng nhập để xem thông tin riêng tư.':data.error;return}
    privateRows=data.listings.map(r=>{const safe=publicRows.find(p=>p.id===r.id);return {...r,privateTitle:r.title,title:safe.title,shareText:safe.shareText+'\n\n'+r.hashtags.join(' ')}});
-   window.RENTAL_LISTINGS=privateRows;$('#admin-login').hidden=true;$('#admin-workspace').hidden=false;$('#admin-status').textContent='Đã đăng nhập. Phiên quản trị có thời hạn 8 giờ.';render();
+   window.RENTAL_LISTINGS=privateRows;$('#admin-login').hidden=true;$('#admin-workspace').hidden=false;$('#admin-status').textContent='Đã đăng nhập. Phiên quản trị có thời hạn 8 giờ.';render();window.dispatchEvent(new CustomEvent('admin-session',{detail:true}));
   }catch{clear();$('#admin-status').textContent='Chưa kết nối được trang quản trị. Anh vui lòng thử lại.'}
  }
  $('#admin-login').addEventListener('submit',async event=>{

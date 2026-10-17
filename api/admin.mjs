@@ -4,7 +4,8 @@ import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 const lifetime=8*60*60;
 function equal(a,b){const x=createHash('sha256').update(a).digest(),y=createHash('sha256').update(b).digest();return timingSafeEqual(x,y)}
 function signature(value,secret){return createHmac('sha256','rental-admin-session:'+secret).update(value).digest('base64url')}
-function authenticated(req,secret){
+export function authenticated(req,secret=process.env.ADMIN_SECRET){
+ if(!secret||secret.length<32)return false;
  const token=String(req.headers.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('rental_admin='))?.slice(13)||'';
  const [expires,nonce,sig,...extra]=token.split('.');
  return extra.length===0&&/^\d+$/.test(expires||'')&&Number(expires)>Date.now()&&Number(expires)<=Date.now()+lifetime*1000&&!!nonce&&!!sig&&equal(sig,signature(expires+'.'+nonce,secret));
@@ -13,7 +14,7 @@ function cookie(req,value,maxAge){
  const secure=process.env.VERCEL||req.headers['x-forwarded-proto']==='https'||req.socket?.encrypted;
  return `rental_admin=${value}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure?'; Secure':''}`;
 }
-async function listings(secret){
+export async function listings(secret=process.env.ADMIN_SECRET){
  const payload=JSON.parse(await readFile(new URL('../lib/admin-listings.enc.json',import.meta.url),'utf8'));
  const key=createHash('sha256').update('rental-admin-data:'+secret).digest();
  const decipher=createDecipheriv('aes-256-gcm',key,Buffer.from(payload.iv,'base64'));

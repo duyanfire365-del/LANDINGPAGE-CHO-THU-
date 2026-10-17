@@ -1,0 +1,10 @@
+(() => {
+ const esc=RentalSharing.escape;
+ (async()=>{try{
+  const response=await fetch('/api/catalog',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);
+  const slug=new URLSearchParams(location.search).get('slug'),post=data.posts.find(p=>p.slug===slug);
+  if(!post){document.querySelector('#live-property').textContent='Tin chưa được đăng hoặc đã được gỡ. Anh/chị vui lòng xem danh sách BĐS khác.';return}
+  document.title=post.title+' | Nguồn cho thuê Hà Nội';window.RENTAL_LISTINGS.push(post);
+  document.querySelector('#live-property').innerHTML=`<p class="eyebrow">${esc(post.code)} · ${esc(post.type)}</p><h1 class="property-title">${esc(post.title)}</h1><p>${esc(post.address)}</p><div class="property-layout"><article class="property-content"><img class="property-photo" src="${esc(post.image)}" alt="${esc(post.imageAlt)}"><p>${esc(post.description)}</p><p>${esc(post.areaText)} · ${esc(post.price)} triệu đồng/tháng</p><div class="portal-gallery">${(post.media||[]).filter(m=>m.kind==='image').map(m=>`<div><img src="/api/files?action=media&id=${m.id}" alt="Ảnh BĐS"><a href="/api/files?action=media&id=${m.id}&download=1">Tải ảnh</a></div>`).join('')}</div><div class="property-videos">${(post.media||[]).filter(m=>m.kind==='video').map(m=>`<video controls preload="metadata" src="/api/files?action=media&id=${m.id}"></video><div class="media-download"><a href="/api/files?action=media&id=${m.id}&download=1">Tải video</a></div>`).join('')}</div>${RentalSharing.markup(post)}</article><aside class="property-contact"><a class="button" href="tel:0906215365">Gọi 0906 215 365</a><a class="button outline" href="https://zalo.me/0906215365" target="_blank" rel="noopener noreferrer">Chat Zalo</a><a href="/?inquiry=${esc(post.slug)}#tu-van">Đăng ký quan tâm BĐS này</a><p>Liên hệ để nhận địa chỉ chi tiết và xác nhận giá, hiện trạng.</p></aside></div>`;
+ }catch{document.querySelector('#live-property').textContent='Chưa tải được tin. Anh/chị vui lòng thử lại hoặc gọi hotline.'}})();
+})();

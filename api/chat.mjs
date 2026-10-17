@@ -1,10 +1,11 @@
 import {readFileSync} from 'node:fs';
+import {configured} from '../lib/platform.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 const knowledge=JSON.parse(readFileSync(new URL('../lib/chat-knowledge.json',import.meta.url),'utf8'));
 export function configuration(){const provider=process.env.AI_PROVIDER||(process.env.OPENROUTER_API_KEY?'openrouter':'openai');return {provider,key:provider==='openrouter'?process.env.OPENROUTER_API_KEY:process.env.OPENAI_API_KEY,model:process.env.AI_MODEL||(provider==='openrouter'?'openai/gpt-4o-mini':'gpt-4o-mini')}}
 export default async function handler(req,res){
  const config=configuration();
- if(req.method==='GET')return send(res,200,{aiEnabled:Boolean(config.key),leadEnabled:Boolean(process.env.LEAD_WEBHOOK_URL)});
+ if(req.method==='GET')return send(res,200,{aiEnabled:Boolean(config.key),leadEnabled:Boolean(process.env.LEAD_WEBHOOK_URL)||configured()});
  if(req.method!=='POST'){res.setHeader('Allow','GET, POST');return send(res,405,{error:'Method not allowed'})}
  if(!sameOrigin(req))return send(res,403,{error:'Origin not allowed'});
  if(limited(req))return send(res,429,{error:'Anh/chị vui lòng chờ một phút hoặc gọi 0906215365.'});

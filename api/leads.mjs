@@ -1,9 +1,10 @@
+import {configured,db,member,notify} from '../lib/platform.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 export default async function handler(req,res){
  if(req.method!=='POST'){res.setHeader('Allow','POST');return send(res,405,{error:'Method not allowed'})}
  if(!sameOrigin(req))return send(res,403,{error:'Origin not allowed'});
  if(limited(req,8))return send(res,429,{error:'Anh/chị vui lòng chờ một phút rồi gửi lại.'});
- if(!process.env.LEAD_WEBHOOK_URL)return send(res,503,{error:'Chưa có nơi nhận yêu cầu. Vui lòng sao chép thông tin và gửi qua Zalo.'});
+ if(!process.env.LEAD_WEBHOOK_URL&&!configured())return send(res,503,{error:'Chưa có nơi nhận yêu cầu. Vui lòng sao chép thông tin và gửi qua Zalo.'});
  try{
   const body=await readJson(req,10000);const text=(v,n=300)=>typeof v==='string'?v.trim().slice(0,n):'';
   const name=text(body.name,100),phone=text(body.phone,20),intent=body.intent;
@@ -13,6 +14,13 @@ export default async function handler(req,res){
    const ownerAddress=text(body.ownerAddress),ownerSize=Number(body.ownerSize),ownerRent=body.ownerRent===''?null:Number(body.ownerRent);
    if(!ownerAddress||!Number.isFinite(ownerSize)||ownerSize<1||ownerSize>10000000||body.ownerAuthority!==true||(ownerRent!==null&&(!Number.isFinite(ownerRent)||ownerRent<0||ownerRent>1000000)))return send(res,400,{error:'Vui lòng kiểm tra địa chỉ, diện tích, giá thuê và quyền ký gửi.'});
    Object.assign(record,{ownerAddress,ownerSize,ownerRent,ownerNotes:text(body.ownerNotes,1500),ownerAuthority:true});
+  }
+  if(configured()){
+   const profile=await member(req);
+   const rows=await db('inquiries',{method:'POST',body:{member_id:profile?.id||null,intent,name,phone,area:record.area,type:record.type,budget:record.budget,property:record.property,date:record.date,owner_address:record.ownerAddress||null,owner_size:record.ownerSize||null,owner_rent:record.ownerRent??null,owner_notes:record.ownerNotes||null,contact_consent:true}});
+   const notice=await notify(intent==='owner'?'Có thông tin ký gửi mới':'Có nhu cầu thuê mới',{...record,id:rows[0].id});
+   await db('notification_log',{method:'POST',body:{kind:'inquiry',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
+   return send(res,200,{received:true});
   }
   const url=new URL(process.env.LEAD_WEBHOOK_URL);if(url.protocol!=='https:')throw Error('HTTPS webhook required');
   const headers={'Content-Type':'application/json'};if(process.env.LEAD_WEBHOOK_TOKEN)headers.Authorization=`Bearer ${process.env.LEAD_WEBHOOK_TOKEN}`;

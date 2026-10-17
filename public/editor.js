@@ -1,0 +1,35 @@
+(() => {
+ const esc=RentalSharing.escape,types=[...new Set(window.RENTAL_LISTINGS.flatMap(r=>r.categories))];
+ const allTypes=['Mặt bằng kinh doanh','Văn phòng','Kho xưởng','Nhà nguyên căn','Căn hộ chung cư','Căn hộ dịch vụ','Phòng trọ','Biệt thự, nhà liền kề','Ki-ốt','Đất cho thuê','Bất động sản khác'];
+ const areas=['Ba Đình','Bắc Từ Liêm','Cầu Giấy','Đống Đa','Hà Đông','Hai Bà Trưng','Hoàn Kiếm','Hoàng Mai','Long Biên','Nam Từ Liêm','Tây Hồ','Thanh Xuân','Ba Vì','Chương Mỹ','Đan Phượng','Đông Anh','Gia Lâm','Hoài Đức','Mê Linh','Mỹ Đức','Mỹ Đức','Phú Xuyên','Phúc Thọ','Quốc Oai','Sóc Sơn','Thạch Thất','Thanh Oai','Thanh Trì','Thường Tín','Ứng Hòa','Sơn Tây'];
+ const fileMimes={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',mp4:'video/mp4',webm:'video/webm',pdf:'application/pdf',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',txt:'text/plain'};
+ async function request(path,body){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),data=await response.json();if(!response.ok)throw Error(data.error||'Chưa xử lý được yêu cầu.');return data}
+ function mount(container,{onSubmitted=()=>{}}={}){
+  container.innerHTML=`<section class="portal-card"><h2>Chuẩn bị tin đăng</h2><p class="portal-notice">Tin luôn chờ quản trị viên duyệt. Phần công khai chỉ ghi tên đường/khu vực; số nhà, ngõ/ngách và hashtag điền ở ô riêng tư.</p><label>Tải tài liệu, ảnh hoặc video<input class="editor-upload" type="file" multiple accept=".xlsx,.docx,.pdf,.txt,.jpg,.jpeg,.png,.webp,.mp4,.webm"></label><p class="sample-note">Ảnh/tài liệu tối đa 10 MB mỗi tệp; video MP4/WebM tối đa 50 MB. Chỉ tải tệp anh/chị có quyền sử dụng.</p><div class="editor-assets portal-assets"></div><label><input class="editor-ai" type="checkbox"> Dùng AI đọc tài liệu/ảnh (nội dung được gửi tới dịch vụ AI đã kết nối).</label><div class="editor-imports"></div><pre class="editor-source portal-source" hidden></pre><label class="editor-candidates-label" hidden>Chọn tin từ tài liệu<select class="editor-candidates"></select></label><form class="editor-form"><label>Tiêu đề công khai<input name="title" required maxlength="160" placeholder="Ví dụ: Văn phòng cho thuê tại Cầu Giấy"></label><div class="portal-grid"><label>Khu vực<select name="area" required><option value="">Chọn khu vực</option>${[...new Set(areas)].map(a=>`<option>${esc(a)}</option>`).join('')}</select></label><label>Danh mục<select name="type" required><option value="">Chọn danh mục</option>${allTypes.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label></div><label>Tên đường/khu vực công khai<input name="location" required maxlength="160" placeholder="Ví dụ: Phạm Huy Thông"></label><div class="portal-grid"><label>Giá thuê (triệu đồng/tháng)<input name="price" type="number" step="0.1" min="0.1" max="1000000" required></label><label>Diện tích (m²)<input name="size" type="number" step="0.1" min="0.1" max="10000000" required></label></div><label>Mô tả công khai<textarea name="description" rows="5" maxlength="3000" required placeholder="Công năng, diện tích, điều kiện thuê; không ghi số nhà/ngõ/ngách hoặc hashtag"></textarea></label><details><summary>Thông tin riêng tư gửi quản trị viên</summary><label>Địa chỉ đầy đủ<input name="privateAddress" maxlength="500"></label><label>Hashtag gốc<textarea name="hashtags" rows="2" maxlength="1500"></textarea></label></details><button class="button" type="submit">Gửi tin để duyệt</button></form><p class="editor-status portal-status" role="status"></p></section>`;
+  const q=s=>container.querySelector(s),assets=[],candidates=[];
+  const status=text=>q('.editor-status').textContent=text;
+  function fill(item){for(const key of ['title','area','type','location','price','size','description','privateAddress','hashtags'])q('.editor-form').elements[key].value=Array.isArray(item[key])?item[key].join(' '):item[key]??''}
+  q('.editor-candidates').addEventListener('change',event=>fill(candidates[Number(event.target.value)]));
+  q('.editor-upload').addEventListener('change',async event=>{
+   const input=event.target;input.disabled=true;
+   try{for(const file of input.files){
+    if(assets.length>=12)throw Error('Mỗi tin tối đa 12 ảnh/video/tài liệu.');
+    status('Đang tải '+file.name+'…');const mime=file.type||fileMimes[file.name.split('.').pop().toLowerCase()];
+    const signed=await request('/api/files',{action:'upload',name:file.name,mime,size:file.size});
+    const response=await fetch(signed.url,{method:'PUT',headers:{'Content-Type':mime},body:file});if(!response.ok)throw Error('Tệp chưa tải lên thành công. Vui lòng thử lại.');
+    assets.push({id:signed.id,name:file.name,kind:signed.kind});
+    q('.editor-assets').innerHTML=assets.map(a=>`<span>${esc(a.name)}</span>`).join('');
+    q('.editor-imports').innerHTML=assets.filter(a=>a.kind!=='video').map(a=>`<button class="button outline small" type="button" data-import="${a.id}">Đọc ${esc(a.name)}</button>`).join(' ');
+   }status('Đã tải tệp lên. Ảnh/video sẽ gắn vào tin; tài liệu chỉ dùng làm nguồn riêng tư.')}catch(error){status(error.message)}finally{input.disabled=false;input.value=''}
+  });
+  q('.editor-imports').addEventListener('click',async event=>{
+   const button=event.target.closest('[data-import]');if(!button)return;button.disabled=true;status('Đang đọc nội dung…');
+   try{const data=await request('/api/files',{action:'parse',id:button.dataset.import,useAI:q('.editor-ai').checked});candidates.splice(0,candidates.length,...data.items);q('.editor-source').textContent=data.text||'';q('.editor-source').hidden=!data.text;q('.editor-candidates-label').hidden=!candidates.length;q('.editor-candidates').innerHTML=candidates.map((item,i)=>`<option value="${i}">${i+1}. ${esc(item.title||'Tin cần bổ sung thông tin')}</option>`).join('');if(candidates[0])fill(candidates[0]);status(data.source==='ai'?'AI đã gợi ý bản nháp. Anh/chị kiểm tra từng trường trước khi gửi duyệt.':'Đã đọc văn bản và gợi ý danh mục/khu vực nếu nhận diện được (tối đa 30 bản nháp mỗi lần). Anh/chị hoàn thiện bản nháp; chưa có tin nào được đăng.')}catch(error){status(error.message)}finally{button.disabled=false}
+  });
+  q('.editor-form').addEventListener('submit',async event=>{
+   event.preventDefault();const button=event.submitter;button.disabled=true;
+   try{const form=new FormData(event.target),body=Object.fromEntries(form);body.action='submit';body.assetIds=assets.filter(a=>a.kind!=='document').map(a=>a.id);await request('/api/workspace',body);event.target.reset();assets.splice(0);q('.editor-assets').replaceChildren();q('.editor-imports').replaceChildren();q('.editor-source').hidden=true;q('.editor-candidates-label').hidden=true;status('Đã gửi tin vào hàng chờ. Tin chỉ xuất hiện trên website khi quản trị viên duyệt.');await onSubmitted()}catch(error){status(error.message)}finally{button.disabled=false}
+  });
+ }
+ window.RentalEditor={mount,request};
+})();

@@ -4,10 +4,11 @@ Landing page tiếng Việt, responsive cho dịch vụ cho thuê bất động 
 
 ## Chạy
 
-Yêu cầu Node.js >=20. Không cần cài dependencies cho ứng dụng.
+Yêu cầu Node.js 24. Cài dependencies bằng `npm ci` (thư viện nhập/xuất tài liệu chạy phía máy chủ).
 
 ```sh
 cd /workspace/LANDINGPAGE-CHO-THU-
+npm ci
 npm start
 ```
 
@@ -80,3 +81,11 @@ Cập nhật tin: chuẩn bị nguồn riêng ngoài repository, xuất dữ li�
 Các bản Vercel cũ, bản demo đã tải, Git history hoặc bài đã chia sẻ trước thay đổi này có thể còn địa chỉ/hashtag cũ. Cần xóa hoặc hạn chế truy cập các deployment cũ trong Vercel, kiểm tra quyền riêng tư repository và cập nhật bài đã đăng bên ngoài nếu cần. Bản cập nhật không thể thu hồi những nội dung đã được người khác sao chép.
 
 Kiểm thử: server dùng cùng `ADMIN_SECRET` với dữ liệu mã hóa; chạy `node tests/admin.cjs` với `ADMIN_SECRET` và `ADMIN_TEST_URL` trong môi trường. Không ghi giá trị khóa trong lệnh shell hoặc test source.
+
+## Thành viên và vận hành
+
+Đã bổ sung `/thanh-vien`, cổng đăng nhập/đăng ký hai nhóm, quyền gửi tin do quản trị cấp và hàng chờ duyệt. Mọi tin mới chỉ công khai khi quản trị duyệt. Dashboard quản trị có hồ sơ cần thuê/ký gửi, thông báo chưa gửi, nhập tài liệu/ảnh/video và xuất Excel/Word/PDF. Lưu trữ dùng Supabase Auth/Postgres/Storage qua các API phía máy chủ; không dùng localStorage hay filesystem Vercel để lưu hồ sơ thật.
+
+Hướng dẫn kích hoạt đầy đủ: [PLATFORM_SETUP.md](PLATFORM_SETUP.md), SQL tạo bảng/bucket: [database/setup.sql](database/setup.sql). Chưa có cấu hình Supabase/SMTP/Telegram/AI thật thì không tuyên bố các dịch vụ đã hoạt động. Các tin cũ vẫn xem được và quản trị vẫn xuất được tin cũ sau khi đăng nhập. Đọc tài liệu văn bản có thể dùng không có AI sau khi kết nối lưu trữ; ảnh/PDF quét cần luồng ảnh + AI, không giả lập OCR.
+
+`tests/platform.mjs` kiểm tra API thật và trình duyệt với Supabase/Telegram giả lập nội bộ, bao gồm tách quyền, hàng chờ, nhập tài liệu, xuất tiếng Việt và lưu hồ sơ khi Telegram lỗi. Cần `ADMIN_SECRET` đúng với bộ dữ liệu mã hóa; không ghi khóa trong test source.

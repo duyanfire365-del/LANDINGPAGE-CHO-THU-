@@ -1,7 +1,7 @@
 (() => {
   const files = new Map();
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const url = listing => `https://webchothue.vercel.app/bds/${listing.slug}`;
+  const url = listing => `https://webchothue.vercel.app${listing.href||'/bds/'+listing.slug}`;
   const text = listing => `${listing.shareText}\n\nXem thông tin: ${url(listing)}`;
   function status(element, message) {
     const target = element?.closest('.sharing-tools')?.querySelector('.share-status') || document.querySelector('#share-status');
@@ -23,7 +23,7 @@
   function prepare(listing) {
     if (!files.has(listing.id)) files.set(listing.id, fetch(listing.shareImage || listing.image).then(r => {
       if (!r.ok) throw Error('image'); return r.blob();
-    }).then(blob => new File([blob], `${listing.code}-anh-minh-hoa.jpg`, {type:blob.type || 'image/jpeg'})).catch(() => null));
+    }).then(blob => new File([blob], `${listing.code}.${blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'}`, {type:blob.type || 'image/jpeg'})).catch(() => null));
     return files.get(listing.id);
   }
   async function share(listing, element) {
