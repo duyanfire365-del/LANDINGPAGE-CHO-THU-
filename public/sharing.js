@@ -10,13 +10,13 @@
   async function copy(listing, element) {
     try {
       await navigator.clipboard.writeText(text(listing));
-      status(element, 'Đã sao chép bài đăng, hashtag và liên kết. Anh/chị có thể dán để chia sẻ.');
+      status(element, 'Đã sao chép bài đăng và liên kết. Anh/chị có thể dán để chia sẻ.');
       return true;
     } catch {
       const field = document.createElement('textarea');
       field.value = text(listing); field.style.position = 'fixed'; field.style.opacity = '0'; document.body.append(field); field.select();
       let ok = false; try { ok = document.execCommand('copy'); } catch {} field.remove();
-      status(element, ok ? 'Đã sao chép bài đăng và hashtag.' : 'Chưa sao chép được. Anh/chị chọn nội dung trong mục Bài đăng để chia sẻ.');
+      status(element, ok ? 'Đã sao chép bài đăng.' : 'Chưa sao chép được. Anh/chị chọn nội dung trong mục Bài đăng để chia sẻ.');
       return ok;
     }
   }
@@ -42,7 +42,7 @@
     }
   }
   function markup(listing) {
-    return `<div class="sharing-tools"><div class="share-buttons"><button type="button" data-share-id="${listing.id}" data-share-action="copy">Sao chép bài đăng</button><button type="button" data-share-id="${listing.id}" data-share-action="native">Chia sẻ bài & ảnh</button><a data-share-id="${listing.id}" data-share-action="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url(listing))}" target="_blank" rel="noopener noreferrer">Facebook</a><a data-share-id="${listing.id}" data-share-action="zalo" href="https://chat.zalo.me/" target="_blank" rel="noopener noreferrer">Zalo</a></div><p class="share-status" role="status"></p><p class="sharing-note">Giữ nguyên hashtag. Trên điện thoại hỗ trợ, chọn Facebook/Zalo trong bảng chia sẻ để gửi bài và ảnh. Anh/chị tự chọn nhóm và bấm đăng. Nếu Facebook chỉ nhận liên kết và ảnh xem trước, dán thêm phần bài đã sao chép.</p></div>`;
+    return `<div class="sharing-tools"><div class="share-buttons"><button type="button" data-share-id="${listing.id}" data-share-action="copy">Sao chép bài đăng</button><button type="button" data-share-id="${listing.id}" data-share-action="native">Chia sẻ bài & ảnh</button><a data-share-id="${listing.id}" data-share-action="facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url(listing))}" target="_blank" rel="noopener noreferrer">Facebook</a><a data-share-id="${listing.id}" data-share-action="zalo" href="https://chat.zalo.me/" target="_blank" rel="noopener noreferrer">Zalo</a></div><p class="share-status" role="status"></p><p class="sharing-note">Trên điện thoại hỗ trợ, chọn Facebook/Zalo trong bảng chia sẻ để gửi bài và ảnh. Anh/chị tự chọn nhóm và bấm đăng. Nếu Facebook chỉ nhận liên kết và ảnh xem trước, dán thêm phần bài đã sao chép.</p></div>`;
   }
   document.addEventListener('click', event => {
     const target = event.target.closest('[data-share-action]'); if (!target) return;

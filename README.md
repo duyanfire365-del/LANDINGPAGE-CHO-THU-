@@ -65,6 +65,18 @@ Khung chat trả lời FAQ, hướng dẫn tìm thuê hoặc ký gửi chính ch
 
 22 nguồn đã được chuẩn hóa thành mã HN-001 đến HN-022; xem `LISTINGS_REVIEW.md`. Mỗi tin có trang `/bds/hn-xxx`, ảnh WebP để xem và JPEG để chia sẻ, cùng metadata ảnh xem trước Facebook/Zalo. Bộ lọc dùng tiền thuê tháng, không dùng giá sang nhượng; tin Đỗ Quang HN-010 có hai phương án thuê 25/50 triệu.
 
-Nút sao chép giữ nguyên hashtag. Web Share hỗ trợ gửi nội dung và ảnh khi thiết bị cho phép; khách tự chọn ứng dụng/nhóm và xác nhận đăng. Facebook chia sẻ liên kết có ảnh xem trước; caption có thể cần dán riêng. Không có API tự đăng bài vào hội nhóm hay bảo đảm nền tảng nhận toàn bộ caption. Không hỗ trợ chia sẻ ảnh trực tiếp thì nút sao chép cung cấp caption và liên kết. URL chuẩn hiện là https://webchothue.vercel.app; khi đổi tên miền cần sửa `public/sharing.js` và chạy bộ tạo trang với `SITE_URL`.
+Khách sao chép bài công khai đã lược số nhà/ngõ/ngách và không có hashtag. Trang quản trị sau đăng nhập cho phép xem địa chỉ đầy đủ, hashtag và sao chép caption công khai kèm hashtag. Web Share hỗ trợ gửi nội dung và ảnh khi thiết bị cho phép; khách tự chọn ứng dụng/nhóm và xác nhận đăng. Facebook chia sẻ liên kết có ảnh xem trước; caption có thể cần dán riêng. Không có API tự đăng bài vào hội nhóm hay bảo đảm nền tảng nhận toàn bộ caption. Không hỗ trợ chia sẻ ảnh trực tiếp thì nút sao chép cung cấp caption và liên kết. URL chuẩn hiện là https://webchothue.vercel.app; khi đổi tên miền cần sửa `public/sharing.js` và chạy bộ tạo trang với `SITE_URL`.
 
 Kiểm thử nhập tin/chia sẻ: `DEMO_URL=http://127.0.0.1:3003 node tests/listings.cjs`. Ảnh và nội dung được lưu sẵn trong `public`, không cần API AI khi vận hành.
+
+## Quyền riêng tư và quản trị
+
+Mở `/admin`, đăng nhập bằng `ADMIN_SECRET` được cấu hình trong Vercel. Dữ liệu riêng chỉ đi qua `/api/admin` sau xác thực cookie HttpOnly, SameSite=Strict, Secure trên Vercel; phiên hết hạn sau 8 giờ. Không lưu dữ liệu riêng trong localStorage. API không cache và không hoạt động khi thiếu khóa.
+
+`lib/admin-listings.enc.json` chứa dữ liệu AES-256-GCM đã mã hóa; khóa ngẫu nhiên được bàn giao riêng ngoài repository. Thêm đúng khóa dưới tên `ADMIN_SECRET`, rồi redeploy; không tự đặt khóa khác vì sẽ không giải mã được dữ liệu hiện có. Không đặt khóa trong Git, chat hoặc file public. Muốn thay khóa cần mã hóa lại dữ liệu bằng `scripts/encrypt-admin-data.mjs`.
+
+Cập nhật tin: chuẩn bị nguồn riêng ngoài repository, xuất dữ liệu công khai qua `scripts/public-listings.py` (rà soát tên đường/tiêu đề được duyệt), mã hóa nguồn riêng, rồi chạy `scripts/build-listing-pages.py` và `scripts/export-demo.py`. Không bao giờ ghi nguồn riêng vào `public/listings.json`. Bản demo ngoại tuyến chỉ chứa dữ liệu công khai.
+
+Các bản Vercel cũ, bản demo đã tải, Git history hoặc bài đã chia sẻ trước thay đổi này có thể còn địa chỉ/hashtag cũ. Cần xóa hoặc hạn chế truy cập các deployment cũ trong Vercel, kiểm tra quyền riêng tư repository và cập nhật bài đã đăng bên ngoài nếu cần. Bản cập nhật không thể thu hồi những nội dung đã được người khác sao chép.
+
+Kiểm thử: server dùng cùng `ADMIN_SECRET` với dữ liệu mã hóa; chạy `node tests/admin.cjs` với `ADMIN_SECRET` và `ADMIN_TEST_URL` trong môi trường. Không ghi giá trị khóa trong lệnh shell hoặc test source.

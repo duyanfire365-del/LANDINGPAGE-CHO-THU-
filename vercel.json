@@ -18,12 +18,29 @@
           "value": "strict-origin-when-cross-origin"
         }
       ]
+    },
+    {
+      "source": "/admin(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, private"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
     }
   ],
   "functions": {
     "api/*.mjs": {
       "maxDuration": 30,
-      "includeFiles": "lib/chat-knowledge.json"
+      "includeFiles": "lib/**"
     }
   }
 }

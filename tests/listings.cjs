@@ -5,7 +5,7 @@ const crypto=require('node:crypto');
 const records=require('../public/listings.json');
 (async()=>{
  assert.equal(records.length,22);
- for(const field of ['id','slug','address','image'])assert.equal(new Set(records.map(r=>r[field])).size,22,field);
+ for(const field of ['id','slug','image'])assert.equal(new Set(records.map(r=>r[field])).size,22,field);
  assert.equal(records[5].area,'Ba Đình');assert.equal(records[14].area,'Thanh Trì');
  assert.equal(records[5].price,40);assert.equal(records[5].transferPrice,320);
  assert.deepEqual(records[9].priceOptions.map(o=>o.price),[25,50]);
@@ -14,7 +14,8 @@ const records=require('../public/listings.json');
  for(const r of records){
   for(const field of ['image','shareImage'])assert(fs.statSync('public'+r[field]).size>10000);
   hashes.add(crypto.createHash('sha256').update(fs.readFileSync('public'+r.image)).digest('hex'));
-  assert.deepEqual(r.shareText.match(/#[\p{L}\p{N}_]+/gu),r.hashtags);
+  assert.equal(r.hashtags,undefined);assert(!r.shareText.includes('#'));
+  assert(!/(?:số \d|ngõ \d|ngách \d|15B|10A|49A|LK13)/i.test(JSON.stringify(r)));
   assert(!/0867561961|0967841598|0948743688/.test(JSON.stringify(r)));
  }
  assert.equal(hashes.size,22);
@@ -30,14 +31,14 @@ const records=require('../public/listings.json');
   assert((await page.locator('.card').innerText()).includes('Ba Đình'));
   await page.locator('[data-detail="1006"]').click();assert((await page.locator('#detail-content').innerText()).includes('320 triệu'));
   await page.locator('#detail [data-share-action=copy]').click();
-  const clipboard=await page.evaluate(()=>navigator.clipboard.readText());assert(clipboard.includes('#DongDa'));assert(clipboard.includes('Ba Đình'));assert(clipboard.endsWith('/bds/hn-006'));
+  const clipboard=await page.evaluate(()=>navigator.clipboard.readText());assert(!clipboard.includes('#DongDa'));assert(!clipboard.includes('10A'));assert(clipboard.includes('Ba Đình'));assert(clipboard.endsWith('/bds/hn-006'));
   await page.locator('#close-detail').click();
   await page.goto(base+'/bds/hn-019');assert.equal(await page.locator('h1').innerText(),records[18].title);
   assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'),'https://webchothue.vercel.app/images/hn-019.jpg');
   const picture=await page.request.get(base+records[18].shareImage);assert.equal(picture.status(),200);assert.equal(picture.headers()['content-type'],'image/jpeg');
   await page.evaluate(()=>{navigator.share=async payload=>{window.shareResult={text:payload.text,files:payload.files?.map(f=>({name:f.name,type:f.type,size:f.size}))}};navigator.canShare=()=>true});
   await page.locator('[data-share-action=native]').click();await page.waitForFunction(()=>window.shareResult);
-  const shared=await page.evaluate(()=>window.shareResult);assert(shared.text.includes('#'));assert.equal(shared.files[0].type,'image/jpeg');assert(shared.files[0].size>10000);
+  const shared=await page.evaluate(()=>window.shareResult);assert(!shared.text.includes('#'));assert(!shared.text.includes('16/26'));assert.equal(shared.files[0].type,'image/jpeg');assert(shared.files[0].size>10000);
   for(const width of [375,768,1440]){await page.setViewportSize({width,height:1000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'detail overflow '+width)}
   await page.locator('a[href*="inquiry=hn-019"]').click();await page.waitForFunction(()=>document.querySelector('#lead-property')?.value==='1019');
   assert.equal(await page.inputValue('[name=preferredType]'),'Kho xưởng');assert.equal(await page.inputValue('[name=preferredArea]'),'Nam Từ Liêm');
