@@ -2,6 +2,8 @@
 
 ## Phần dùng ngay, không cần API key
 
+Biểu mẫu liên hệ dùng chung hai lựa chọn “Cần thuê” và “Ký gửi cho thuê” ở đầu khối. Các trường dùng chung gồm họ tên, số điện thoại, khu vực và loại BĐS; ngân sách/lịch xem chỉ hiển thị ở chế độ cần thuê, địa chỉ/diện tích/giá/mô tả và xác nhận quyền cho thuê chỉ hiển thị ở chế độ ký gửi. Chuyển chế độ giữ dữ liệu đang điền và ẩn bản tóm tắt cũ để khách kiểm tra lại đúng nhu cầu.
+
 - Nút “Chat tư vấn” mở khung chat trên mọi trang, toàn màn hình trên điện thoại.
 - Tự trả lời 10 FAQ hiện có. Nhận biết câu hỏi về phí, đặt cọc, hợp đồng, lịch xem và nhu cầu gấp.
 - Hai luồng hướng dẫn: khách tìm thuê (loại BĐS, khu vực, ngân sách), chính chủ ký gửi (loại BĐS, khu vực, rồi chuyển tới phần địa chỉ, diện tích, giá dự kiến).

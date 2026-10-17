@@ -26,13 +26,26 @@
     buttons([['Điền thông tin quan tâm',()=>goToForm(state.draft.intent||'tenant')],['Chính chủ ký gửi',()=>start('owner')]]);
     const call=document.createElement('a');call.href='tel:0906215365';call.textContent='Gọi ngay 0906 215 365';options.append(call);
   }
+  function updateSubmitLabel() {
+    const owner=q('#lead-intent').value==='owner';
+    form.querySelector('button[type=submit]').textContent=state.lead?(owner?'Gửi thông tin ký gửi':'Gửi nhu cầu cần thuê'):(owner?'Xem lại thông tin ký gửi':'Xem lại nhu cầu cần thuê');
+  }
   function setIntent(intent) {
-    q('#lead-intent').value=intent;const owner=intent==='owner';q('#owner-fields').hidden=!owner;q('#owner-fields').disabled=!owner;
-    q('#lead-heading').textContent=owner?'Thông tin BĐS chính chủ ký gửi':'Thông tin cần tư vấn';
+    const changed=q('#lead-intent').value!==intent;
+    q('#lead-intent').value=intent;const owner=intent==='owner';
+    q('#owner-fields').hidden=!owner;q('#owner-fields').disabled=!owner;
+    q('#lead-heading').textContent=owner?'Thông tin ký gửi cho thuê':'Thông tin cần thuê';
+    q('#lead-mode-description').textContent=owner?'Dành cho chính chủ hoặc người được ủy quyền: cung cấp vị trí, diện tích và giá cho thuê dự kiến.':'Chọn khu vực, loại BĐS và ngân sách để chuẩn bị nhu cầu tìm thuê.';
     q('#lead-area-label').textContent=owner?'Khu vực có BĐS':'Khu vực muốn thuê';
     q('#lead-type-label').textContent=owner?'Loại BĐS ký gửi':'BĐS muốn thuê';
-    q('#lead-budget-label').textContent=owner?'Khoảng giá cho thuê mỗi tháng':'Ngân sách mỗi tháng';
+    const budget=form.elements.preferredBudget;budget.closest('label').hidden=owner;budget.disabled=owner;
+    const extra=form.querySelector('.extra-fields');extra.hidden=owner;
+    extra.querySelectorAll('input, select').forEach(field=>field.disabled=owner);
+    document.querySelectorAll('[data-lead-intent]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.leadIntent===intent)));
+    if(changed){q('#lead-review').hidden=true;q('#form-status').textContent='';}
+    updateSubmitLabel();
   }
+  document.querySelectorAll('[data-lead-intent]').forEach(button=>button.addEventListener('click',()=>setIntent(button.dataset.leadIntent)));
   q('#lead-intent').addEventListener('change',e=>setIntent(e.target.value));
   function goToForm(intent) {
     setIntent(intent);
@@ -127,32 +140,32 @@
   function leadData() {
     const fields=form.elements;
     const selected=name=>fields[name].options[fields[name].selectedIndex]?.textContent||'';
-    return {intent:fields.intent.value,name:fields.name.value.trim(),phone:fields.phone.value.trim(),area:fields.preferredArea.value,type:fields.preferredType.value,budget:fields.preferredBudget.value,budgetLabel:fields.preferredBudget.value?selected('preferredBudget'):'Chưa xác định',property:fields.property.value?selected('property'):'',date:fields.date.value,ownerAddress:fields.ownerAddress.value.trim(),ownerSize:fields.ownerSize.value,ownerRent:fields.ownerRent.value,ownerNotes:fields.ownerNotes.value.trim(),ownerAuthority:fields.ownerAuthority.checked,contactConsent:fields.contactConsent.checked};
+    return {intent:fields.intent.value,name:fields.name.value.trim(),phone:fields.phone.value.trim(),area:fields.preferredArea.value,type:fields.preferredType.value,budget:fields.intent.value==='tenant'?fields.preferredBudget.value:'',budgetLabel:fields.preferredBudget.value?selected('preferredBudget'):'Chưa xác định',property:fields.intent.value==='tenant'&&fields.property.value?selected('property'):'',date:fields.intent.value==='tenant'?fields.date.value:'',ownerAddress:fields.ownerAddress.value.trim(),ownerSize:fields.ownerSize.value,ownerRent:fields.ownerRent.value,ownerNotes:fields.ownerNotes.value.trim(),ownerAuthority:fields.ownerAuthority.checked,contactConsent:fields.contactConsent.checked};
   }
   function summary(data) {
-    const lines=[data.intent==='owner'?'YÊU CẦU CHÍNH CHỦ KÝ GỬI CHO THUÊ':'NHU CẦU TÌM BĐS THUÊ',`Họ và tên: ${data.name}`,`Số điện thoại: ${data.phone}`,`Khu vực: ${data.area||'Cần tư vấn'}`,`Loại BĐS: ${data.type||'Cần tư vấn'}`,`Khoảng giá: ${data.budgetLabel}${data.budget ? " đồng/tháng" : ""}`];
+    const lines=[data.intent==='owner'?'YÊU CẦU CHÍNH CHỦ KÝ GỬI CHO THUÊ':'NHU CẦU TÌM BĐS THUÊ',`Họ và tên: ${data.name}`,`Số điện thoại: ${data.phone}`,`Khu vực: ${data.area||'Cần tư vấn'}`,`Loại BĐS: ${data.type||'Cần tư vấn'}`];
     if(data.intent==='owner')lines.push(`Địa chỉ: ${data.ownerAddress}`,`Diện tích: ${data.ownerSize} m²`,`Giá thuê dự kiến: ${data.ownerRent?data.ownerRent+' triệu đồng/tháng':'Thỏa thuận'}`,`Mô tả: ${data.ownerNotes||'Trao đổi thêm'}`,'Xác nhận: Chủ sở hữu hoặc người được ủy quyền cho thuê.');
-    else{if(data.property)lines.push(`Căn minh họa quan tâm: ${data.property}`);if(data.date)lines.push(`Ngày muốn xem: ${data.date.split('-').reverse().join('/')}`)}
+    else{lines.push(`Ngân sách: ${data.budgetLabel}${data.budget ? ' đồng/tháng' : ''}`);if(data.property)lines.push(`Căn minh họa quan tâm: ${data.property}`);if(data.date)lines.push(`Ngày muốn xem: ${data.date.split('-').reverse().join('/')}`)}
     return lines.join('\n');
   }
   let sending=false;
   form.addEventListener('submit',async e=>{
     e.preventDefault();if(sending)return;
     if(!form.elements.name.value.trim()){form.elements.name.setCustomValidity('Vui lòng nhập họ và tên.');form.elements.name.reportValidity();return}
-    const date=form.elements.date;if(date.value&&date.value<date.min){date.setCustomValidity('Vui lòng chọn hôm nay hoặc ngày sắp tới.');date.reportValidity();return}
+    const date=form.elements.date;if(form.elements.intent.value==='tenant'&&date.value&&date.value<date.min){date.setCustomValidity('Vui lòng chọn hôm nay hoặc ngày sắp tới.');date.reportValidity();return}
     if(!form.reportValidity())return;
     const data=leadData();q('#lead-summary').textContent=summary(data);q('#lead-review').hidden=false;
     if(!state.lead){q('#form-status').textContent='Thông tin đã sẵn sàng. Chưa gửi dữ liệu. Anh/chị sao chép nội dung bên dưới, mở Zalo và gửi cho tư vấn viên.';return}
     sending=true;const button=form.querySelector('button[type=submit]');button.disabled=true;button.textContent='Đang gửi…';
     try{const response=await fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),signal:AbortSignal.timeout(14000)});const result=await response.json();if(!response.ok||result.received!==true)throw Error('Not received');q('#form-status').textContent='Đã gửi yêu cầu thành công. Lịch xem hoặc thông tin ký gửi sẽ được xác nhận khi trao đổi trực tiếp.'}
     catch{q('#form-status').textContent='Chưa xác nhận gửi thành công. Anh/chị có thể sao chép thông tin và gửi qua Zalo hoặc gọi hotline.'}
-    finally{sending=false;button.disabled=false;button.textContent='Gửi yêu cầu tư vấn'}
+    finally{sending=false;button.disabled=false;updateSubmitLabel()}
   });
   q('#copy-lead').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(q('#lead-summary').textContent);q('#form-status').textContent='Đã sao chép thông tin. Anh/chị mở Zalo, dán nội dung và bấm gửi để tư vấn viên nhận được.'}catch{const selection=window.getSelection(),range=document.createRange();range.selectNodeContents(q('#lead-summary'));selection.removeAllRanges();selection.addRange(range);q('#form-status').textContent='Chưa sao chép tự động được. Anh/chị sao chép phần nội dung được chọn rồi gửi qua Zalo.'}});
   fetch('/api/chat',{signal:AbortSignal.timeout(5000)}).then(r=>r.ok?r.json():null).then(data=>{
     if(!data)return;state.ai=data.aiEnabled===true;state.lead=data.leadEnabled===true;
     if(state.ai){q('#chat-mode').textContent='Trợ lý AI · FAQ và tư vấn nhu cầu';q('#chat-privacy').textContent='Câu hỏi có thể được gửi đến dịch vụ AI để tạo câu trả lời. Chat không tự gửi thông tin liên hệ cho tư vấn viên.'}
-    if(state.lead){form.querySelector('button[type=submit]').textContent='Gửi yêu cầu tư vấn';q('#lead-delivery-note').textContent='Thông tin chỉ được gửi sau khi anh/chị đồng ý liên hệ và bấm gửi yêu cầu.'}
+    if(state.lead){updateSubmitLabel();q('#lead-delivery-note').textContent='Thông tin chỉ được gửi sau khi anh/chị đồng ý liên hệ và bấm gửi yêu cầu.'}
   }).catch(()=>{});
   setIntent(q('#lead-intent').value);
 })();
