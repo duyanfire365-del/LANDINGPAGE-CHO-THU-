@@ -10,3 +10,5 @@
 .filter-note{margin:16px 0 0;color:var(--muted);font-size:13px;line-height:1.6}.filter-note span+span{margin-left:8px}#search select{width:100%;text-overflow:ellipsis}.tabs{min-width:0}.tabs button{white-space:nowrap}
 @media(max-width:700px){.tabs{display:flex;flex-wrap:wrap;gap:7px}.tabs button{flex:1 0 auto;padding:8px 12px}.filter-note span{display:block}.filter-note span+span{margin-left:0}.listing-toolbar{min-width:0}}
 .hero-slogan{margin:0 0 24px;color:var(--primary);font-size:clamp(14px,1.2vw,17px);font-weight:700;line-height:1.65;letter-spacing:.35px;text-wrap:balance}.hero h1{margin-bottom:16px;text-wrap:balance}
+/* Display the complete uploaded poster, including its embedded text. */
+.hero-photo.hero-banner{display:flex;align-items:center;min-height:0;height:auto;background:#f5ead9}.hero-photo.hero-banner>img{position:static;inset:auto;width:100%;height:auto;object-fit:contain;aspect-ratio:3/2}

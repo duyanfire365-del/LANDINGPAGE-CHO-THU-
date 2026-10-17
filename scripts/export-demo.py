@@ -10,6 +10,8 @@ for i, image in enumerate(images):
     page = page.replace(f'/room-{i}.svg', image)
 logo = 'data:image/png;base64,' + base64.b64encode((p / 'logo.png').read_bytes()).decode()
 page = page.replace('/logo.png', logo)
+banner = 'data:image/png;base64,' + base64.b64encode((p / 'banner.png').read_bytes()).decode()
+page = page.replace('/banner.png', banner)
 script = (p / 'app.js').read_text().replace('`/room-${(h.id-1)%6}.svg`', 'demoImages[(h.id-1)%6]')
 script = 'const demoImages=' + json.dumps(images) + ';\n' + script
 page = page.replace('<link rel="stylesheet" href="/styles.css">', '<style>' + (p / 'styles.css').read_text() + '</style>')
