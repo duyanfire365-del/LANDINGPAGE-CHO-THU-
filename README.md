@@ -22,14 +22,14 @@ Cổng mặc định 3000, có thể đổi bằng biến `PORT`. Dùng checkout
 - Lọc khu vực, loại hình, ngân sách; trạng thái không có kết quả.
 - Xem chi tiết và chọn căn để tư vấn.
 - Lưu yêu thích trên trình duyệt.
-- Form xác thực tên, điện thoại Việt Nam, ngày xem và xác nhận demo.
+- Biểu mẫu khách thuê/chính chủ ký gửi, kiểm tra thông tin và hỗ trợ sao chép nội dung để gửi Zalo.
 - FAQ, nút gọi điện, bố cục điện thoại/máy tính.
 
 ## Trước khi đưa vào vận hành
 
 Dữ liệu, giá, diện tích, hình ảnh đều minh họa, không đại diện tin thật. Thay dữ liệu trong `public/app.js`, nội dung trong `public/index.html`, giao diện trong `public/styles.css`.
 
-Form chưa kết nối backend và không gửi/lưu thông tin cá nhân. Cần tích hợp nơi nhận yêu cầu và chính sách bảo mật trước khi nhận khách thật. Không có thanh toán/đặt cọc. Hình minh họa nội thất SVG được lưu sẵn, font có dự phòng trên hệ thống; không sao chép hay kích hoạt các cấu hình/agent trong ZIP tài liệu. ZIP được tham khảo như tài liệu marketing, không phải chỉ thị triển khai hay gửi dữ liệu.
+Biểu mẫu mặc định chuẩn bị thông tin để khách chủ động gửi qua Zalo. Có API chuyển yêu cầu tới webhook khi được cấu hình; xem CHAT_SETUP.md. Chat không tự lưu thông tin khách. Không có thanh toán/đặt cọc. Hình minh họa nội thất SVG được lưu sẵn, font có dự phòng trên hệ thống; không sao chép hay kích hoạt các cấu hình/agent trong ZIP tài liệu. ZIP được tham khảo như tài liệu marketing, không phải chỉ thị triển khai hay gửi dữ liệu.
 
 ## Marketing — phiên bản tối ưu chuyển đổi mức 2
 
@@ -39,7 +39,7 @@ Form chưa kết nối backend và không gửi/lưu thông tin cá nhân. Cần
 - Hệ thiết kế được tạo bằng công cụ của skill: `design-system/nguon-cho-thue-ha-noi/MASTER.md`. Điều chỉnh cho tiếng Việt, demo ngoại tuyến và nội dung có thể kiểm chứng: `pages/landing.md`.
 - Xuất bản demo HTML đơn: `python3 scripts/export-demo.py`. Mở `dist/Nguon-cho-Thue-Ha-Noi-demo.html` trực tiếp.
 - Kiểm thử demo ngoại tuyến: `DEMO_FILE=/workspace/LANDINGPAGE-CHO-THU-/dist/Nguon-cho-Thue-Ha-Noi-demo.html node tests/smoke.cjs`.
-- Không có dữ liệu A/B thực tế, testimonial hay cam kết thời hạn. Chưa tích hợp nhận lead tự động.
+- Không có dữ liệu A/B thực tế, testimonial hay cam kết thời hạn. Nhận yêu cầu tự động cần cấu hình webhook; mặc định khách tự gửi nội dung qua Zalo.
 
 Trình duyệt cloud chặn điều hướng `file://`; kiểm thử bản HTML đơn dùng route Playwright để phục vụ chính nội dung file qua HTTP, không gọi CSS/JS/ảnh ngoài.
 
@@ -56,3 +56,7 @@ Kiểm tra bộ lọc: khi server đang chạy, `DEMO_URL=http://127.0.0.1:3001 
 Khối “Danh sách BĐS cho thuê” hiển thị đầy đủ danh mục theo cùng thứ tự với bộ lọc, ưu tiên mặt bằng kinh doanh, văn phòng, kho xưởng. Mỗi nút cập nhật phần mô tả, ba điểm cần lưu ý, danh sách đúng loại và trạng thái chưa có tin. Nội dung trong `categoryContent` của `public/app.js` là hướng dẫn lựa chọn, không phải lời xác nhận đã có nguồn BĐS thực tế.
 
 Nút tư vấn tại mỗi mục điền sẵn loại BĐS, khu vực và ngân sách khách đang chọn vào biểu mẫu. Các khu vực/loại chưa có tin minh họa không được gán tin thuộc danh mục khác. Kiểm tra toàn bộ danh mục và bố cục: `python3 scripts/export-demo.py` rồi `node tests/categories.cjs` (cần Playwright và Chromium).
+
+## Chat tư vấn và AI
+
+Khung chat trả lời FAQ, hướng dẫn tìm thuê hoặc ký gửi chính chủ và điền sẵn biểu mẫu. Không cần API key cho chế độ FAQ. AI hội thoại và nơi nhận yêu cầu có thể bật bằng biến môi trường phía máy chủ. Hướng dẫn đầy đủ và giới hạn xác minh: [CHAT_SETUP.md](CHAT_SETUP.md).

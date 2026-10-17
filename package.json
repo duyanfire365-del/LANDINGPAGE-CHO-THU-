@@ -1,1 +1,13 @@
-{"name":"an-cu-rentals","version":"1.0.0","private":true,"scripts":{"start":"node server.mjs","dev":"node server.mjs","check":"node --check server.mjs && node --check public/app.js"},"engines":{"node":">=20"}}
+{
+  "name": "an-cu-rentals",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "check": "node --check server.mjs && node --check public/app.js && node --check public/chatbot.js && node --check api/chat.mjs && node --check api/leads.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

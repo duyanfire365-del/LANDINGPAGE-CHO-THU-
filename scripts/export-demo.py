@@ -16,6 +16,9 @@ script = (p / 'app.js').read_text().replace('`/room-${(h.id-1)%6}.svg`', 'demoIm
 script = 'const demoImages=' + json.dumps(images) + ';\n' + script
 page = page.replace('<link rel="stylesheet" href="/styles.css">', '<style>' + (p / 'styles.css').read_text() + '</style>')
 page = page.replace('<script src="/app.js" defer></script>', '')
+page = page.replace('<script src="/chatbot.js" defer></script>', '')
+page = page.replace('<link rel="stylesheet" href="/chatbot.css">', '<style>' + (p / 'chatbot.css').read_text() + '</style>')
+script += '\n;' + (p / 'chatbot.js').read_text()
 page = page.replace('</body>', '<script>' + script + '</script></body>')
 out = root / 'dist' / 'Nguon-cho-Thue-Ha-Noi-demo.html'
 out.parent.mkdir(exist_ok=True)

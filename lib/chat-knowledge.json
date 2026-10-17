@@ -1,0 +1,47 @@
+{
+  "brand": "Nguồn cho thuê Hà Nội",
+  "phone": "0906215365",
+  "faq": [
+    {
+      "question": "Giá thuê niêm yết đã bao gồm các chi phí khác chưa?",
+      "answer": "Giá thuê hiển thị trên website là mức giá tham khảo tại thời điểm đăng tin. Các khoản chi phí như điện, nước, phí dịch vụ, phí quản lý, thuế hoặc chi phí phát sinh khác (nếu có) sẽ được tư vấn và làm rõ trước khi khách hàng quyết định thuê."
+    },
+    {
+      "question": "Tôi có phải trả phí khi được tư vấn và xem nhà không?",
+      "answer": "Quý khách có thể liên hệ để được cung cấp thông tin, tư vấn và xác nhận các khoản phí liên quan trước khi đi xem nhà. Nếu có phí dịch vụ hoặc môi giới, chúng tôi sẽ thông báo rõ ràng trước khi khách hàng sử dụng dịch vụ."
+    },
+    {
+      "question": "Làm thế nào để đặt lịch xem nhà hoặc mặt bằng?",
+      "answer": "Quý khách có thể liên hệ hotline 0906215365 để đề nghị đặt lịch xem nhà hoặc mặt bằng. Vui lòng cung cấp mã bất động sản (nếu có), thời gian mong muốn và số điện thoại liên hệ. Chúng tôi sẽ kiểm tra tình trạng bất động sản và phối hợp xác nhận lịch xem phù hợp. Quý khách có thể chuẩn bị yêu cầu qua biểu mẫu rồi gửi qua Zalo, hoặc gọi hotline để xác nhận lịch xem. Chỉ coi là đã gửi khi có xác nhận gửi thành công hoặc tin nhắn đã được gửi trên Zalo."
+    },
+    {
+      "question": "Thông tin và hình ảnh bất động sản trên website có chính xác không?",
+      "answer": "Chúng tôi hướng tới việc cung cấp thông tin rõ ràng, hình ảnh thực tế và cập nhật thường xuyên. Tuy nhiên, tình trạng cho thuê, giá và hiện trạng bất động sản có thể thay đổi. Khách hàng nên xác nhận lại thông tin và trực tiếp khảo sát trước khi ký hợp đồng."
+    },
+    {
+      "question": "Tôi có thể tìm thuê nhà, văn phòng, mặt bằng kinh doanh và nhà xưởng không?",
+      "answer": "Có. Website giới thiệu nhiều loại hình bất động sản cho thuê tại Hà Nội, bao gồm nhà ở, nhà nguyên căn, mặt bằng kinh doanh, cửa hàng, văn phòng, kho bãi và nhà xưởng. Quý khách có thể trao đổi nhu cầu về vị trí, diện tích và ngân sách để được hỗ trợ tìm kiếm."
+    },
+    {
+      "question": "Thời hạn hợp đồng thuê và tiền đặt cọc được quy định như thế nào?",
+      "answer": "Thời hạn thuê, số tiền đặt cọc, kỳ thanh toán và điều kiện hoàn trả cọc phụ thuộc vào từng bất động sản và thỏa thuận giữa các bên. Những nội dung này cần được thể hiện rõ trong hợp đồng thuê để bảo đảm quyền lợi và hạn chế tranh chấp."
+    },
+    {
+      "question": "Tôi có thể thương lượng giá thuê với chủ nhà không?",
+      "answer": "Có thể. Tùy từng bất động sản, khách hàng có thể đề xuất thương lượng giá thuê, thời gian thuê, phương thức thanh toán hoặc thời gian sửa chữa, hoàn thiện mặt bằng. Chúng tôi sẽ hỗ trợ chuyển đề xuất và trao đổi với bên cho thuê, nhưng kết quả phụ thuộc vào sự thống nhất giữa các bên."
+    },
+    {
+      "question": "Tôi có thể đặt cọc giữ nhà trực tiếp trên website không?",
+      "answer": "Quý khách không nên chuyển tiền đặt cọc chỉ dựa trên thông tin đăng tải trên website. Trước khi thanh toán, cần xác minh chủ thể có quyền cho thuê, kiểm tra hiện trạng bất động sản và thống nhất các điều khoản đặt cọc bằng văn bản. Phương thức thanh toán sẽ được các bên xác nhận cụ thể."
+    },
+    {
+      "question": "Nếu không tìm được bất động sản phù hợp, tôi có được hỗ trợ tìm kiếm không?",
+      "answer": "Có. Quý khách có thể gửi yêu cầu về khu vực, loại hình bất động sản, diện tích, ngân sách và thời gian dự kiến thuê. Chúng tôi sẽ hỗ trợ đối chiếu nhu cầu với các bất động sản đang có thông tin và liên hệ khi tìm được lựa chọn phù hợp."
+    },
+    {
+      "question": "Cần kiểm tra những gì trước khi ký hợp đồng thuê bất động sản?",
+      "answer": "Quý khách nên kiểm tra quyền cho thuê, hiện trạng tài sản, mục đích sử dụng được phép, giá thuê, tiền cọc, thời hạn hợp đồng, điều kiện tăng giá, trách nhiệm sửa chữa, chi phí phát sinh và điều kiện chấm dứt hợp đồng. Đối với mặt bằng kinh doanh, văn phòng hoặc nhà xưởng, cần đặc biệt lưu ý điều kiện pháp lý, phòng cháy chữa cháy và các yêu cầu phù hợp với hoạt động dự kiến."
+    }
+  ],
+  "status": "Tin đăng, hình ảnh và giá trên trang hiện là minh họa. Không xác nhận nhà còn trống, phí môi giới, lịch hẹn hoặc giá cuối cùng khi chưa trao đổi trực tiếp."
+}
