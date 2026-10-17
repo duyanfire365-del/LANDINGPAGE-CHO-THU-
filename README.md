@@ -50,3 +50,9 @@ Khu vực gồm đủ 12 quận, 17 huyện và thị xã Sơn Tây theo địa 
 Giá tính bằng triệu đồng/tháng: dưới 5 là `<5`, dưới 10 là `<10`; 10–20 là `[10,20)`, 20–30 là `[20,30)`, 30–50 là `[30,50]`, trên 50 là `>50`. Hai lựa chọn “dưới” có chủ ý bao phủ chồng nhau. Tin minh họa hiện chỉ có căn hộ chung cư, căn hộ dịch vụ và nhà nguyên căn; các khu vực/loại khác chưa có tin sẽ hiển thị trạng thái không có kết quả.
 
 Kiểm tra bộ lọc: khi server đang chạy, `DEMO_URL=http://127.0.0.1:3001 node tests/filters.cjs` (đổi cổng theo server).
+
+## Danh mục và nội dung riêng
+
+Khối “Danh sách BĐS cho thuê” hiển thị đầy đủ danh mục theo cùng thứ tự với bộ lọc, ưu tiên mặt bằng kinh doanh, văn phòng, kho xưởng. Mỗi nút cập nhật phần mô tả, ba điểm cần lưu ý, danh sách đúng loại và trạng thái chưa có tin. Nội dung trong `categoryContent` của `public/app.js` là hướng dẫn lựa chọn, không phải lời xác nhận đã có nguồn BĐS thực tế.
+
+Nút tư vấn tại mỗi mục điền sẵn loại BĐS, khu vực và ngân sách khách đang chọn vào biểu mẫu. Các khu vực/loại chưa có tin minh họa không được gán tin thuộc danh mục khác. Kiểm tra toàn bộ danh mục và bố cục: `python3 scripts/export-demo.py` rồi `node tests/categories.cjs` (cần Playwright và Chromium).
