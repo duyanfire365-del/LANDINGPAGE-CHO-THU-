@@ -1,4 +1,5 @@
 import {readFile} from 'node:fs/promises';
+import {intentLabels,priceLabels} from '../lib/inquiries.mjs';
 import {send} from '../lib/http.mjs';
 import {requireAdmin,db,configured} from '../lib/platform.mjs';
 import {listings} from './admin.mjs';
@@ -13,7 +14,7 @@ export default async function handler(req,res){
    const original=await listings();const dynamic=configured()?await db('posts',{query:'?status=eq.published&order=created_at.desc&limit=1000'}):[];
    rows=[...original.map(r=>({'Mã':r.code,'Tiêu đề':r.title,'Địa chỉ riêng tư':r.address,'Danh mục':r.type,'Khu vực':r.area,'Giá thuê (triệu/tháng)':r.price,'Diện tích':r.areaText,'Hashtag':r.hashtags.join(' '),'Nội dung':r.shareText})),...dynamic.map(p=>({'Mã':p.public_data.code,'Tiêu đề':p.public_data.title,'Địa chỉ riêng tư':p.private_data.address,'Danh mục':p.public_data.type,'Khu vực':p.public_data.area,'Giá thuê (triệu/tháng)':p.public_data.price,'Diện tích':p.public_data.areaText,'Hashtag':(p.private_data.hashtags||[]).join(' '),'Trạng thái':p.status,'Nội dung':p.public_data.description}))];
   }else if(kind==='inquiries'){
-   rows=(await db('inquiries',{query:'?order=created_at.desc&limit=1000'})).map(r=>({'Mã':r.id,'Họ và tên':r.name,'Điện thoại':r.phone,'Nhu cầu':r.intent==='owner'?'Ký gửi cho thuê':'Cần thuê','Khu vực':r.area,'Loại BĐS':r.type,'Ngân sách':r.budget,'BĐS quan tâm':r.property,'Ngày xem':r.date,'Địa chỉ ký gửi':r.owner_address,'Diện tích':r.owner_size,'Giá ký gửi':r.owner_rent,'Ghi chú':r.owner_notes,'Ngày đăng ký':r.created_at}));
+   rows=(await db('inquiries',{query:'?order=created_at.desc&limit=1000'})).map(r=>({'Mã':r.id,'Họ và tên':r.name,'Điện thoại':r.phone,'Nhu cầu':intentLabels[r.intent]||r.intent,'Khu vực':r.area,'Loại BĐS':r.type,'Ngân sách':r.budget,'BĐS quan tâm':r.property,'Ngày xem':r.date,'Địa chỉ ký gửi':r.owner_address,'Diện tích':r.owner_size,'Giá ký gửi (triệu đồng)':r.owner_price??r.owner_rent,'Đơn vị giá':r.intent==='owner'?'triệu đồng/tháng':r.intent==='tenant'?'':'triệu đồng','Tiền thuê hiện tại (triệu/tháng)':r.transfer_monthly_rent,'Ghi chú':r.owner_notes,'Ngày đăng ký':r.created_at}));
   }else if(kind==='members'){
    rows=(await db('profiles',{query:'?order=created_at.desc&limit=1000'})).map(r=>({'Mã':r.id,'Họ và tên':r.full_name,'Email':r.email,'Điện thoại':r.phone,'Nhóm':r.kind==='sales'?'Sale / CTV':'Khách hàng','Quyền gửi tin':r.can_post?'Được cấp':'Chưa cấp','Ngày đăng ký':r.created_at}));
   }else return send(res,400,{error:'Loại dữ liệu không hợp lệ.'});

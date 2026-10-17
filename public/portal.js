@@ -6,7 +6,7 @@
  async function posts(){
   const response=await fetch('/api/workspace',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);
   $('#member-posts').innerHTML=data.posts.length?data.posts.map(post=>`<article class="portal-record"><h3>${esc(post.public_data.title)}</h3><p>${esc(({pending:'Chờ duyệt',published:'Đã đăng',rejected:'Chưa được duyệt'})[post.status])}</p><p>${esc(post.public_data.description)}</p></article>`).join(''):'<p>Chưa có tin được gửi.</p>';
-  $('#member-posts').innerHTML+='<h3>Nhu cầu đã gửi</h3>'+((data.inquiries||[]).map(r=>`<p>${r.intent==='owner'?'Ký gửi':'Cần thuê'} · ${esc(r.area||'Chưa chọn khu vực')} · ${esc(r.type||'Chưa chọn danh mục')}</p>`).join('')||'<p>Chưa có nhu cầu được ghi nhận trong tài khoản.</p>');
+  $('#member-posts').innerHTML+='<h3>Nhu cầu đã gửi</h3>'+((data.inquiries||[]).map(r=>`<p>${({tenant:'Cần thuê',owner:'Ký gửi cho thuê',owner_sale:'Ký gửi bán',owner_transfer:'Chuyển nhượng'})[r.intent]||r.intent} · ${esc(r.area||'Chưa chọn khu vực')} · ${esc(r.type||'Chưa chọn danh mục')}</p>`).join('')||'<p>Chưa có nhu cầu được ghi nhận trong tài khoản.</p>');
  }
  async function load(){
   try{const response=await fetch('/api/members',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);profile=data.profile;

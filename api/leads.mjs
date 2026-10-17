@@ -1,3 +1,4 @@
+import {intentLabels,isConsignment} from '../lib/inquiries.mjs';
 import {configured,db,member,notify} from '../lib/platform.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 export default async function handler(req,res){
@@ -8,17 +9,17 @@ export default async function handler(req,res){
  try{
   const body=await readJson(req,10000);const text=(v,n=300)=>typeof v==='string'?v.trim().slice(0,n):'';
   const name=text(body.name,100),phone=text(body.phone,20),intent=body.intent;
-  if(!name||! /^(0|\+84)[0-9]{9}$/.test(phone)||!['tenant','owner'].includes(intent)||body.contactConsent!==true)return send(res,400,{error:'Vui lòng kiểm tra họ tên, số điện thoại và đồng ý liên hệ.'});
-  const record={intent,name,phone,area:text(body.area),type:text(body.type),budget:text(body.budget,80),property:text(body.property),date:text(body.date,20),createdAt:new Date().toISOString()};
-  if(intent==='owner'){
-   const ownerAddress=text(body.ownerAddress),ownerSize=Number(body.ownerSize),ownerRent=body.ownerRent===''?null:Number(body.ownerRent);
-   if(!ownerAddress||!Number.isFinite(ownerSize)||ownerSize<1||ownerSize>10000000||body.ownerAuthority!==true||(ownerRent!==null&&(!Number.isFinite(ownerRent)||ownerRent<0||ownerRent>1000000)))return send(res,400,{error:'Vui lòng kiểm tra địa chỉ, diện tích, giá thuê và quyền ký gửi.'});
-   Object.assign(record,{ownerAddress,ownerSize,ownerRent,ownerNotes:text(body.ownerNotes,1500),ownerAuthority:true});
+  if(!name||! /^(0|\+84)[0-9]{9}$/.test(phone)||!Object.hasOwn(intentLabels,intent)||body.contactConsent!==true)return send(res,400,{error:'Vui lòng kiểm tra họ tên, số điện thoại và đồng ý liên hệ.'});
+  const record={intent,name,phone,area:text(body.area),type:text(body.type),budget:intent==='tenant'?text(body.budget,80):'',property:intent==='tenant'?text(body.property):'',date:intent==='tenant'?text(body.date,20):'',createdAt:new Date().toISOString()};
+  if(isConsignment(intent)){
+   const ownerAddress=text(body.ownerAddress),ownerSize=Number(body.ownerSize),ownerPrice=(body.ownerPrice??body.ownerRent)===''||(body.ownerPrice??body.ownerRent)==null?null:Number(body.ownerPrice??body.ownerRent),transferMonthlyRent=body.transferMonthlyRent===''||body.transferMonthlyRent==null?null:Number(body.transferMonthlyRent);
+   if(!ownerAddress||!Number.isFinite(ownerSize)||ownerSize<1||ownerSize>10000000||body.ownerAuthority!==true||(ownerPrice!==null&&(!Number.isFinite(ownerPrice)||ownerPrice<0||ownerPrice>1000000))||(intent==='owner_transfer'&&transferMonthlyRent!==null&&(!Number.isFinite(transferMonthlyRent)||transferMonthlyRent<0||transferMonthlyRent>1000000)))return send(res,400,{error:'Vui lòng kiểm tra địa chỉ, diện tích, giá dự kiến và quyền ký gửi.'});
+   Object.assign(record,{ownerAddress,ownerSize,ownerPrice,ownerRent:intent==='owner'?ownerPrice:null,transferMonthlyRent:intent==='owner_transfer'?transferMonthlyRent:null,ownerNotes:text(body.ownerNotes,1500),ownerAuthority:true});
   }
   if(configured()){
    const profile=await member(req);
-   const rows=await db('inquiries',{method:'POST',body:{member_id:profile?.id||null,intent,name,phone,area:record.area,type:record.type,budget:record.budget,property:record.property,date:record.date,owner_address:record.ownerAddress||null,owner_size:record.ownerSize||null,owner_rent:record.ownerRent??null,owner_notes:record.ownerNotes||null,contact_consent:true}});
-   const notice=await notify(intent==='owner'?'Có thông tin ký gửi mới':'Có nhu cầu thuê mới',{...record,id:rows[0].id});
+   const rows=await db('inquiries',{method:'POST',body:{member_id:profile?.id||null,intent,name,phone,area:record.area,type:record.type,budget:record.budget,property:record.property,date:record.date,owner_address:record.ownerAddress||null,owner_size:record.ownerSize||null,owner_rent:record.ownerRent??null,owner_price:record.ownerPrice??null,transfer_monthly_rent:record.transferMonthlyRent??null,owner_notes:record.ownerNotes||null,contact_consent:true}});
+   const notice=await notify('Có đăng ký mới: '+intentLabels[intent],{...record,id:rows[0].id});
    await db('notification_log',{method:'POST',body:{kind:'inquiry',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
    return send(res,200,{received:true});
   }

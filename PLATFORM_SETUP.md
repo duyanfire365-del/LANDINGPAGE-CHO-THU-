@@ -74,3 +74,9 @@ Kiểm thử trong môi trường phát triển đã dùng dịch vụ giả l�
 ## Ghi nhận kiểm thử phụ thuộc
 
 Cài lại thành công bằng `npm ci` theo lockfile. Kiểm tra npm audit không có mức high/critical; còn 5 cảnh báo moderate trong phụ thuộc gián tiếp của ExcelJS/Mammoth. Không dùng `audit fix --force` vì đề xuất hạ phiên bản phá vỡ API. Luồng hiện tại chỉ dùng UUID v4 và API trích văn bản, không gọi CLI argparse. Nên theo dõi bản vá upstream khi bảo trì.
+
+## Bổ sung ký gửi bán / chuyển nhượng
+
+Biểu mẫu chung có bốn nhu cầu: Cần thuê, Ký gửi cho thuê, Ký gửi bán, Chuyển nhượng. Giá bán và chuyển nhượng tính bằng triệu đồng một lần; tiền thuê hiện tại (nếu có) là khoản riêng theo tháng. Hồ sơ chỉ gửi tư vấn/quản trị, không tự xuất bản tin bán vào danh sách BĐS cho thuê.
+
+Dự án Supabase mới dùng bản `database/setup.sql` mới nhất. Nếu đã chạy SQL cũ, chạy thêm `database/migrations/002-sale-transfer.sql` trong SQL Editor trước khi tiếp nhận hai loại hồ sơ mới. Migration thêm cột giá chung, tiền thuê hiện tại và mở rộng các loại nhu cầu; giữ nguyên hồ sơ thuê trước đây.

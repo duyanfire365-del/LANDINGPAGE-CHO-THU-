@@ -18,9 +18,9 @@ drop trigger if exists on_member_created on auth.users;
 create trigger on_member_created after insert on auth.users for each row execute function public.create_member_profile();
 create table if not exists public.inquiries (
  id uuid primary key default gen_random_uuid(), member_id uuid references public.profiles(id),
- intent text not null check(intent in ('tenant','owner')), name text not null, phone text not null,
+ intent text not null check(intent in ('tenant','owner','owner_sale','owner_transfer')), name text not null, phone text not null,
  area text, type text, budget text, property text, date text,
- owner_address text, owner_size numeric, owner_rent numeric, owner_notes text,
+ owner_address text, owner_size numeric, owner_rent numeric, owner_price numeric, transfer_monthly_rent numeric, owner_notes text,
  contact_consent boolean not null default false, created_at timestamptz not null default now()
 );
 create table if not exists public.posts (

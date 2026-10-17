@@ -26,18 +26,33 @@
     buttons([['Điền thông tin quan tâm',()=>goToForm(state.draft.intent||'tenant')],['Chính chủ ký gửi',()=>start('owner')]]);
     const call=document.createElement('a');call.href='tel:0906215365';call.textContent='Gọi ngay 0906 215 365';options.append(call);
   }
+  const consignments={owner:{name:'Ký gửi cho thuê',heading:'Thông tin ký gửi cho thuê',price:'Giá cho thuê (triệu đồng/tháng)',verb:'cho thuê',description:'Dành cho chính chủ hoặc người được ủy quyền: cung cấp vị trí, diện tích và giá cho thuê dự kiến.'},owner_sale:{name:'Ký gửi bán',heading:'Thông tin ký gửi bán BĐS',price:'Giá bán (triệu đồng)',verb:'bán',description:'Dành cho chính chủ hoặc người được ủy quyền bán: cung cấp vị trí, diện tích, giá bán dự kiến và tình trạng pháp lý.'},owner_transfer:{name:'Chuyển nhượng',heading:'Thông tin ký gửi chuyển nhượng',price:'Giá chuyển nhượng (triệu đồng)',verb:'chuyển nhượng',description:'Cung cấp thông tin BĐS/mặt bằng, giá chuyển nhượng, tài sản đi kèm và điều kiện hợp đồng hiện tại (nếu có).'}};
+  const isOwner=intent=>Object.hasOwn(consignments,intent);
   function updateSubmitLabel() {
-    const owner=q('#lead-intent').value==='owner';
+    const owner=isOwner(q('#lead-intent').value);
     form.querySelector('button[type=submit]').textContent=state.lead?(owner?'Gửi thông tin ký gửi':'Gửi nhu cầu cần thuê'):(owner?'Xem lại thông tin ký gửi':'Xem lại nhu cầu cần thuê');
   }
+  const pricesByIntent={};
   function setIntent(intent) {
-    const changed=q('#lead-intent').value!==intent;
-    q('#lead-intent').value=intent;const owner=intent==='owner';
+    if(intent!=='tenant'&&!isOwner(intent))intent='tenant';
+    const previous=q('#lead-intent').value,changed=previous!==intent;
+    if(changed){pricesByIntent[previous]=form.elements.ownerRent.value;form.elements.ownerRent.value=pricesByIntent[intent]??'';form.elements.ownerAuthority.checked=false;}
+    q('#lead-intent').value=intent;const owner=isOwner(intent),config=consignments[intent];
     q('#owner-fields').hidden=!owner;q('#owner-fields').disabled=!owner;
-    q('#lead-heading').textContent=owner?'Thông tin ký gửi cho thuê':'Thông tin cần thuê';
-    q('#lead-mode-description').textContent=owner?'Dành cho chính chủ hoặc người được ủy quyền: cung cấp vị trí, diện tích và giá cho thuê dự kiến.':'Chọn khu vực, loại BĐS và ngân sách để chuẩn bị nhu cầu tìm thuê.';
+    q('#lead-heading').textContent=owner?config.heading:'Thông tin cần thuê';
+    q('#lead-mode-description').textContent=owner?config.description:'Chọn khu vực, loại BĐS và ngân sách để chuẩn bị nhu cầu tìm thuê.';
     q('#lead-area-label').textContent=owner?'Khu vực có BĐS':'Khu vực muốn thuê';
     q('#lead-type-label').textContent=owner?'Loại BĐS ký gửi':'BĐS muốn thuê';
+    const typeSelect=form.elements.preferredType,selectedType=typeSelect.value;
+    const saleOrTransfer=intent==='owner_sale'||intent==='owner_transfer';
+    const typeItems=propertyOptions.filter(option=>!saleOrTransfer||option.value!=='Đất cho thuê').map(option=>new Option(option.textContent,option.value));
+    if(saleOrTransfer)for(const type of ['Đất / Đất nền',...(intent==='owner_transfer'?['Cơ sở kinh doanh','Hợp đồng thuê / Mặt bằng']:[])])typeItems.push(new Option(type,type));
+    typeSelect.replaceChildren(new Option('Chọn loại bất động sản',''),...typeItems);typeSelect.value=[...typeSelect.options].some(option=>option.value===selectedType)?selectedType:'';
+    q('#owner-price-label').textContent=owner?config.price:consignments.owner.price;
+    q('#owner-authority-label').textContent=owner?' Tôi là chủ sở hữu hoặc người được ủy quyền '+config.verb+' BĐS/tài sản này.':' Tôi là chủ sở hữu hoặc người được ủy quyền.';
+    q('#owner-notes-label').textContent=intent==='owner_sale'?'Mô tả BĐS, pháp lý và thời gian bàn giao':intent==='owner_transfer'?'Nội dung chuyển nhượng, tài sản đi kèm và thời hạn hợp đồng':'Mô tả và thời gian bàn giao';
+    form.elements.ownerNotes.placeholder=intent==='owner_sale'?'Loại đất/nhà, giấy tờ pháp lý, hiện trạng và thời gian có thể bàn giao...':intent==='owner_transfer'?'Chuyển nhượng BĐS, hợp đồng hay cơ sở kinh doanh? Tài sản đi kèm, tiền cọc, hợp đồng còn lại...':'Mặt tiền, số tầng, công năng, thời điểm có thể cho thuê...';
+    q('#transfer-rent-field').hidden=intent!=='owner_transfer';form.elements.transferMonthlyRent.disabled=intent!=='owner_transfer';
     const budget=form.elements.preferredBudget;budget.closest('label').hidden=owner;budget.disabled=owner;
     const extra=form.querySelector('.extra-fields');extra.hidden=owner;
     extra.querySelectorAll('input, select').forEach(field=>field.disabled=owner);
@@ -53,7 +68,7 @@
     for(const [key,name]of Object.entries(map))if(state.draft[key])form.elements[name].value=state.draft[key];
     close();q('#tu-van').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
     form.elements.name.focus({preventScroll:true});
-    q('#form-status').textContent=intent==='owner'?'Anh/chị điền thêm địa chỉ, diện tích và thông tin liên hệ để chuẩn bị yêu cầu ký gửi. Thông tin chưa được gửi.':'Nhu cầu đã được điền sẵn từ chat. Anh/chị bổ sung thông tin liên hệ để chuẩn bị yêu cầu. Thông tin chưa được gửi.';
+    q('#form-status').textContent=isOwner(intent)?'Anh/chị điền thêm địa chỉ, diện tích và thông tin liên hệ để chuẩn bị yêu cầu ký gửi. Thông tin chưa được gửi.':'Nhu cầu đã được điền sẵn từ chat. Anh/chị bổ sung thông tin liên hệ để chuẩn bị yêu cầu. Thông tin chưa được gửi.';
   }
   function choose(field,available,prompt) {
     append('assistant',prompt);options.replaceChildren();
@@ -64,7 +79,7 @@
     button.addEventListener('click',()=>{if(!select.value){select.focus();return}state.draft[field]=select.value;append('user',select.options[select.selectedIndex].textContent);nextStep()});options.append(label,select,button);scrollLatest();
   }
   function nextStep() {
-    const owner=state.draft.intent==='owner';
+    const owner=isOwner(state.draft.intent);
     if(!state.draft.type)return choose('type',propertyOptions,owner?'Anh/chị muốn ký gửi loại BĐS nào?':'Anh/chị đang cần thuê loại BĐS nào?');
     if(!state.draft.area)return choose('area',areaOptions,owner?'BĐS của anh/chị thuộc khu vực nào?':'Anh/chị ưu tiên khu vực nào của Hà Nội?');
     if(!owner&&!state.draft.budget)return choose('budget',budgetOptions,'Ngân sách thuê mỗi tháng của anh/chị khoảng bao nhiêu?');
@@ -74,8 +89,8 @@
   }
   function start(intent) {
     state.draft={intent};state.flow=true;
-    append('user',intent==='owner'?'Tôi là chính chủ muốn ký gửi cho thuê.':'Tôi đang tìm bất động sản thuê.');
-    append('assistant',intent==='owner'?'Em sẽ giúp anh/chị chuẩn bị thông tin nguồn cho thuê. Anh/chị chỉ chia sẻ thông tin BĐS và liên hệ; việc xác minh quyền cho thuê sẽ được trao đổi trực tiếp.':'Em có thể giúp anh/chị làm rõ loại BĐS, khu vực và ngân sách trước khi trao đổi với tư vấn viên.');nextStep();
+    append('user',isOwner(intent)?'Tôi muốn '+consignments[intent].name.toLocaleLowerCase('vi')+'.':'Tôi đang tìm bất động sản thuê.');
+    append('assistant',isOwner(intent)?'Em sẽ giúp anh/chị chuẩn bị thông tin '+consignments[intent].name.toLocaleLowerCase('vi')+'. Quyền giao dịch và điều kiện cụ thể cần được xác minh khi trao đổi trực tiếp.':'Em có thể giúp anh/chị làm rõ loại BĐS, khu vực và ngân sách trước khi trao đổi với tư vấn viên.');nextStep();
   }
   function urgent() {append('assistant','Nếu cần trao đổi gấp hoặc xác nhận nhà còn trống, anh/chị gọi ngay 0906 215 365. Chat tự động không xác nhận lịch xem, giá cuối cùng hoặc nhận đặt cọc.');contactOptions()}
   function showFaqs() {append('assistant','Anh/chị chọn câu hỏi cần giải đáp. Các câu trả lời dựa trên nội dung FAQ của website.');buttons(faqs.map(f=>[f.question,()=>respond(f.question)]))}
@@ -87,8 +102,8 @@
     if(!state.draft.type)for(const [word,value]of aliases)if(new RegExp(`\\b${word}\\b`).test(normalized)){state.draft.type=value;changed=true;break}
     const phone=text.match(/(?:\+84|0)[0-9]{9}\b/);if(phone){state.draft.phone=phone[0];changed=true}
     const budget=budgetOptions.find(o=>normalized.includes(norm(o.textContent)));if(budget){state.draft.budget=budget.value;changed=true}
-    else {const price=normalized.match(/(\d+(?:[.,]\d+)?)\s*(?:trieu|tr\b)/);if(price){const n=Number(price[1].replace(',','.'));state.draft.budget=n<5?'under-5':n<10?'under-10':n<20?'10-20':n<30?'20-30':n<=50?'30-50':'over-50';if(state.draft.intent==='owner')state.draft.ownerRent=String(n);changed=true}}
-    const size=text.match(/(\d+(?:[.,]\d+)?)\s*(?:m2|m²)/i);if(size&&state.draft.intent==='owner'){state.draft.ownerSize=size[1].replace(',','.');changed=true}
+    else {const price=normalized.match(/(\d+(?:[.,]\d+)?)\s*(?:trieu|tr\b)/);if(price){const n=Number(price[1].replace(',','.'));state.draft.budget=n<5?'under-5':n<10?'under-10':n<20?'10-20':n<30?'20-30':n<=50?'30-50':'over-50';if(isOwner(state.draft.intent))state.draft.ownerRent=String(n);changed=true}}
+    const size=text.match(/(\d+(?:[.,]\d+)?)\s*(?:m2|m²)/i);if(size&&isOwner(state.draft.intent)){state.draft.ownerSize=size[1].replace(',','.');changed=true}
     return changed;
   }
   function faqAnswer(text) {
@@ -109,6 +124,8 @@
     if(state.busy)return;append('user',text);options.replaceChildren();
     const normalized=norm(text);
     if(/can gap|khan cap|gap qua|can ngay|hotline|goi ngay/.test(normalized)){urgent();return}
+    if(/chuyen nhuong|sang nhuong/.test(normalized)){state.draft={intent:'owner_transfer'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
+    if(/ky gui ban|muon ban|can ban/.test(normalized)){state.draft={intent:'owner_sale'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
     if(/chinh chu|ky gui|toi co (?:nha|mat bang|kho|xuong)|nha cua toi/.test(normalized)) {state.draft={intent:'owner'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
     const answer=faqAnswer(text);if(answer){append('assistant',answer);contactOptions();return}
     if(/can thue|tim thue|muon thue|tim mat bang|tim van phong/.test(normalized)&&!state.draft.intent){state.draft.intent='tenant';state.flow=true}
@@ -140,12 +157,13 @@
   function leadData() {
     const fields=form.elements;
     const selected=name=>fields[name].options[fields[name].selectedIndex]?.textContent||'';
-    return {intent:fields.intent.value,name:fields.name.value.trim(),phone:fields.phone.value.trim(),area:fields.preferredArea.value,type:fields.preferredType.value,budget:fields.intent.value==='tenant'?fields.preferredBudget.value:'',budgetLabel:fields.preferredBudget.value?selected('preferredBudget'):'Chưa xác định',property:fields.intent.value==='tenant'&&fields.property.value?selected('property'):'',date:fields.intent.value==='tenant'?fields.date.value:'',ownerAddress:fields.ownerAddress.value.trim(),ownerSize:fields.ownerSize.value,ownerRent:fields.ownerRent.value,ownerNotes:fields.ownerNotes.value.trim(),ownerAuthority:fields.ownerAuthority.checked,contactConsent:fields.contactConsent.checked};
+    return {intent:fields.intent.value,name:fields.name.value.trim(),phone:fields.phone.value.trim(),area:fields.preferredArea.value,type:fields.preferredType.value,budget:fields.intent.value==='tenant'?fields.preferredBudget.value:'',budgetLabel:fields.preferredBudget.value?selected('preferredBudget'):'Chưa xác định',property:fields.intent.value==='tenant'&&fields.property.value?selected('property'):'',date:fields.intent.value==='tenant'?fields.date.value:'',ownerAddress:fields.ownerAddress.value.trim(),ownerSize:fields.ownerSize.value,ownerPrice:fields.ownerRent.value,ownerRent:fields.intent.value==='owner'?fields.ownerRent.value:'',transferMonthlyRent:fields.intent.value==='owner_transfer'?fields.transferMonthlyRent.value:'',ownerNotes:fields.ownerNotes.value.trim(),ownerAuthority:fields.ownerAuthority.checked,contactConsent:fields.contactConsent.checked};
   }
   function summary(data) {
-    const lines=[data.intent==='owner'?'YÊU CẦU CHÍNH CHỦ KÝ GỬI CHO THUÊ':'NHU CẦU TÌM BĐS THUÊ',`Họ và tên: ${data.name}`,`Số điện thoại: ${data.phone}`,`Khu vực: ${data.area||'Cần tư vấn'}`,`Loại BĐS: ${data.type||'Cần tư vấn'}`];
-    if(data.intent==='owner')lines.push(`Địa chỉ: ${data.ownerAddress}`,`Diện tích: ${data.ownerSize} m²`,`Giá thuê dự kiến: ${data.ownerRent?data.ownerRent+' triệu đồng/tháng':'Thỏa thuận'}`,`Mô tả: ${data.ownerNotes||'Trao đổi thêm'}`,'Xác nhận: Chủ sở hữu hoặc người được ủy quyền cho thuê.');
+    const lines=[isOwner(data.intent)?'YÊU CẦU CHÍNH CHỦ '+consignments[data.intent].name.toLocaleUpperCase('vi'):'NHU CẦU TÌM BĐS THUÊ',`Họ và tên: ${data.name}`,`Số điện thoại: ${data.phone}`,`Khu vực: ${data.area||'Cần tư vấn'}`,`Loại BĐS: ${data.type||'Cần tư vấn'}`];
+    if(isOwner(data.intent))lines.push(`Địa chỉ: ${data.ownerAddress}`,`Diện tích: ${data.ownerSize} m²`,`${data.intent==='owner'?'Giá thuê dự kiến':data.intent==='owner_sale'?'Giá bán dự kiến':'Giá chuyển nhượng dự kiến'}: ${data.ownerPrice!==''?data.ownerPrice+(data.intent==='owner'?' triệu đồng/tháng':' triệu đồng'):'Thỏa thuận'}`,`Mô tả: ${data.ownerNotes||'Trao đổi thêm'}`,'Xác nhận: Chủ sở hữu hoặc người được ủy quyền '+consignments[data.intent].verb+'.');
     else{lines.push(`Ngân sách: ${data.budgetLabel}${data.budget ? ' đồng/tháng' : ''}`);if(data.property)lines.push(`BĐS quan tâm: ${data.property}`);if(data.date)lines.push(`Ngày muốn xem: ${data.date.split('-').reverse().join('/')}`)}
+    if(data.intent==='owner_transfer'&&data.transferMonthlyRent!=='')lines.push(`Tiền thuê hiện tại: ${data.transferMonthlyRent} triệu đồng/tháng (tách riêng giá chuyển nhượng)`);
     return lines.join('\n');
   }
   let sending=false;

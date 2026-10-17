@@ -89,3 +89,7 @@ Kiểm thử: server dùng cùng `ADMIN_SECRET` với dữ liệu mã hóa; ch�
 Hướng dẫn kích hoạt đầy đủ: [PLATFORM_SETUP.md](PLATFORM_SETUP.md), SQL tạo bảng/bucket: [database/setup.sql](database/setup.sql). Chưa có cấu hình Supabase/SMTP/Telegram/AI thật thì không tuyên bố các dịch vụ đã hoạt động. Các tin cũ vẫn xem được và quản trị vẫn xuất được tin cũ sau khi đăng nhập. Đọc tài liệu văn bản có thể dùng không có AI sau khi kết nối lưu trữ; ảnh/PDF quét cần luồng ảnh + AI, không giả lập OCR.
 
 `tests/platform.mjs` kiểm tra API thật và trình duyệt với Supabase/Telegram giả lập nội bộ, bao gồm tách quyền, hàng chờ, nhập tài liệu, xuất tiếng Việt và lưu hồ sơ khi Telegram lỗi. Cần `ADMIN_SECRET` đúng với bộ dữ liệu mã hóa; không ghi khóa trong test source.
+
+## Ký gửi bán và chuyển nhượng
+
+Biểu mẫu có thêm `owner_sale` và `owner_transfer`, dùng chung liên hệ/địa chỉ/diện tích nhưng tách giá bán/chuyển nhượng một lần khỏi tiền thuê tháng. Chat nhận diện nhu cầu mới và dẫn vào đúng biểu mẫu; dashboard, Telegram và xuất hồ sơ có nhãn nhu cầu rõ ràng. SQL cho dự án mới đã cập nhật; dự án đã chạy setup cũ cần migration `database/migrations/002-sale-transfer.sql`. Đây là thu thập yêu cầu tư vấn, không tự đăng tin bán vào catalog cho thuê.

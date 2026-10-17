@@ -81,6 +81,10 @@ try{
  const template=await fetch(base+'/api/exports?kind=template&format=xlsx',{headers:{cookie:adminCookie}});assert.equal(template.status,200);const templateRows=await spreadsheetDrafts(Buffer.from(await template.arrayBuffer()));assert.equal(templateRows[0].price,20);assert.equal(templateRows[0].privateAddress,'Điền số nhà và ngõ/ngách tại đây');
  process.env.TELEGRAM_BOT_TOKEN='test';process.env.TELEGRAM_CHAT_ID='test';
  result=await post('/api/leads',{intent:'owner',name,phone:'0906215365',area:'Ba Đình',type:'Văn phòng',ownerAddress:'Địa chỉ riêng',ownerSize:80,ownerRent:18,ownerAuthority:true,contactConsent:true},salesCookie);assert.equal(result.response.status,200);assert(result.data.received);assert.equal(tables.inquiries.length,1);assert.equal(tables.inquiries[0].member_id,tables.profiles[0].id);assert(tables.notification_log.some(n=>n.kind==='inquiry'&&!n.sent),'failed Telegram is retained and does not lose the saved lead');
+ for(const [intent,price] of [['owner_sale',5500],['owner_transfer',350]]){
+  const submission=await post('/api/leads',{intent,name,phone:'0906215365',area:'Ba Đình',type:'Nhà nguyên căn',ownerAddress:'Địa chỉ ký gửi riêng',ownerSize:80,ownerPrice:price,transferMonthlyRent:intent==='owner_transfer'?20:'',ownerAuthority:true,contactConsent:true},salesCookie);
+  assert.equal(submission.response.status,200);const saved=tables.inquiries.at(-1);assert.equal(saved.intent,intent);assert.equal(saved.owner_price,price);assert.equal(saved.owner_rent,null);assert.equal(saved.transfer_monthly_rent,intent==='owner_transfer'?20:null);
+ }
  for(const format of ['xlsx','docx','pdf']){
   const response=await fetch(base+'/api/exports?kind=inquiries&format='+format,{headers:{cookie:adminCookie}});assert.equal(response.status,200);const bytes=Buffer.from(await response.arrayBuffer());const text=await extractDocument(bytes,response.headers.get('content-type'));assert(text.includes(name));
  }
