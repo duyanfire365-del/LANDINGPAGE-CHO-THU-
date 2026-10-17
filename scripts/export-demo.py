@@ -5,15 +5,19 @@ import json
 root = Path(__file__).resolve().parents[1]
 p = root / 'public'
 page = (p / 'index.html').read_text()
-images = ['data:image/svg+xml;base64,' + base64.b64encode((p / f'room-{i}.svg').read_bytes()).decode() for i in range(6)]
-for i, image in enumerate(images):
-    page = page.replace(f'/room-{i}.svg', image)
+records = json.loads((p / 'listings.json').read_text())
+for record in records:
+    for field, mime in [('image', 'image/webp'), ('shareImage', 'image/jpeg')]:
+        record[field] = 'data:' + mime + ';base64,' + base64.b64encode((p / record[field].lstrip('/')).read_bytes()).decode()
 logo = 'data:image/png;base64,' + base64.b64encode((p / 'logo.png').read_bytes()).decode()
 page = page.replace('/logo.png', logo)
 banner = 'data:image/png;base64,' + base64.b64encode((p / 'banner.png').read_bytes()).decode()
 page = page.replace('/banner.png', banner)
-script = (p / 'app.js').read_text().replace('`/room-${(h.id-1)%6}.svg`', 'demoImages[(h.id-1)%6]')
-script = 'const demoImages=' + json.dumps(images) + ';\n' + script
+script = 'window.RENTAL_LISTINGS=' + json.dumps(records, ensure_ascii=False).replace('<', '\\u003c') + ';\n'
+script += (p / 'sharing.js').read_text() + '\n;' + (p / 'app.js').read_text()
+for name in ['listings-data.js', 'sharing.js']:
+    page = page.replace(f'<script src="/{name}" defer></script>', '')
+page = page.replace('<link rel="stylesheet" href="/listings.css">', '<style>' + (p / 'listings.css').read_text() + '</style>')
 page = page.replace('<link rel="stylesheet" href="/styles.css">', '<style>' + (p / 'styles.css').read_text() + '</style>')
 page = page.replace('<script src="/app.js" defer></script>', '')
 page = page.replace('<script src="/chatbot.js" defer></script>', '')

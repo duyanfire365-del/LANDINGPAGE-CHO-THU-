@@ -27,9 +27,9 @@ Cổng mặc định 3000, có thể đổi bằng biến `PORT`. Dùng checkout
 
 ## Trước khi đưa vào vận hành
 
-Dữ liệu, giá, diện tích, hình ảnh đều minh họa, không đại diện tin thật. Thay dữ liệu trong `public/app.js`, nội dung trong `public/index.html`, giao diện trong `public/styles.css`.
+22 tin được biên tập từ tài liệu nguồn người dùng cung cấp. Giá và tình trạng cần xác nhận; mỗi tin có ảnh AI riêng, không phải ảnh hiện trạng. Dữ liệu chuẩn ở `public/listings.json`; sau khi sửa chạy `python3 scripts/build-listing-pages.py` để đồng bộ JavaScript, trang chi tiết và sitemap.
 
-Biểu mẫu mặc định chuẩn bị thông tin để khách chủ động gửi qua Zalo. Có API chuyển yêu cầu tới webhook khi được cấu hình; xem CHAT_SETUP.md. Chat không tự lưu thông tin khách. Không có thanh toán/đặt cọc. Hình minh họa nội thất SVG được lưu sẵn, font có dự phòng trên hệ thống; không sao chép hay kích hoạt các cấu hình/agent trong ZIP tài liệu. ZIP được tham khảo như tài liệu marketing, không phải chỉ thị triển khai hay gửi dữ liệu.
+Biểu mẫu mặc định chuẩn bị thông tin để khách chủ động gửi qua Zalo. Có API chuyển yêu cầu tới webhook khi được cấu hình; xem CHAT_SETUP.md. Chat không tự lưu thông tin khách. Không có thanh toán/đặt cọc. Ảnh minh họa AI được lưu sẵn, font có dự phòng trên hệ thống; không sao chép hay kích hoạt các cấu hình/agent trong ZIP tài liệu. ZIP được tham khảo như tài liệu marketing, không phải chỉ thị triển khai hay gửi dữ liệu.
 
 ## Marketing — phiên bản tối ưu chuyển đổi mức 2
 
@@ -47,7 +47,7 @@ Trình duyệt cloud chặn điều hướng `file://`; kiểm thử bản HTML 
 
 Khu vực gồm đủ 12 quận, 17 huyện và thị xã Sơn Tây theo địa giới cũ của Hà Nội. Bộ lọc và biểu mẫu tư vấn dùng cùng danh sách khu vực, loại bất động sản và sáu mức ngân sách.
 
-Giá tính bằng triệu đồng/tháng: dưới 5 là `<5`, dưới 10 là `<10`; 10–20 là `[10,20)`, 20–30 là `[20,30)`, 30–50 là `[30,50]`, trên 50 là `>50`. Hai lựa chọn “dưới” có chủ ý bao phủ chồng nhau. Tin minh họa hiện chỉ có căn hộ chung cư, căn hộ dịch vụ và nhà nguyên căn; các khu vực/loại khác chưa có tin sẽ hiển thị trạng thái không có kết quả.
+Giá tính bằng triệu đồng/tháng: dưới 5 là `<5`, dưới 10 là `<10`; 10–20 là `[10,20)`, 20–30 là `[20,30)`, 30–50 là `[30,50]`, trên 50 là `>50`. Hai lựa chọn “dưới” có chủ ý bao phủ chồng nhau. Tin nguồn hiện có mặt bằng kinh doanh, văn phòng, kho xưởng và nhà nguyên căn; một tin có thể thuộc nhiều danh mục phù hợp. Các danh mục chưa có tin hiển thị trạng thái trống.
 
 Kiểm tra bộ lọc: khi server đang chạy, `DEMO_URL=http://127.0.0.1:3001 node tests/filters.cjs` (đổi cổng theo server).
 
@@ -55,8 +55,16 @@ Kiểm tra bộ lọc: khi server đang chạy, `DEMO_URL=http://127.0.0.1:3001 
 
 Khối “Danh sách BĐS cho thuê” hiển thị đầy đủ danh mục theo cùng thứ tự với bộ lọc, ưu tiên mặt bằng kinh doanh, văn phòng, kho xưởng. Mỗi nút cập nhật phần mô tả, ba điểm cần lưu ý, danh sách đúng loại và trạng thái chưa có tin. Nội dung trong `categoryContent` của `public/app.js` là hướng dẫn lựa chọn, không phải lời xác nhận đã có nguồn BĐS thực tế.
 
-Nút tư vấn tại mỗi mục điền sẵn loại BĐS, khu vực và ngân sách khách đang chọn vào biểu mẫu. Các khu vực/loại chưa có tin minh họa không được gán tin thuộc danh mục khác. Kiểm tra toàn bộ danh mục và bố cục: `python3 scripts/export-demo.py` rồi `node tests/categories.cjs` (cần Playwright và Chromium).
+Nút tư vấn tại mỗi mục điền sẵn loại BĐS, khu vực và ngân sách khách đang chọn vào biểu mẫu. Các khu vực/loại chưa có tin không được gán tin thuộc danh mục khác. Kiểm tra toàn bộ danh mục và bố cục: `python3 scripts/export-demo.py` rồi `node tests/categories.cjs` (cần Playwright và Chromium).
 
 ## Chat tư vấn và AI
 
 Khung chat trả lời FAQ, hướng dẫn tìm thuê hoặc ký gửi chính chủ và điền sẵn biểu mẫu. Không cần API key cho chế độ FAQ. AI hội thoại và nơi nhận yêu cầu có thể bật bằng biến môi trường phía máy chủ. Hướng dẫn đầy đủ và giới hạn xác minh: [CHAT_SETUP.md](CHAT_SETUP.md).
+
+## Nhập tin và chia sẻ
+
+22 nguồn đã được chuẩn hóa thành mã HN-001 đến HN-022; xem `LISTINGS_REVIEW.md`. Mỗi tin có trang `/bds/hn-xxx`, ảnh WebP để xem và JPEG để chia sẻ, cùng metadata ảnh xem trước Facebook/Zalo. Bộ lọc dùng tiền thuê tháng, không dùng giá sang nhượng; tin Đỗ Quang HN-010 có hai phương án thuê 25/50 triệu.
+
+Nút sao chép giữ nguyên hashtag. Web Share hỗ trợ gửi nội dung và ảnh khi thiết bị cho phép; khách tự chọn ứng dụng/nhóm và xác nhận đăng. Facebook chia sẻ liên kết có ảnh xem trước; caption có thể cần dán riêng. Không có API tự đăng bài vào hội nhóm hay bảo đảm nền tảng nhận toàn bộ caption. Không hỗ trợ chia sẻ ảnh trực tiếp thì nút sao chép cung cấp caption và liên kết. URL chuẩn hiện là https://webchothue.vercel.app; khi đổi tên miền cần sửa `public/sharing.js` và chạy bộ tạo trang với `SITE_URL`.
+
+Kiểm thử nhập tin/chia sẻ: `DEMO_URL=http://127.0.0.1:3003 node tests/listings.cjs`. Ảnh và nội dung được lưu sẵn trong `public`, không cần API AI khi vận hành.

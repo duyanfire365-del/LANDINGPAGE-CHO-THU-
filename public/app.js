@@ -1,12 +1,9 @@
-const homes=[
-{id:1,title:'Căn hộ ngập tràn ánh sáng',area:'Tây Hồ',type:'Căn hộ chung cư',price:18,size:75,beds:2,image:'photo-1600210492486-724fe5c67fb0',tag:'KHÔNG GIAN THOÁNG',description:'Phòng khách mở, ban công đón nắng và nội thất tông gỗ ấm. Một gợi ý cho người yêu không gian sống thư thái.'},
-{id:2,title:'Studio nhỏ, cảm hứng lớn',area:'Cầu Giấy',type:'Căn hộ dịch vụ',price:8.5,size:35,beds:1,image:'photo-1522708323590-d24dbb6b0267',tag:'SỐNG TỐI GIẢN',description:'Không gian gọn gàng, khu bếp riêng và góc làm việc đón sáng. Gợi ý dành cho một người hoặc cặp đôi.'},
-{id:3,title:'Tổ ấm giữa lòng phố',area:'Ba Đình',type:'Nhà nguyên căn',price:24,size:110,beds:3,image:'photo-1600607687939-ce8a6c25118c',tag:'DÀNH CHO GIA ĐÌNH',description:'Không gian sinh hoạt rộng rãi, nhiều phòng riêng cùng góc xanh để cả gia đình tận hưởng thời gian bên nhau.'},
-{id:4,title:'Một khoảng xanh bên cửa sổ',area:'Tây Hồ',type:'Căn hộ chung cư',price:14,size:60,beds:2,image:'photo-1600566753086-00f18fb6b3ea',tag:'GẦN GŨI THIÊN NHIÊN',description:'Nội thất dịu nhẹ và không gian mở tạo cảm giác gần gũi. Gợi ý cho những ngày làm việc tại nhà.'},
-{id:5,title:'Góc riêng đầy chất thơ',area:'Ba Đình',type:'Căn hộ dịch vụ',price:9,size:40,beds:1,image:'photo-1505693416388-ac5ce068fe85',tag:'ẤM CÚNG & RIÊNG TƯ',description:'Phòng ngủ ấm áp, nội thất tối giản và ánh sáng tự nhiên. Một góc riêng để trở về sau ngày dài.'},
-{id:6,title:'Sống rộng, tận hưởng nhiều hơn',area:'Cầu Giấy',type:'Căn hộ chung cư',price:28,size:95,beds:3,image:'photo-1600607687920-4e2a09cf159d',tag:'KHÔNG GIAN RỘNG MỞ',description:'Căn hộ rộng với khu sinh hoạt chung thoáng đãng, phù hợp cho gia đình cần nhiều không gian.'}
-];
-const $=s=>document.querySelector(s);const image=h=>`/room-${(h.id-1)%6}.svg`;
+const homes=window.RENTAL_LISTINGS || [];
+const $=selector=>document.querySelector(selector);
+const image=home=>home.image;
+const esc=window.RentalSharing.escape;
+const inCategory=(home,type)=>type==='all'||home.categories.includes(type);
+let visibleLimit=9;
 let saved=new Set();try{saved=new Set(JSON.parse(localStorage.getItem('rental-favorites')||'[]').filter(id=>homes.some(h=>h.id===id)))}catch{}
 let toastTimer;
 function toast(message){$('#toast').textContent=message;$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',2800)}
@@ -87,11 +84,11 @@ function renderCategory(type, count) {
   $('#category-consult').textContent = type === 'all' ? 'Tư vấn tìm BĐS' : 'Tư vấn loại BĐS này';
   const empty = $('#properties .empty');
   if (empty) {
-    const hasCategoryListings = homes.some(home => type === 'all' || home.type === type);
+    const hasCategoryListings = homes.some(home => inCategory(home,type));
     const title = document.createElement('strong');
     title.textContent = hasCategoryListings ? 'Chưa có kết quả phù hợp với bộ lọc.' : `Chưa có tin đăng trong mục ${type.toLocaleLowerCase('vi')}.`;
     const body = document.createElement('span');
-    body.textContent = hasCategoryListings ? 'Anh/chị có thể đổi khu vực, ngân sách hoặc liên hệ để được tư vấn.' : 'Anh/chị có thể liên hệ để trao đổi nhu cầu. Các tin trên trang hiện là dữ liệu minh họa.';
+    body.textContent = hasCategoryListings ? 'Anh/chị có thể đổi khu vực, ngân sách hoặc liên hệ để được tư vấn.' : 'Anh/chị có thể liên hệ để trao đổi nhu cầu. Tin được tổng hợp từ nguồn cung cấp; ảnh là minh họa bằng AI.';
     const link = document.createElement('a'); link.href = '#tu-van'; link.className = 'text-link';
     link.textContent = 'Trao đổi nhu cầu thuê'; link.addEventListener('click', prepareCategoryConsultation);
     empty.replaceChildren(title, body, link);
@@ -105,15 +102,43 @@ function prepareCategoryConsultation() {
 }
 $('#category-consult').addEventListener('click', prepareCategoryConsultation);
 
-function render(){const area=$('#area').value,type=$('#type').value,budget=$('#budget').value;const selected=homes.filter(h=>(area==='all'||h.area===area)&&(type==='all'||h.type===type)&&matchesBudget(h.price,budget));$('#result-count').textContent=`${selected.length} bất động sản phù hợp`;$('#properties').innerHTML=selected.length?selected.map(h=>`<article class="card"><div class="card-photo"><img src="${image(h)}" alt="Hình minh họa ${h.title.toLowerCase()}" loading="lazy"><span class="tag">${h.tag}</span><button class="favorite" data-save="${h.id}" aria-label="Lưu ${h.title}" aria-pressed="${saved.has(h.id)}">${saved.has(h.id)?'♥':'♡'}</button></div><div class="card-info"><p class="location">${h.area}, Hà Nội · ${h.type}</p><h3>${h.title}</h3><div class="specs"><span>${h.size} m²</span><span>${h.beds} phòng ngủ</span><span>Đầy đủ nội thất</span></div><div class="card-bottom"><div class="price">${String(h.price).replace('.',',')} triệu <small>đồng/tháng</small></div><button class="detail-button" data-detail="${h.id}" aria-label="Xem chi tiết ${h.title}">Xem chi tiết</button></div></div></article>`).join(''):'<p class="empty">Chưa có bất động sản phù hợp với bộ lọc. Anh/chị hãy thử khu vực, loại bất động sản hoặc mức giá khác.</p>';renderCategory(type,selected.length);document.querySelectorAll('[data-type]').forEach(b=>{b.classList.toggle('active',b.dataset.type===type);b.setAttribute('aria-pressed',String(b.dataset.type===type))})}
-$('#search').addEventListener('submit',e=>{e.preventDefault();render();$('#bat-dong-san').scrollIntoView({behavior:'smooth'})});document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{$('#type').value=b.dataset.type;render()}));
+function rentMatches(home,budget){return (home.priceOptions||[{price:home.price}]).some(option=>matchesBudget(option.price,budget))}
+function card(home){
+  return `<article class="card"><div class="card-photo"><a href="/bds/${home.slug}" aria-label="Xem ${esc(home.title)}"><img src="${image(home)}" alt="${esc(home.imageAlt)}" loading="lazy" width="1200" height="800"></a><span class="tag">${home.transferPrice?'SANG NHƯỢNG':'CHO THUÊ'} · ${esc(home.code)}</span><button class="favorite" data-save="${home.id}" aria-label="Lưu ${esc(home.title)}" aria-pressed="${saved.has(home.id)}">${saved.has(home.id)?'♥':'♡'}</button><span class="illustration-label">Ảnh minh họa bằng AI</span></div><div class="card-info"><p class="location">${esc(home.area||'Cần xác nhận quận/huyện')} · ${esc(home.type)}</p><h3><a href="/bds/${home.slug}">${esc(home.title)}</a></h3><p class="card-address">${esc(home.address)}</p><div class="specs"><span>${esc(home.areaText)}</span></div><p class="card-summary">${esc(home.description)}</p>${home.notes.length?'<p class="listing-warning">Có thông tin cần xác nhận — xem chi tiết.</p>':''}<div class="card-bottom"><div class="price">${home.priceOptions?'Từ ':''}${String(home.price).replace('.',',')} triệu <small>đồng/tháng</small></div><button class="detail-button" data-detail="${home.id}" aria-label="Xem chi tiết ${esc(home.title)}">Xem chi tiết</button></div>${home.transferPrice?`<p class="transfer-price">Sang nhượng: ${home.transferPrice} triệu đồng, tính riêng.</p>`:''}<div class="card-share"><button type="button" data-share-action="copy" data-share-id="${home.id}">Sao chép bài</button><button type="button" data-share-action="native" data-share-id="${home.id}">Chia sẻ bài & ảnh</button></div></div></article>`;
+}
+function render(){
+  const area=$('#area').value,type=$('#type').value,budget=$('#budget').value,query=($('#property-query')?.value||'').trim().toLocaleLowerCase('vi');
+  const selected=homes.filter(home=>(area==='all'||home.area===area)&&inCategory(home,type)&&rentMatches(home,budget)&&(!query||`${home.code} ${home.title} ${home.address} ${home.categories.join(' ')}`.toLocaleLowerCase('vi').includes(query)));
+  $('#result-count').textContent=`${selected.length} BĐS phù hợp`;
+  $('#properties').innerHTML=selected.length?selected.slice(0,visibleLimit).map(card).join(''):'<div class="empty"></div>';
+  $('#load-more').hidden=selected.length<=visibleLimit;
+  $('#load-more').textContent=`Xem thêm BĐS (${Math.max(0,selected.length-visibleLimit)} tin còn lại)`;
+  renderCategory(type,selected.length);
+  document.querySelectorAll('[data-type]').forEach(button=>{button.classList.toggle('active',button.dataset.type===type);button.setAttribute('aria-pressed',String(button.dataset.type===type))});
+}
+$('#load-more').addEventListener('click',()=>{visibleLimit+=9;render()});
+$('#search').addEventListener('submit',e=>{e.preventDefault();visibleLimit=9;render();$('#bat-dong-san').scrollIntoView({behavior:'smooth'})});document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{$('#type').value=b.dataset.type;visibleLimit=9;render()}));
 $('#properties').addEventListener('click',e=>{const save=e.target.closest('[data-save]'),detail=e.target.closest('[data-detail]');if(save){const id=Number(save.dataset.save);saved.has(id)?saved.delete(id):saved.add(id);try{localStorage.setItem('rental-favorites',JSON.stringify([...saved]))}catch{}render();toast(saved.has(id)?'Đã lưu căn yêu thích trên trình duyệt này':'Đã bỏ lưu căn nhà')}if(detail)showDetail(Number(detail.dataset.detail))});
-function showDetail(id){const h=homes.find(h=>h.id===id);$('#detail-content').innerHTML=`<img src="${image(h)}" alt="Hình minh họa ${h.title}"><div><p class="eyebrow">${h.area.toUpperCase()} · HÀ NỘI</p><h2>${h.title}</h2><p>${h.description}</p><p>${h.size} m² · ${h.beds} phòng ngủ · Đầy đủ nội thất</p><p class="price">${String(h.price).replace('.',',')} triệu đồng/tháng</p><p class="sample-note">Thông tin minh họa. Vui lòng gọi để xác nhận nhà còn trống, giá thuê, tiền đặt cọc và các khoản phí khác.</p><button class="button" id="choose-home">Tư vấn về căn này</button></div>`;$('#detail').showModal();$('#choose-home').onclick=()=>{$('#lead-property').value=String(id);$('[name=preferredType]').value=h.type;$('.extra-fields').open=true;$('#detail').close();$('#tu-van').scrollIntoView({behavior:'smooth'});$('#lead-form input[name=name]').focus({preventScroll:true})}}
+function showDetail(id){
+  const home=homes.find(record=>record.id===id);if(!home)return;
+  const prices=home.priceOptions?home.priceOptions.map(o=>`<li>${esc(o.label)}: <strong>${o.price} triệu đồng/tháng</strong></li>`).join(''):`<li>Giá thuê: <strong>${home.price} triệu đồng/tháng</strong></li>`;
+  $('#detail-content').innerHTML=`<img src="${image(home)}" alt="${esc(home.imageAlt)}"><div><p class="eyebrow">${esc(home.code)} · ${esc(home.type)}</p><h2>${esc(home.title)}</h2><p>${esc(home.address)}</p><p>${esc(home.areaText)}</p><ul class="detail-facts">${prices}${home.transferPrice?`<li>Giá sang nhượng: <strong>${home.transferPrice} triệu đồng</strong>, tách riêng tiền thuê.</li>`:''}${home.facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>${home.notes.length?`<div class="detail-notes"><h3>Thông tin cần xác nhận</h3><ul>${home.notes.map(note=>`<li>${esc(note)}</li>`).join('')}</ul></div>`:''}<p class="sample-note">Thông tin theo nguồn cung cấp; cần xác nhận giá, tình trạng còn trống và các khoản phí trước khi thuê. Ảnh minh họa bằng AI, không phải ảnh hiện trạng.</p><div class="detail-actions"><button class="button" id="choose-home">Tư vấn về BĐS này</button><a href="/bds/${home.slug}">Mở trang riêng</a><a href="tel:0906215365">Gọi 0906 215 365</a></div>${RentalSharing.markup(home)}<details class="share-caption"><summary>Bài đăng để chia sẻ — có hashtag gốc</summary><pre>${esc(RentalSharing.text(home))}</pre></details></div>`;
+  RentalSharing.prepare(home);$('#detail').showModal();
+  $('#choose-home').onclick=()=>{preparePropertyInquiry(home);$('#detail').close();$('#tu-van').scrollIntoView({behavior:'smooth'});$('#lead-form input[name=name]').focus({preventScroll:true})};
+}
+function preparePropertyInquiry(home){
+  const intent=$('#lead-intent');if(intent){intent.value='tenant';intent.dispatchEvent(new Event('change'))}
+  $('#lead-property').value=String(home.id);$('[name=preferredType]').value=home.type;$('[name=preferredArea]').value=home.area||'';
+  $('.extra-fields').hidden=false;$('.extra-fields').open=true;
+}
 $('#close-detail').onclick=()=>$('#detail').close();$('#detail').addEventListener('click',e=>{if(e.target===$('#detail')){const r=$('#detail').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('#detail').close()}});
-homes.forEach(h=>{const o=document.createElement('option');o.value=String(h.id);o.textContent=`${h.title} — ${h.area}`;$('#lead-property').append(o)});
+homes.forEach(h=>{const o=document.createElement('option');o.value=String(h.id);o.textContent=`${h.code} · ${h.title}`;$('#lead-property').append(o)});
 const dateField=$('input[name=date]');const now=new Date();const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;dateField.min=today;
 $('input[name=name]').addEventListener('input',e=>e.target.setCustomValidity(''));dateField.addEventListener('input',()=>dateField.setCustomValidity(''));render();
 // Vietnamese feedback instead of browser-default messages in another language.
 const form=$('#lead-form');
 form.addEventListener('invalid',event=>{const field=event.target;if(field.validity.valueMissing){field.setCustomValidity(field.type==='checkbox'?'Vui lòng xác nhận trước khi tiếp tục.':({name:'Vui lòng nhập họ và tên.',phone:'Vui lòng nhập số điện thoại.',ownerAddress:'Vui lòng nhập địa chỉ BĐS.',ownerSize:'Vui lòng nhập diện tích BĐS.'}[field.name]||'Vui lòng điền thông tin này.'))}else if(field.name==='phone'&&field.validity.patternMismatch){field.setCustomValidity('Vui lòng nhập số điện thoại Việt Nam gồm 10 chữ số hoặc bắt đầu bằng +84.')}else if(field.name==='date'&&field.validity.rangeUnderflow){field.setCustomValidity('Vui lòng chọn hôm nay hoặc ngày sắp tới.')}},true);
 form.addEventListener('input',event=>event.target.setCustomValidity?.(''));
+
+const inquiry=new URLSearchParams(location.search).get('inquiry');
+if(inquiry){const property=homes.find(home=>home.slug===inquiry);if(property)window.addEventListener('load',()=>preparePropertyInquiry(property),{once:true})}

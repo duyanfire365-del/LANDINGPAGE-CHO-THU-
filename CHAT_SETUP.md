@@ -52,4 +52,4 @@ Chỉ gửi sau khi khách đồng ý liên hệ và bấm gửi. Máy chủ ki�
 
 ## Giới hạn xác minh
 
-Đã kiểm tra luồng UI/validation, trường hợp AI thành công/thất bại bằng mock và việc chuyển yêu cầu tới webhook được mock. Chưa kiểm tra AI hoặc webhook thật vì phiên thiết lập chưa có khóa hay endpoint được cấu hình. Tin BĐS vẫn là minh họa, không được bot trình bày như nguồn nhà đã xác minh.
+Đã kiểm tra luồng UI/validation, trường hợp AI thành công/thất bại bằng mock và việc chuyển yêu cầu tới webhook được mock. Chưa kiểm tra AI hoặc webhook thật vì phiên thiết lập chưa có khóa hay endpoint được cấu hình. 22 tin BĐS được biên tập từ tài liệu người dùng cung cấp, chưa xác minh tình trạng còn trống; ảnh là minh họa AI. Bot không được trình bày như nguồn BĐS đã xác minh.

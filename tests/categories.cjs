@@ -20,7 +20,7 @@ const path = require('node:path');
    descriptions.add(await page.locator('#category-description').innerText());
    assert.equal(await page.locator('[data-type][aria-pressed=true]').count(),1);
    assert.equal(await page.locator('#category-checklist li').count(),3);
-   const count=({'all':6,'Nhà nguyên căn':1,'Căn hộ chung cư':3,'Căn hộ dịch vụ':2})[value]||0;
+   const count=({'all':9,'Mặt bằng kinh doanh':9,'Văn phòng':9,'Kho xưởng':1,'Nhà nguyên căn':6})[value]||0;
    assert.equal(await page.locator('.card').count(),count);
    if(count===0)assert((await page.locator('.empty').innerText()).includes(value.toLocaleLowerCase('vi')));
    await page.locator('#category-consult').click();
