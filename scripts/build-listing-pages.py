@@ -8,7 +8,7 @@ root=Path(__file__).resolve().parents[1]
 public=root/'public'
 records=json.loads((public/'listings.json').read_text())
 assert all('hashtags' not in row and 'sourceNumber' not in row for row in records), 'Refusing to publish private source records; export the public dataset first.'
-site=os.environ.get('SITE_URL','https://webchothue.vercel.app').rstrip('/')
+site=os.environ.get('SITE_URL','https://nguonchothue.vn').rstrip('/')
 assert site.startswith('https://')
 for record in records:
     record.setdefault('shareImage',f"/images/{record['slug']}.jpg")

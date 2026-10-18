@@ -1,7 +1,7 @@
 (() => {
   const files = new Map();
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const url = listing => `https://webchothue.vercel.app${listing.href||'/bds/'+listing.slug}`;
+  const url = listing => new URL(listing.href||'/bds/'+listing.slug,location.protocol==='https:'?location.origin:'https://nguonchothue.vn').href;
   const text = listing => `${listing.shareText}\n\nXem thông tin: ${url(listing)}`;
   function status(element, message) {
     const target = element?.closest('.sharing-tools')?.querySelector('.share-status') || document.querySelector('#share-status');

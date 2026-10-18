@@ -8,7 +8,7 @@ export default async function handler(req,res){
   if(!/^live-\d{10,20}$/.test(slug||'')||!configured()){res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'});return res.end('Tin chưa được đăng hoặc đã được gỡ.')}
   const rows=await db('posts',{query:'?status=eq.published&public_data->>slug=eq.'+encodeURIComponent(slug)+'&select=public_data&limit=1'});
   const post=rows[0]?.public_data;if(!post){res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'});return res.end('Không tìm thấy tin.')}
-  const origin=(process.env.SITE_URL||'https://webchothue.vercel.app').replace(/\/$/,'');
+  const origin=(process.env.SITE_URL||'https://nguonchothue.vn').replace(/\/$/,'');
   let page=await readFile(new URL('../public/tin.html',import.meta.url),'utf8');
   page=page.replace('<title>Chi tiết BĐS | Nguồn cho thuê Hà Nội</title>',`<title>${escape(post.title)} | Nguồn cho thuê Hà Nội</title><meta name="description" content="${escape(post.description)}"><meta property="og:type" content="article"><meta property="og:title" content="${escape(post.title)}"><meta property="og:description" content="${escape(post.description)}"><meta property="og:url" content="${escape(origin+post.href)}"><meta property="og:image" content="${escape(new URL(post.image,origin).href)}">`);
   res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(page);

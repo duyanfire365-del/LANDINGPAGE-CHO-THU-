@@ -16,7 +16,7 @@ Mã nguồn đã có cổng thành viên, cấp quyền Sale/CTV, hàng chờ du
 | `SUPABASE_SERVICE_ROLE_KEY` | Khóa `service_role`, đánh dấu Sensitive |
 | `ADMIN_SECRET` | Giữ nguyên khóa quản trị đã bàn giao, dùng để giải mã 22 tin cũ |
 
-5. Supabase → **Authentication → URL Configuration**: Site URL là `https://webchothue.vercel.app`; thêm URL này vào danh sách redirect được phép. Khi đổi tên miền, cập nhật cả hai nơi.
+5. Supabase → **Authentication → URL Configuration**: Site URL là `https://nguonchothue.vn`; thêm URL này vào danh sách redirect được phép. Khi đổi tên miền, cập nhật cả hai nơi.
 6. Giữ **Confirm email** bật. Cấu hình **Custom SMTP** để gửi email xác nhận cho khách thật; mail thử mặc định của Supabase có giới hạn người nhận/tần suất. Người đăng ký xác nhận email trước khi đăng nhập.
 7. Vercel → **Deployments → bản mới nhất → Redeploy**. Không bỏ qua bước này sau khi thêm biến.
 

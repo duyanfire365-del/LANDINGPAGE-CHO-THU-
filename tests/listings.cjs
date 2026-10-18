@@ -34,7 +34,7 @@ const records=require('../public/listings.json');
   const clipboard=await page.evaluate(()=>navigator.clipboard.readText());assert(!clipboard.includes('#DongDa'));assert(!clipboard.includes('10A'));assert(clipboard.includes('Ba Đình'));assert(clipboard.endsWith('/bds/hn-006'));
   await page.locator('#close-detail').click();
   await page.goto(base+'/bds/hn-019');assert.equal(await page.locator('h1').innerText(),records[18].title);
-  assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'),'https://webchothue.vercel.app/images/hn-019.jpg');
+  assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'),'https://nguonchothue.vn/images/hn-019.jpg');
   const picture=await page.request.get(base+records[18].shareImage);assert.equal(picture.status(),200);assert.equal(picture.headers()['content-type'],'image/jpeg');
   await page.evaluate(()=>{navigator.share=async payload=>{window.shareResult={text:payload.text,files:payload.files?.map(f=>({name:f.name,type:f.type,size:f.size}))}};navigator.canShare=()=>true});
   await page.locator('[data-share-action=native]').click();await page.waitForFunction(()=>window.shareResult);
