@@ -72,7 +72,7 @@ Kiểm thử nhập tin/chia sẻ: `DEMO_URL=http://127.0.0.1:3003 node tests/li
 
 ## Quyền riêng tư và quản trị
 
-Mở `/admin`, đăng nhập bằng `ADMIN_SECRET` được cấu hình trong Vercel. Dữ liệu riêng chỉ đi qua `/api/admin` sau xác thực cookie HttpOnly, SameSite=Strict, Secure trên Vercel; phiên hết hạn sau 8 giờ. Không lưu dữ liệu riêng trong localStorage. API không cache và không hoạt động khi thiếu khóa.
+Mở `/admin`, đăng nhập bằng mật khẩu quản trị đã thiết lập; `ADMIN_SECRET` trong Vercel chỉ giữ vai trò khóa mã hóa/ký phiên. Dữ liệu riêng chỉ đi qua `/api/admin` sau xác thực cookie HttpOnly, SameSite=Strict, Secure trên Vercel; phiên hết hạn sau 8 giờ. Không lưu dữ liệu riêng trong localStorage. API không cache và không hoạt động khi thiếu khóa.
 
 `lib/admin-listings.enc.json` chứa dữ liệu AES-256-GCM đã mã hóa; khóa ngẫu nhiên được bàn giao riêng ngoài repository. Thêm đúng khóa dưới tên `ADMIN_SECRET`, rồi redeploy; không tự đặt khóa khác vì sẽ không giải mã được dữ liệu hiện có. Không đặt khóa trong Git, chat hoặc file public. Muốn thay khóa cần mã hóa lại dữ liệu bằng `scripts/encrypt-admin-data.mjs`.
 
@@ -93,3 +93,5 @@ Hướng dẫn kích hoạt đầy đủ: [PLATFORM_SETUP.md](PLATFORM_SETUP.md)
 ## Ký gửi bán và chuyển nhượng
 
 Biểu mẫu có thêm `owner_sale` và `owner_transfer`, dùng chung liên hệ/địa chỉ/diện tích nhưng tách giá bán/chuyển nhượng một lần khỏi tiền thuê tháng. Chat nhận diện nhu cầu mới và dẫn vào đúng biểu mẫu; dashboard, Telegram và xuất hồ sơ có nhãn nhu cầu rõ ràng. SQL cho dự án mới đã cập nhật; dự án đã chạy setup cũ cần migration `database/migrations/002-sale-transfer.sql`. Đây là thu thập yêu cầu tư vấn, không tự đăng tin bán vào catalog cho thuê.
+
+Mật khẩu đăng nhập quản trị được xác thực bằng scrypt trong `lib/admin-password.json`, tách khỏi `ADMIN_SECRET` dùng giải mã và ký phiên. Không đổi ADMIN_SECRET thành mật khẩu ngắn. Đổi verifier sẽ hủy hiệu lực phiên quản trị cũ. Kiểm thử dùng `ADMIN_LOGIN_PASSWORD` (không phải khóa giải mã) qua môi trường.

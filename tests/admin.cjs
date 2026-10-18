@@ -2,8 +2,8 @@ const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 (async()=>{
- const base=process.env.ADMIN_TEST_URL||'http://127.0.0.1:3004',secret=process.env.ADMIN_SECRET;
- assert(secret,'Provide ADMIN_SECRET through the environment, never in test source');
+ const base=process.env.ADMIN_TEST_URL||'http://127.0.0.1:3004',secret=process.env.ADMIN_LOGIN_PASSWORD;
+ assert(secret,'Provide ADMIN_LOGIN_PASSWORD through the environment, never in test source');
  const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium'});
  try{
   const context=await browser.newContext({permissions:['clipboard-read','clipboard-write']}),page=await context.newPage();

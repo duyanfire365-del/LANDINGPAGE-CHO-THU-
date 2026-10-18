@@ -56,7 +56,8 @@ try{
  const name='Nguyễn Văn An',email='sale@example.test',password='Test-password-123!';
  let result=await post('/api/members',{action:'register',name,phone:'0906215365',kind:'sales',email,password,consent:true,can_post:true});assert.equal(result.response.status,200);assert.equal(tables.profiles[0].can_post,false);
  result=await post('/api/members',{action:'login',email,password});assert.equal(result.response.status,200);const salesCookie=cookie(result.response);
- const login=await post('/api/admin',{action:'login',password:process.env.ADMIN_SECRET});assert.equal(login.response.status,200);const adminCookie=cookie(login.response);
+ const oldKeyLogin=await post('/api/admin',{action:'login',password:process.env.ADMIN_SECRET});assert.equal(oldKeyLogin.response.status,401,'encryption key is not a login password');
+ const login=await post('/api/admin',{action:'login',password:process.env.ADMIN_LOGIN_PASSWORD});assert.equal(login.response.status,200);const adminCookie=cookie(login.response);
  const input={action:'submit',title:'Văn phòng cho thuê tại Cầu Giấy',location:'Phạm Huy Thông',area:'Ba Đình',type:'Văn phòng',price:18,size:80,description:'Không gian văn phòng, liên hệ để xem thực tế.',privateAddress:'123 ngõ 99 Phạm Huy Thông',hashtags:'#NguonRieng',assetIds:[]};
  result=await post('/api/workspace',input,salesCookie);assert.equal(result.response.status,403,'unapproved sales cannot submit');
  result=await post('/api/workspace',{action:'permission',id:tables.profiles[0].id,canPost:true},salesCookie);assert.equal(result.response.status,401,'sales cannot grant privileges');
@@ -93,7 +94,7 @@ try{
  await context.addCookies([{name:'rental_member',value:salesCookie.split('=')[1],url:base}]);await page.goto(base+'/thanh-vien');await page.locator('#member-posting').waitFor();assert(await page.locator('.editor-form').isVisible());
  for(const width of [375,768,1440]){await page.setViewportSize({width,height:950});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'member overflow '+width)}
  await page.goto(base+'/tin?slug='+catalog.posts[0].slug);await page.locator('.property-title').waitFor();assert(!(await page.locator('body').innerText()).includes('123 ngõ'));
- await page.goto(base+'/admin');await page.locator('#admin-password').fill(process.env.ADMIN_SECRET);await page.locator('#admin-login button').click();await page.locator('#management-members table').waitFor();
+ await page.goto(base+'/admin');await page.locator('#admin-password').fill(process.env.ADMIN_LOGIN_PASSWORD);await page.locator('#admin-login button').click();await page.locator('#management-members table').waitFor();
  await page.locator('[data-manage=inquiries]').click();assert((await page.locator('#management-inquiries').innerText()).includes(name));
  await page.locator('[data-manage=exports]').click();const download=page.waitForEvent('download');await page.locator('[data-panel=exports] [data-export=posts][data-format=xlsx]').click();assert.equal((await download).suggestedFilename(),'posts.xlsx');
  for(const width of [375,768,1440]){await page.setViewportSize({width,height:950});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'admin overflow '+width)}

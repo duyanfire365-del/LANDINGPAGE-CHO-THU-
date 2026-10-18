@@ -1,9 +1,12 @@
-import {createHash,createHmac,createDecipheriv,timingSafeEqual,randomBytes} from 'node:crypto';
+import {createHash,createHmac,createDecipheriv,timingSafeEqual,randomBytes,scryptSync} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 const lifetime=8*60*60;
+const verifier=JSON.parse(readFileSync(new URL('../lib/admin-password.json',import.meta.url),'utf8'));
+function passwordMatches(password){if(password.length>200)return false;return timingSafeEqual(scryptSync(password,verifier.salt,64),Buffer.from(verifier.hash,'hex'))}
 function equal(a,b){const x=createHash('sha256').update(a).digest(),y=createHash('sha256').update(b).digest();return timingSafeEqual(x,y)}
-function signature(value,secret){return createHmac('sha256','rental-admin-session:'+secret).update(value).digest('base64url')}
+function signature(value,secret){return createHmac('sha256','rental-admin-session:'+secret+':'+verifier.hash).update(value).digest('base64url')}
 export function authenticated(req,secret=process.env.ADMIN_SECRET){
  if(!secret||secret.length<32)return false;
  const token=String(req.headers.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('rental_admin='))?.slice(13)||'';
@@ -31,7 +34,7 @@ export default async function handler(req,res){
   try{
    const body=await readJson(req,2000);
    if(body.action==='logout'){res.setHeader('Set-Cookie',cookie(req,'',0));return send(res,200,{authenticated:false})}
-   if(body.action!=='login'||typeof body.password!=='string'||!equal(body.password,secret))return send(res,401,{error:'Khóa đăng nhập không đúng.'});
+   if(body.action!=='login'||typeof body.password!=='string'||!passwordMatches(body.password))return send(res,401,{error:'Mật khẩu đăng nhập không đúng.'});
    // Verify the configured key can decrypt the data before issuing a session.
    await listings(secret);
    const value=String(Date.now()+lifetime*1000)+'.'+randomBytes(24).toString('base64url');
