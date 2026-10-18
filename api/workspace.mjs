@@ -1,11 +1,16 @@
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
-import {actor,requireAdmin,db,clean,notify} from '../lib/platform.mjs';
+import {actor,requireAdmin,db,clean,notify,configured} from '../lib/platform.mjs';
 import {draft} from '../lib/posts.mjs';
 import {intentLabels} from '../lib/inquiries.mjs';
 export default async function handler(req,res){
  try{
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='connections'){
+    requireAdmin(req);let storageReady=false;
+    if(configured())try{await Promise.all([db('inquiries',{query:'?select=id&limit=1'}),db('profiles',{query:'?select=id&limit=1'})]);storageReady=true}catch{}
+    return send(res,200,{storageConfigured:configured(),storageReady,telegramConfigured:Boolean(process.env.TELEGRAM_BOT_TOKEN&&process.env.TELEGRAM_CHAT_ID)});
+   }
    if(params.get('view')==='inquiries'){
     requireAdmin(req);
     const page=Number(params.get('page')||0),intent=params.get('intent')||'',state=params.get('status')||'';
@@ -31,6 +36,11 @@ export default async function handler(req,res){
    return send(res,201,{submitted:true,id:rows[0].id});
   }
   requireAdmin(req);
+  if(body.action==='telegram-test'){
+   if(!process.env.TELEGRAM_BOT_TOKEN||!process.env.TELEGRAM_CHAT_ID)return send(res,503,{error:'Cần thêm TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID vào Vercel, rồi Redeploy.'});
+   const result=await notify('Thông báo thử — đã kết nối website với Telegram',{id:'kiem-tra-ket-noi'});
+   return send(res,result.sent?200:502,result.sent?{sent:true}:{error:'Telegram chưa xác nhận nhận tin. Kiểm tra token, chat ID và bấm Start trong bot trước khi thử lại.'});
+  }
   if(body.action==='inquiry-update'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||!['new','contacted','following','closed'].includes(body.status)||typeof body.notes!=='string'||body.notes.length>4000)return send(res,400,{error:'Thông tin cập nhật hồ sơ không hợp lệ.'});
    const rows=await db('inquiries',{method:'PATCH',query:'?id=eq.'+body.id,body:{management_status:body.status,admin_notes:body.notes.trim(),updated_at:new Date().toISOString()}});

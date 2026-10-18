@@ -47,8 +47,8 @@ const fake=http.createServer(async(req,res)=>{
 });
 await new Promise(resolve=>fake.listen(0,'127.0.0.1',resolve));
 process.env.SUPABASE_URL='http://127.0.0.1:'+fake.address().port;process.env.SUPABASE_ANON_KEY='test-anon';process.env.SUPABASE_SERVICE_ROLE_KEY='test-service';process.env.PORT='3006';
-const originalFetch=globalThis.fetch;
-globalThis.fetch=async(url,options)=>String(url).startsWith('https://api.telegram.org/')?new Response(JSON.stringify({ok:false}),{status:502}):originalFetch(url,options);
+const originalFetch=globalThis.fetch;let telegramSuccess=false;
+globalThis.fetch=async(url,options)=>String(url).startsWith('https://api.telegram.org/')?new Response(JSON.stringify({ok:telegramSuccess}),{status:telegramSuccess?200:502}):originalFetch(url,options);
 await import('../server.mjs');
 const base='http://127.0.0.1:3006';
 const cookie=response=>(response.headers.get('set-cookie')||'').split(';')[0];
@@ -82,7 +82,10 @@ try{
  await post('/api/workspace',{action:'review',id:mediaPost.data.id,status:'published'},adminCookie);
  const mediaResponse=await fetch(base+'/api/files?action=media&id='+mediaUpload.data.id+'&download=1',{redirect:'manual'});assert.equal(mediaResponse.status,302);assert(mediaResponse.headers.get('location').includes('download=video.mp4'));
  const template=await fetch(base+'/api/exports?kind=template&format=xlsx',{headers:{cookie:adminCookie}});assert.equal(template.status,200);const templateRows=await spreadsheetDrafts(Buffer.from(await template.arrayBuffer()));assert.equal(templateRows[0].price,20);assert.equal(templateRows[0].privateAddress,'Điền số nhà và ngõ/ngách tại đây');
+ const connections=await (await fetch(base+'/api/workspace?view=connections',{headers:{cookie:adminCookie}})).json();assert(connections.storageReady);assert.equal(connections.telegramConfigured,false);assert.equal((await fetch(base+'/api/workspace?view=connections',{headers:{cookie:salesCookie}})).status,401);
  process.env.TELEGRAM_BOT_TOKEN='test';process.env.TELEGRAM_CHAT_ID='test';
+ assert.equal((await post('/api/workspace',{action:'telegram-test'},salesCookie)).response.status,401);
+ assert.equal((await post('/api/workspace',{action:'telegram-test'},adminCookie)).response.status,502);telegramSuccess=true;assert.equal((await post('/api/workspace',{action:'telegram-test'},adminCookie)).data.sent,true);telegramSuccess=false;
  result=await post('/api/leads',{intent:'owner',name,phone:'0906215365',area:'Ba Đình',type:'Văn phòng',ownerAddress:'Địa chỉ riêng',ownerSize:80,ownerRent:18,ownerAuthority:true,contactConsent:true},salesCookie);assert.equal(result.response.status,200);assert(result.data.received);assert.equal(tables.inquiries.length,1);assert.equal(tables.inquiries[0].member_id,tables.profiles[0].id);assert(tables.notification_log.some(n=>n.kind==='inquiry'&&!n.sent),'failed Telegram is retained and does not lose the saved lead');
  for(const [intent,price] of [['owner_sale',5500],['owner_transfer',350]]){
   const submission=await post('/api/leads',{intent,name,phone:'0906215365',area:'Ba Đình',type:'Nhà nguyên căn',ownerAddress:'Địa chỉ ký gửi riêng',ownerSize:80,ownerPrice:price,transferMonthlyRent:intent==='owner_transfer'?20:'',ownerAuthority:true,contactConsent:true},salesCookie);
