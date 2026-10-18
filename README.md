@@ -97,3 +97,7 @@ Biểu mẫu có thêm `owner_sale` và `owner_transfer`, dùng chung liên hệ
 Mật khẩu đăng nhập quản trị được xác thực bằng scrypt trong `lib/admin-password.json`, tách khỏi `ADMIN_SECRET` dùng giải mã và ký phiên. Không đổi ADMIN_SECRET thành mật khẩu ngắn. Đổi verifier sẽ hủy hiệu lực phiên quản trị cũ. Kiểm thử dùng `ADMIN_LOGIN_PASSWORD` (không phải khóa giải mã) qua môi trường.
 
 Trang quản trị ưu tiên mục Khách gửi thông tin, có tìm kiếm/lọc/phân trang, trạng thái xử lý và ghi chú nội bộ. Cập nhật Supabase đã có bằng migration 003; ghi chú không cấp cho Sale/CTV hay trả về danh sách nhu cầu của thành viên.
+
+## Ảnh xem trước trang chủ khi chia sẻ
+
+Trang chủ trả sẵn Open Graph (website, tiêu đề, mô tả, banner JPEG công khai 1536×1024) và Twitter card trong HTML, không cần JavaScript hay đăng nhập. Hotline/Zalo có trong tiêu đề, mô tả và banner gốc do chủ website cung cấp. Ảnh `public/share-banner-v1.jpg` chỉ chuyển định dạng/tối ưu dung lượng từ banner gốc. Zalo quyết định cách cắt ảnh, rút gọn chữ và lưu cache; tin đã gửi trước đó không tự cập nhật. Sau triển khai có thể thử gửi liên kết mới `https://nguonchothue.vn/?v=2`. Muốn đổi banner cần đổi tên/version ảnh và cập nhật metadata. Không có nút Zalo riêng trong thẻ xem trước: người nhận bấm thẻ để mở website và gọi/chat từ đó.

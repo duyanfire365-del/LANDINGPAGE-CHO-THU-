@@ -10,7 +10,7 @@ import leadsHandler from './api/leads.mjs';
 import adminHandler from './api/admin.mjs';
 import {readFile,readdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-const files={'/thanh-vien':'thanh-vien.html','/tin':'tin.html','/admin':'admin.html','/admin/':'admin.html','/admin.html':'admin.html','/admin.js':'admin.js','/admin.css':'admin.css','/chatbot.js':'chatbot.js','/chatbot.css':'chatbot.css','/':'index.html','/styles.css':'styles.css','/app.js':'app.js','/logo.png':'logo.png','/banner.png':'banner.png'};
+const files={'/share-banner-v1.jpg':'share-banner-v1.jpg','/thanh-vien':'thanh-vien.html','/tin':'tin.html','/admin':'admin.html','/admin/':'admin.html','/admin.html':'admin.html','/admin.js':'admin.js','/admin.css':'admin.css','/chatbot.js':'chatbot.js','/chatbot.css':'chatbot.css','/':'index.html','/styles.css':'styles.css','/app.js':'app.js','/logo.png':'logo.png','/banner.png':'banner.png'};
 for(const name of ['thanh-vien.html','tin.html','navigation.js','crm.js','portal.css','portal.js','editor.js','management.js','catalog.js','live-property.js'])files['/'+name]=name;
 for(let i=0;i<6;i++)files['/room-'+i+'.svg']='room-'+i+'.svg';
 for(const name of ['listings.css','listings-data.js','listings.json','sharing.js','property.js','sitemap.xml'])files['/'+name]=name;
