@@ -80,3 +80,9 @@ Cài lại thành công bằng `npm ci` theo lockfile. Kiểm tra npm audit khô
 Biểu mẫu chung có bốn nhu cầu: Cần thuê, Ký gửi cho thuê, Ký gửi bán, Chuyển nhượng. Giá bán và chuyển nhượng tính bằng triệu đồng một lần; tiền thuê hiện tại (nếu có) là khoản riêng theo tháng. Hồ sơ chỉ gửi tư vấn/quản trị, không tự xuất bản tin bán vào danh sách BĐS cho thuê.
 
 Dự án Supabase mới dùng bản `database/setup.sql` mới nhất. Nếu đã chạy SQL cũ, chạy thêm `database/migrations/002-sale-transfer.sql` trong SQL Editor trước khi tiếp nhận hai loại hồ sơ mới. Migration thêm cột giá chung, tiền thuê hiện tại và mở rộng các loại nhu cầu; giữ nguyên hồ sơ thuê trước đây.
+
+## Quản lý khách gửi thông tin
+
+Trang `/admin` mở sẵn mục **Khách gửi thông tin**: tra cứu họ tên/điện thoại/khu vực, lọc bốn loại nhu cầu và trạng thái xử lý, xem từng trang 20 hồ sơ, gọi điện/mở Zalo, lưu ghi chú riêng. Có bốn trạng thái: Mới, Đã liên hệ, Đang chăm sóc, Đã hoàn tất. Trạng thái và ghi chú nội bộ đi kèm khi xuất Excel/Word/PDF và không trả cho thành viên/khách. Dùng **Làm mới** để nhận hồ sơ mới gửi.
+
+Dự án Supabase mới chạy `database/setup.sql` hiện tại. Dự án đã thiết lập trước đó cần chạy `database/migrations/003-inquiry-management.sql` để có cột quản lý. Nếu chưa chạy migration 002 cho bán/chuyển nhượng, chạy 002 trước rồi 003. Hồ sơ khách đã gửi thành công được giữ nguyên. Thông tin khách chỉ chuẩn bị trên biểu mẫu nhưng chưa gửi, hoặc tự nhắn qua Zalo, không tự xuất hiện trong quản trị. Chưa kết nối Supabase thì không thể lưu/đọc hồ sơ thật; API và giao diện sẽ báo lỗi kết nối.

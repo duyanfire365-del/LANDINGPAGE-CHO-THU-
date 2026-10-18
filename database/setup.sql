@@ -21,6 +21,7 @@ create table if not exists public.inquiries (
  intent text not null check(intent in ('tenant','owner','owner_sale','owner_transfer')), name text not null, phone text not null,
  area text, type text, budget text, property text, date text,
  owner_address text, owner_size numeric, owner_rent numeric, owner_price numeric, transfer_monthly_rent numeric, owner_notes text,
+ management_status text not null default 'new' check(management_status in ('new','contacted','following','closed')), admin_notes text not null default '', updated_at timestamptz,
  contact_consent boolean not null default false, created_at timestamptz not null default now()
 );
 create table if not exists public.posts (

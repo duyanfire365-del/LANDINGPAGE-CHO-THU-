@@ -1,9 +1,22 @@
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 import {actor,requireAdmin,db,clean,notify} from '../lib/platform.mjs';
 import {draft} from '../lib/posts.mjs';
+import {intentLabels} from '../lib/inquiries.mjs';
 export default async function handler(req,res){
  try{
   if(req.method==='GET'){
+   const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='inquiries'){
+    requireAdmin(req);
+    const page=Number(params.get('page')||0),intent=params.get('intent')||'',state=params.get('status')||'';
+    if(!Number.isInteger(page)||page<0||page>100000||(intent&&!Object.hasOwn(intentLabels,intent))||(state&&!['new','contacted','following','closed'].includes(state)))return send(res,400,{error:'Bộ lọc hồ sơ không hợp lệ.'});
+    let query='?order=created_at.desc&limit=21&offset='+page*20;
+    if(intent)query+='&intent=eq.'+intent;
+    if(state)query+='&management_status=eq.'+state;
+    const search=clean(params.get('q'),100).replace(/[^\p{L}\p{N}\s+@.-]/gu,'').trim();
+    if(search)query+='&or=(name.ilike.*'+encodeURIComponent(search)+'*,phone.ilike.*'+encodeURIComponent(search)+'*,area.ilike.*'+encodeURIComponent(search)+'*)';
+    const rows=await db('inquiries',{query});return send(res,200,{inquiries:rows.slice(0,20),hasMore:rows.length>20,page});
+   }
    const who=await actor(req),query=who.admin?'?order=created_at.desc&limit=500':'?author_id=eq.'+who.id+'&order=created_at.desc&limit=100';
    if(who.admin){const [members,inquiries,posts,notifications]=await Promise.all([db('profiles',{query:'?order=created_at.desc&limit=500'}),db('inquiries',{query:'?order=created_at.desc&limit=500'}),db('posts',{query}),db('notification_log',{query:'?sent=eq.false&order=created_at.desc&limit=100'})]);return send(res,200,{members,inquiries,posts,notifications})}
    const [posts,inquiries]=await Promise.all([db('posts',{query}),db('inquiries',{query:'?member_id=eq.'+who.id+'&select=id,intent,area,type,created_at&order=created_at.desc&limit=100'})]);return send(res,200,{posts:posts.map(({private_data,...post})=>post),inquiries,canPost:who.kind==='sales'&&who.can_post});
@@ -18,6 +31,12 @@ export default async function handler(req,res){
    return send(res,201,{submitted:true,id:rows[0].id});
   }
   requireAdmin(req);
+  if(body.action==='inquiry-update'){
+   if(!/^[-\da-f]{36}$/i.test(body.id)||!['new','contacted','following','closed'].includes(body.status)||typeof body.notes!=='string'||body.notes.length>4000)return send(res,400,{error:'Thông tin cập nhật hồ sơ không hợp lệ.'});
+   const rows=await db('inquiries',{method:'PATCH',query:'?id=eq.'+body.id,body:{management_status:body.status,admin_notes:body.notes.trim(),updated_at:new Date().toISOString()}});
+   if(!rows.length)return send(res,404,{error:'Không tìm thấy hồ sơ.'});
+   return send(res,200,{saved:true});
+  }
   if(body.action==='retry'){
    if(!/^[-\da-f]{36}$/i.test(body.id))return send(res,400,{error:'Mã thông báo không hợp lệ.'});
    if(!process.env.TELEGRAM_BOT_TOKEN||!process.env.TELEGRAM_CHAT_ID)return send(res,503,{error:'Cần cấu hình Telegram trước khi gửi lại.'});

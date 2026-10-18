@@ -95,3 +95,5 @@ Hướng dẫn kích hoạt đầy đủ: [PLATFORM_SETUP.md](PLATFORM_SETUP.md)
 Biểu mẫu có thêm `owner_sale` và `owner_transfer`, dùng chung liên hệ/địa chỉ/diện tích nhưng tách giá bán/chuyển nhượng một lần khỏi tiền thuê tháng. Chat nhận diện nhu cầu mới và dẫn vào đúng biểu mẫu; dashboard, Telegram và xuất hồ sơ có nhãn nhu cầu rõ ràng. SQL cho dự án mới đã cập nhật; dự án đã chạy setup cũ cần migration `database/migrations/002-sale-transfer.sql`. Đây là thu thập yêu cầu tư vấn, không tự đăng tin bán vào catalog cho thuê.
 
 Mật khẩu đăng nhập quản trị được xác thực bằng scrypt trong `lib/admin-password.json`, tách khỏi `ADMIN_SECRET` dùng giải mã và ký phiên. Không đổi ADMIN_SECRET thành mật khẩu ngắn. Đổi verifier sẽ hủy hiệu lực phiên quản trị cũ. Kiểm thử dùng `ADMIN_LOGIN_PASSWORD` (không phải khóa giải mã) qua môi trường.
+
+Trang quản trị ưu tiên mục Khách gửi thông tin, có tìm kiếm/lọc/phân trang, trạng thái xử lý và ghi chú nội bộ. Cập nhật Supabase đã có bằng migration 003; ghi chú không cấp cho Sale/CTV hay trả về danh sách nhu cầu của thành viên.

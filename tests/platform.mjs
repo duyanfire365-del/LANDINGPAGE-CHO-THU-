@@ -25,16 +25,18 @@ const fake=http.createServer(async(req,res)=>{
  if(url.pathname.startsWith('/rest/v1/')){
   const name=url.pathname.split('/').pop(),table=tables[name];if(!table)return reply(404,{});
   const matches=row=>[...url.searchParams].every(([key,value])=>{
-   if(['order','limit','select'].includes(key))return true;
+   if(['order','limit','select','offset'].includes(key))return true;
+   if(key==='or')return value.slice(1,-1).split(',').some(part=>{const [field,pattern]=part.split('.ilike.');return String(row[field]||'').toLowerCase().includes(pattern.slice(1,-1).toLowerCase())});
    if(key==='public_data->>slug')return row.public_data.slug===value.slice(3);
    if(key==='public_data->media')return (row.public_data.media||[]).some(a=>JSON.parse(value.slice(3)).some(b=>a.id===b.id));
    if(value.startsWith('eq.'))return String(row[key])===value.slice(3);
    if(value.startsWith('in.('))return value.slice(4,-1).split(',').includes(row[key]);return true;
   });
-  if(req.method==='POST'){const row={id:randomUUID(),created_at:new Date().toISOString(),...body};table.push(row);return reply(201,[row])}
+  if(req.method==='POST'){const row={id:randomUUID(),created_at:new Date().toISOString(),...(name==='inquiries'?{management_status:'new',admin_notes:''}:{}),...body};table.push(row);return reply(201,[row])}
   let rows=table.filter(matches);
   if(req.method==='PATCH')rows.forEach(row=>Object.assign(row,body));
   if(url.searchParams.get('select')&&url.searchParams.get('select')!=='*'){const keys=url.searchParams.get('select').split(',');rows=rows.map(row=>Object.fromEntries(keys.map(key=>[key,row[key]])))}
+  if(req.method==='GET')rows=rows.slice(Number(url.searchParams.get('offset')||0),Number(url.searchParams.get('offset')||0)+Number(url.searchParams.get('limit')||1000));
   return reply(200,rows);
  }
  if(url.pathname.startsWith('/storage/v1/object/upload/sign/'))return reply(200,{url:'/upload/'+url.pathname.split('/').pop()});
@@ -86,6 +88,12 @@ try{
   const submission=await post('/api/leads',{intent,name,phone:'0906215365',area:'Ba Đình',type:'Nhà nguyên căn',ownerAddress:'Địa chỉ ký gửi riêng',ownerSize:80,ownerPrice:price,transferMonthlyRent:intent==='owner_transfer'?20:'',ownerAuthority:true,contactConsent:true},salesCookie);
   assert.equal(submission.response.status,200);const saved=tables.inquiries.at(-1);assert.equal(saved.intent,intent);assert.equal(saved.owner_price,price);assert.equal(saved.owner_rent,null);assert.equal(saved.transfer_monthly_rent,intent==='owner_transfer'?20:null);
  }
+ const inquiry=tables.inquiries[0];
+ assert.equal((await post('/api/workspace',{action:'inquiry-update',id:inquiry.id,status:'contacted',notes:'Không có quyền'},salesCookie)).response.status,401);
+ assert.equal((await post('/api/workspace',{action:'inquiry-update',id:inquiry.id,status:'invalid',notes:''},adminCookie)).response.status,400);
+ const update=await post('/api/workspace',{action:'inquiry-update',id:inquiry.id,status:'contacted',notes:'Đã gọi khách, hẹn trao đổi'},adminCookie);assert.equal(update.response.status,200);assert.equal(inquiry.admin_notes,'Đã gọi khách, hẹn trao đổi');
+ const filtered=await (await fetch(base+'/api/workspace?view=inquiries&status=contacted',{headers:{cookie:adminCookie}})).json();assert.equal(filtered.inquiries.length,1);
+ const own=await (await fetch(base+'/api/workspace',{headers:{cookie:salesCookie}})).json();assert(!JSON.stringify(own).includes('Đã gọi khách'));
  for(const format of ['xlsx','docx','pdf']){
   const response=await fetch(base+'/api/exports?kind=inquiries&format='+format,{headers:{cookie:adminCookie}});assert.equal(response.status,200);const bytes=Buffer.from(await response.arrayBuffer());const text=await extractDocument(bytes,response.headers.get('content-type'));assert(text.includes(name));
  }
@@ -94,8 +102,8 @@ try{
  await context.addCookies([{name:'rental_member',value:salesCookie.split('=')[1],url:base}]);await page.goto(base+'/thanh-vien');await page.locator('#member-posting').waitFor();assert(await page.locator('.editor-form').isVisible());
  for(const width of [375,768,1440]){await page.setViewportSize({width,height:950});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'member overflow '+width)}
  await page.goto(base+'/tin?slug='+catalog.posts[0].slug);await page.locator('.property-title').waitFor();assert(!(await page.locator('body').innerText()).includes('123 ngõ'));
- await page.goto(base+'/admin');await page.locator('#admin-password').fill(process.env.ADMIN_LOGIN_PASSWORD);await page.locator('#admin-login button').click();await page.locator('#management-members table').waitFor();
- await page.locator('[data-manage=inquiries]').click();assert((await page.locator('#management-inquiries').innerText()).includes(name));
+ await page.goto(base+'/admin');await page.locator('#admin-password').fill(process.env.ADMIN_LOGIN_PASSWORD);await page.locator('#admin-login button').click();await page.locator('[data-manage=members]').click();await page.locator('#management-members table').waitFor();
+ await page.locator('[data-manage=inquiries]').click();await page.locator('.crm-card').first().waitFor();await page.locator('.crm-filters [name=intent]').selectOption('owner_sale');await page.locator('.crm-filters button').click();await page.waitForFunction(()=>document.querySelectorAll('.crm-card').length===1);assert((await page.locator('.crm-card').innerText()).includes('Ký gửi bán'));await page.locator('.crm-edit [name=notes]').fill('Ghi chú quản trị từ giao diện');await page.locator('.crm-edit [name=status]').selectOption('following');await page.locator('.crm-edit button').click();await page.locator('.crm-save-status').filter({hasText:'Đã lưu'}).waitFor();await page.locator('[data-crm-refresh]').click();await page.waitForFunction(()=>document.querySelector('.crm-edit textarea')?.value==='Ghi chú quản trị từ giao diện');assert((await page.locator('#management-inquiries').innerText()).includes(name));
  await page.locator('[data-manage=exports]').click();const download=page.waitForEvent('download');await page.locator('[data-panel=exports] [data-export=posts][data-format=xlsx]').click();assert.equal((await download).suggestedFilename(),'posts.xlsx');
  for(const width of [375,768,1440]){await page.setViewportSize({width,height:950});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'admin overflow '+width)}
  await page.screenshot({path:'/tmp/management-platform.png'});assert.deepEqual(errors,[]);
