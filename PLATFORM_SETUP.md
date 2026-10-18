@@ -88,3 +88,7 @@ Trang `/admin` mở sẵn mục **Khách gửi thông tin**: tra cứu họ tên
 Dự án Supabase mới chạy `database/setup.sql` hiện tại. Dự án đã thiết lập trước đó cần chạy `database/migrations/003-inquiry-management.sql` để có cột quản lý. Nếu chưa chạy migration 002 cho bán/chuyển nhượng, chạy 002 trước rồi 003. Hồ sơ khách đã gửi thành công được giữ nguyên. Thông tin khách chỉ chuẩn bị trên biểu mẫu nhưng chưa gửi, hoặc tự nhắn qua Zalo, không tự xuất hiện trong quản trị. Chưa kết nối Supabase thì không thể lưu/đọc hồ sơ thật; API và giao diện sẽ báo lỗi kết nối.
 
 Sau khi Redeploy, vào `/admin` → **Kết nối lưu hồ sơ và Telegram**. Bấm **Kiểm tra kết nối** để kiểm tra thực tế quyền đọc bảng Supabase; bấm **Gửi thử Telegram** để Telegram xác nhận nhận tin. Chỉ quản trị sử dụng được hai chức năng này; màn hình không hiển thị token hoặc khóa.
+
+## Khóa API Supabase thế hệ mới
+
+Có thể dùng Publishable key (`sb_publishable_…`) làm `SUPABASE_ANON_KEY` và Secret key (`sb_secret_…`) làm `SUPABASE_SERVICE_ROLE_KEY`. Tên biến trong ứng dụng giữ nguyên; API key mới chỉ gửi ở header apikey, không dùng làm JWT Bearer. Khóa JWT anon/service_role cũ vẫn được hỗ trợ. Lấy Project URL ở mục Data API của cùng dự án. Không đưa Secret key vào ảnh/chat; nếu đã lộ, tạo khóa thay thế, cập nhật Vercel, Redeploy và thu hồi khóa đã lộ.
