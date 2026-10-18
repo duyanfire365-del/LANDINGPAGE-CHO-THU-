@@ -7,7 +7,7 @@
  const status=text=>$('#management-status').textContent=text;
  async function checkConnections(){
   const version=sessionVersion;$('#connection-status').textContent='Đang kiểm tra kết nối…';
-  try{const response=await fetch('/api/workspace?view=connections',{cache:'no-store'}),data=await response.json();if(version!==sessionVersion)return;if(!response.ok)throw Error(data.error);$('#connection-status').textContent=(data.storageReady?'Lưu hồ sơ: kết nối thành công.':data.storageConfigured?'Lưu hồ sơ: có cấu hình nhưng chưa đọc được bảng dữ liệu; kiểm tra SQL và khóa.':'Lưu hồ sơ: chưa cấu hình Supabase.')+'\n'+(data.telegramConfigured?'Telegram: đã có cấu hình; bấm Gửi thử để xác nhận nhận tin.':'Telegram: chưa thêm token và chat ID.')}catch(error){if(version===sessionVersion)$('#connection-status').textContent=error.message}
+  try{const response=await fetch('/api/workspace?view=connections',{cache:'no-store'}),data=await response.json();if(version!==sessionVersion)return;if(!response.ok)throw Error(data.error);$('#connection-status').textContent=(data.storageReady?'Lưu hồ sơ: kết nối thành công.':data.storageConfigured?'Lưu hồ sơ: có cấu hình nhưng chưa đọc được bảng dữ liệu; kiểm tra SQL và khóa.':'Lưu hồ sơ: chưa cấu hình Supabase.')+'\n'+(data.telegramConfigured?'Telegram: đã có cấu hình; bấm Gửi thử để xác nhận nhận tin.':'Telegram: '+(data.telegramError||'chưa thêm token và chat ID.'))}catch(error){if(version===sessionVersion)$('#connection-status').textContent=error.message}
  }
  async function load(){
   const version=sessionVersion;try{const response=await fetch('/api/workspace',{cache:'no-store'}),data=await response.json();if(version!==sessionVersion)return;if(!response.ok)throw Error(data.error);status('');
@@ -28,7 +28,7 @@
    }
    const body=button.dataset.permission?{action:'permission',id:button.dataset.permission,canPost:button.dataset.grant==='true'}:button.dataset.retry?{action:'retry',id:button.dataset.retry}:{action:'review',id:button.dataset.review,status:button.dataset.status};
    await RentalEditor.request('/api/workspace',body);await load();status('Đã cập nhật.');
-  }catch(error){status(error.message)}finally{button.disabled=false}
+  }catch(error){if(button.hasAttribute('data-test-telegram'))$('#connection-status').textContent=error.message;else status(error.message)}finally{button.disabled=false}
  });
  window.addEventListener('admin-session',event=>{
   sessionVersion++;container.hidden=!event.detail;
