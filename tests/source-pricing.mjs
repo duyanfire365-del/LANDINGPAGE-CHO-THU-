@@ -35,3 +35,19 @@ for(const [text,size,price] of [
  ['DT 100m2\nGiá thuê 58.000đ/m2/th',100,5.8]
 ]){const p=extractRentPricing(text);assert.equal(p.size,size,text);assert.equal(p.price,price,text);if(text.includes('Tầng')||text.includes('T1'))assert(p.floorDescription.includes('tầng 2'));}
 assert.throws(()=>extractRentPricing('Diện tích 60m2 hoặc 90m2 giá 20tr/th'),{status:422});
+
+// Regression: the street Triều Khúc must never become an extra “triệu” price.
+const trieuKhucSource='🔥 Mặt bằng 70m² tại Triều Khúc – 12 triệu/tháng, phù hợp mở quán ăn, kinh doanh ngày đêm!\n📍 12 ngõ 62 Triều Khúc\n• Tầng 1, diện tích 70m²\n• Giá thuê: 12 triệu/tháng\n• Khu vực đông sinh viên, thuận tiện kinh doanh ăn uống\n• Xe máy, ô tô đỗ thoải mái\n• Hiện đang kinh doanh quán lẩu, phù hợp khách muốn mở quán ăn hoặc kinh doanh F&B.\n📞 Quan tâm gọi ngay 0906 215 365 (Zalo/Call) để hỏi thêm thông tin và hẹn xem mặt bằng trực tiếp nhé!\n#TrieuKhuc #MatBangKinhDoanh #ChoThueMatBang #DuyHome #Dhland';
+const trieuKhucItem=validateExtraction(extractByRules(trieuKhucSource),trieuKhucSource);assert.equal(trieuKhucItem.price,12);assert.equal(trieuKhucItem.size,70);assert.equal(trieuKhucItem.location,'Triều Khúc');assert.equal(trieuKhucItem.area,'Thanh Trì');assert(trieuKhucItem.privateAddress.includes('12 ngõ 62'));
+for(const text of [
+ '70m2 tại 62 Triều Khúc – 12 triệu/tháng\nGiá thuê: 12tr/th',
+ '70m2, 62 Trieu Khuc, gia 12 trieu/thang',
+ '70m2, địa chỉ 110 Đồng Xuân\nGiá thuê 12tr/tháng',
+ '70m2, dia chi 110 Dong Xuan, 12tr/thang',
+ '70m2, 12 ng 62 Trieu Khuc, giá 12.000.000đ/tháng\nGiá thuê: 12 triệu/tháng',
+ '70m2, 12 Triều /tháng',
+ '70m2, 58K/m2/thang\nĐịa chỉ: 110 Đồng Khánh',
+ '70m2, Giá thuê: 58.000 Đồng/m²/tháng'
+]){const p=extractRentPricing(text);assert.equal(p.price,text.includes('58')?4.06:12,text);assert(text.includes(p.priceEvidence));}
+assert.throws(()=>extractRentPricing('70m2 tại 62 Triều Khúc\nGiá thuê: 12tr/tháng hoặc 15tr/tháng'),{status:422});
+console.log('Street/currency regression passed: exact Triều Khúc screenshot, repeated equivalent rents, address abbreviations, Đồng Xuân, Đồng Khánh, no accents and genuine conflicting prices.');
