@@ -23,7 +23,7 @@
     scrollLatest();
   }
   function contactOptions() {
-    buttons([['Điền thông tin quan tâm',()=>goToForm(state.draft.intent||'tenant')],['Chính chủ ký gửi',()=>start('owner')]]);
+    buttons([['Xem nguồn gợi ý / Điền nhu cầu',()=>goToForm(state.draft.intent||'tenant')],['Chính chủ ký gửi',()=>start('owner')]]);
     const call=document.createElement('a');call.href='tel:0906215365';call.textContent='Gọi ngay 0906 215 365';options.append(call);
   }
   const consignments={owner:{name:'Ký gửi cho thuê',heading:'Thông tin ký gửi cho thuê',price:'Giá cho thuê (triệu đồng/tháng)',verb:'cho thuê',description:'Dành cho chính chủ hoặc người được ủy quyền: cung cấp vị trí, diện tích và giá cho thuê dự kiến.'},owner_sale:{name:'Ký gửi bán',heading:'Thông tin ký gửi bán BĐS',price:'Giá bán (triệu đồng)',verb:'bán',description:'Dành cho chính chủ hoặc người được ủy quyền bán: cung cấp vị trí, diện tích, giá bán dự kiến và tình trạng pháp lý.'},owner_transfer:{name:'Ký gửi chuyển nhượng',heading:'Thông tin ký gửi chuyển nhượng',price:'Giá chuyển nhượng (triệu đồng)',verb:'chuyển nhượng',description:'Cung cấp thông tin BĐS/mặt bằng, giá chuyển nhượng, tài sản đi kèm và điều kiện hợp đồng hiện tại (nếu có).'}};
@@ -64,11 +64,11 @@
   q('#lead-intent').addEventListener('change',e=>setIntent(e.target.value));
   function goToForm(intent) {
     setIntent(intent);
-    const map={type:'preferredType',area:'preferredArea',budget:'preferredBudget',phone:'phone',ownerSize:'ownerSize',ownerRent:'ownerRent',ownerNotes:'ownerNotes'};
-    for(const [key,name]of Object.entries(map))if(state.draft[key])form.elements[name].value=state.draft[key];
+    const map={type:'preferredType',area:'preferredArea',budget:'preferredBudget',phone:'phone',ownerSize:'ownerSize',ownerRent:'ownerRent',ownerNotes:'ownerNotes',industry:'industry',minSize:'minSize',maxBudget:'maxBudget',requirements:'requirements'};
+    for(const [key,name]of Object.entries(map))if(state.draft[key]&&form.elements[name])form.elements[name].value=state.draft[key];
     close();q('#tu-van').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
-    form.elements.name.focus({preventScroll:true});
-    q('#form-status').textContent=isOwner(intent)?'Anh/chị điền thêm địa chỉ, diện tích và thông tin liên hệ để chuẩn bị yêu cầu ký gửi. Thông tin chưa được gửi.':'Nhu cầu đã được điền sẵn từ chat. Anh/chị bổ sung thông tin liên hệ để chuẩn bị yêu cầu. Thông tin chưa được gửi.';
+    if(isOwner(intent))form.elements.name.focus({preventScroll:true});else{form.querySelector('[data-find-matches]')?.click();form.elements.preferredArea.focus({preventScroll:true})}
+    q('#form-status').textContent=isOwner(intent)?'Anh/chị điền thêm địa chỉ, diện tích và thông tin liên hệ để chuẩn bị yêu cầu ký gửi. Thông tin chưa được gửi.':'Nhu cầu đã được điền sẵn từ chat. Nguồn gợi ý đang được lọc theo các tiêu chí bên trên. Anh/chị có thể chỉnh thêm nhu cầu, sau đó điền họ tên, số điện thoại và bấm gửi để được hỗ trợ. Thông tin chưa được gửi.';
   }
   function choose(field,available,prompt) {
     append('assistant',prompt);options.replaceChildren();
@@ -76,21 +76,23 @@
     const select=document.createElement('select');select.id='chat-choice';select.setAttribute('aria-label',prompt);
     select.append(new Option('Chọn thông tin phù hợp',''));available.forEach(o=>select.append(new Option(o.textContent,o.value)));
     const button=document.createElement('button');button.type='button';button.textContent='Tiếp tục';
-    button.addEventListener('click',()=>{if(!select.value){select.focus();return}state.draft[field]=select.value;append('user',select.options[select.selectedIndex].textContent);nextStep()});options.append(label,select,button);scrollLatest();
+    button.addEventListener('click',()=>{if(!select.value){select.focus();return}state.draft[field]=select.value;append('user',select.options[select.selectedIndex].textContent);nextStep()});options.append(label,select,button);if(!isOwner(state.draft.intent)){const quick=document.createElement('button');quick.type='button';quick.textContent='Điền form và xem nguồn ngay';quick.onclick=()=>goToForm('tenant');options.append(quick)}scrollLatest();
   }
   function nextStep() {
     const owner=isOwner(state.draft.intent);
     if(!state.draft.type)return choose('type',propertyOptions,owner?'Anh/chị muốn ký gửi loại BĐS nào?':'Anh/chị đang cần thuê loại BĐS nào?');
     if(!state.draft.area)return choose('area',areaOptions,owner?'BĐS của anh/chị thuộc khu vực nào?':'Anh/chị ưu tiên khu vực nào của Hà Nội?');
-    if(!owner&&!state.draft.budget)return choose('budget',budgetOptions,'Ngân sách thuê mỗi tháng của anh/chị khoảng bao nhiêu?');
+    if(!owner&&!state.draft.budget&&!state.draft.maxBudget)return choose('budget',budgetOptions,'Ngân sách thuê mỗi tháng của anh/chị khoảng bao nhiêu?');
+    if(!owner&&state.draft.industry===undefined){const available=Object.keys(window.RentalNeedMatching?.sectors||{}).concat('Ngành khác').map(value=>({value,textContent:value}));choose('industry',available,'Anh/chị dự định kinh doanh ngành nghề nào hoặc cần thuê để ở?');const skip=document.createElement('button');skip.type='button';skip.textContent='Chưa xác định ngành nghề';skip.onclick=()=>{state.draft.industry='';nextStep()};options.append(skip);return}
+    if(!owner&&state.draft.minSize===undefined){append('assistant','Anh/chị cần diện tích tối thiểu bao nhiêu m²? Có thể bỏ qua và bổ sung trên form.');options.replaceChildren();const input=document.createElement('input');input.type='number';input.min='1';input.max='10000000';input.step='0.1';input.placeholder='Ví dụ: 80';input.setAttribute('aria-label','Diện tích tối thiểu (m²)');const next=document.createElement('button');next.type='button';next.textContent='Tiếp tục';next.onclick=()=>{if(!input.value||!input.reportValidity())return;state.draft.minSize=input.value;append('user',input.value+' m²');nextStep()};const skip=document.createElement('button');skip.type='button';skip.textContent='Điền form và xem nguồn ngay';skip.onclick=()=>{state.draft.minSize='';goToForm('tenant')};options.append(input,next,skip);return}
     state.flow=false;
-    append('assistant',owner?`Em đã ghi nhận nhu cầu ký gửi ${state.draft.type.toLocaleLowerCase('vi')} tại ${state.draft.area} trong cuộc chat này. Anh/chị bấm bên dưới để bổ sung địa chỉ, diện tích, giá dự kiến và số liên hệ. Sau đó gửi thông tin qua Zalo hoặc gọi hotline để trao đổi.`:`Em đã ghi nhận nhu cầu thuê ${state.draft.type.toLocaleLowerCase('vi')} tại ${state.draft.area}. Anh/chị bấm bên dưới để bổ sung họ tên, số điện thoại và chuẩn bị yêu cầu tư vấn. Chưa có thông tin nào được gửi cho tư vấn viên.`);
-    buttons([[owner?'Điền thông tin ký gửi':'Điền thông tin quan tâm',()=>goToForm(state.draft.intent)],['Tôi cần gấp',urgent]]);
+    append('assistant',owner?`Em đã ghi nhận nhu cầu ký gửi ${state.draft.type.toLocaleLowerCase('vi')} tại ${state.draft.area} trong cuộc chat này. Anh/chị bấm bên dưới để bổ sung địa chỉ, diện tích, giá dự kiến và số liên hệ. Sau đó gửi thông tin qua Zalo hoặc gọi hotline để trao đổi.`:`Em đã ghi nhận nhu cầu thuê ${state.draft.type.toLocaleLowerCase('vi')} tại ${state.draft.area}. Anh/chị bấm bên dưới để xem nguồn gợi ý, chỉnh yêu cầu thêm và điền thông tin nếu muốn được tư vấn. Chưa có thông tin nào được gửi cho tư vấn viên.`);
+    buttons([[owner?'Điền thông tin ký gửi':'Xem nguồn gợi ý / Điền nhu cầu',()=>goToForm(state.draft.intent)],['Tôi cần gấp',urgent]]);
   }
   function start(intent) {
     state.draft={intent};state.flow=true;
     append('user',isOwner(intent)?'Tôi muốn '+consignments[intent].name.toLocaleLowerCase('vi')+'.':'Tôi đang tìm bất động sản thuê.');
-    append('assistant',isOwner(intent)?'Em sẽ giúp anh/chị chuẩn bị thông tin '+consignments[intent].name.toLocaleLowerCase('vi')+'. Quyền giao dịch và điều kiện cụ thể cần được xác minh khi trao đổi trực tiếp.':'Em có thể giúp anh/chị làm rõ loại BĐS, khu vực và ngân sách trước khi trao đổi với tư vấn viên.');nextStep();
+    append('assistant',isOwner(intent)?'Em sẽ giúp anh/chị chuẩn bị thông tin '+consignments[intent].name.toLocaleLowerCase('vi')+'. Quyền giao dịch và điều kiện cụ thể cần được xác minh khi trao đổi trực tiếp.':'Em sẽ giúp lọc nguồn theo loại BĐS, khu vực, ngành nghề, ngân sách và diện tích. Anh/chị có thể gõ nhu cầu hoặc chuyển thẳng sang form để xem gợi ý, chưa cần để lại số điện thoại.');nextStep();
   }
   function urgent() {append('assistant','Nếu cần trao đổi gấp hoặc xác nhận nhà còn trống, anh/chị gọi ngay 0906 215 365. Chat tự động không xác nhận lịch xem, giá cuối cùng hoặc nhận đặt cọc.');contactOptions()}
   function showFaqs() {append('assistant','Anh/chị chọn câu hỏi cần giải đáp. Các câu trả lời dựa trên nội dung FAQ của website.');buttons(faqs.map(f=>[f.question,()=>respond(f.question)]))}
@@ -103,7 +105,8 @@
     const phone=text.match(/(?:\+84|0)[0-9]{9}\b/);if(phone){state.draft.phone=phone[0];changed=true}
     const budget=budgetOptions.find(o=>normalized.includes(norm(o.textContent)));if(budget){state.draft.budget=budget.value;changed=true}
     else {const price=normalized.match(/(\d+(?:[.,]\d+)?)\s*(?:trieu|tr\b)/);if(price){const n=Number(price[1].replace(',','.'));const above=normalized.match(/tren\s*(50|100|200|300)\s*(?:trieu|tr\b)/);state.draft.budget=above?'over-'+above[1]:n<5?'under-5':n<10?'under-10':n<20?'10-20':n<30?'20-30':n<=50?'30-50':n>300?'over-300':n>200?'over-200':n>100?'over-100':'over-50';if(isOwner(state.draft.intent))state.draft.ownerRent=String(n);changed=true}}
-    const size=text.match(/(\d+(?:[.,]\d+)?)\s*(?:m2|m²)/i);if(size&&isOwner(state.draft.intent)){state.draft.ownerSize=size[1].replace(',','.');changed=true}
+    const size=text.match(/(\d+(?:[.,]\d+)?)\s*(?:m2|m²)/i);if(size){state.draft[isOwner(state.draft.intent)?'ownerSize':'minSize']=size[1].replace(',','.');changed=true}
+    if(!isOwner(state.draft.intent)){const industry=Object.entries(window.RentalNeedMatching?.sectors||{}).find(([,terms])=>terms.some(t=>normalized.includes(t)));if(industry){state.draft.industry=industry[0];changed=true}const max=normalized.match(/(?:toi da|ngan sach|duoi|khong qua)\s*[:：]?\s*(\d+(?:[.,]\d+)?)\s*(?:trieu|tr\b)/);if(max){state.draft.maxBudget=max[1].replace(',','.');changed=true}const locations=window.RentalNeedMatching?.locations({requirements:text});if(!state.draft.area&&locations?.areas.length){state.draft.area=locations.areas[0];changed=true}}
     return changed;
   }
   function faqAnswer(text) {
@@ -124,9 +127,11 @@
     if(state.busy)return;append('user',text);options.replaceChildren();
     const normalized=norm(text);
     if(/can gap|khan cap|gap qua|can ngay|hotline|goi ngay/.test(normalized)){urgent();return}
-    if(/chuyen nhuong|sang nhuong/.test(normalized)){state.draft={intent:'owner_transfer'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
+    if(/(?:ky gui|toi co|muon sang|can sang|can chuyen).*?(?:chuyen nhuong|sang nhuong)/.test(normalized)){state.draft={intent:'owner_transfer'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
     if(/ky gui ban|muon ban|can ban/.test(normalized)){state.draft={intent:'owner_sale'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
     if(/chinh chu|ky gui|toi co (?:nha|mat bang|kho|xuong)|nha cua toi/.test(normalized)) {state.draft={intent:'owner'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
+    if(/can thue|tim thue|muon thue|tim mat bang|tim van phong|tim kho|can tim|tim.*(?:sang nhuong|chuyen nhuong)/.test(normalized)&&!isOwner(state.draft.intent)){state.draft.intent='tenant';state.flow=true}
+    if(state.draft.intent==='tenant'){state.draft.requirements=[state.draft.requirements,text].filter(Boolean).join('\n').slice(-1000);const changed=detectFacts(text);if(state.flow||changed){nextStep();return}}
     const answer=faqAnswer(text);if(answer){append('assistant',answer);contactOptions();return}
     if(/can thue|tim thue|muon thue|tim mat bang|tim van phong/.test(normalized)&&!state.draft.intent){state.draft.intent='tenant';state.flow=true}
     const changed=detectFacts(text);
@@ -140,12 +145,12 @@
         const data=await response.json();if(!response.ok||typeof data.reply!=='string')throw Error('AI unavailable');append('assistant',data.reply);contactOptions();
       }catch{append('assistant','AI tạm thời chưa kết nối được. Anh/chị có thể chọn câu hỏi thường gặp, điền nhu cầu hoặc gọi 0906 215 365.');contactOptions()}
       finally{pending.remove();state.busy=false;q('#chat-send').disabled=false}
-    }else {append('assistant','Em hiện trả lời tự động theo FAQ. Với nhu cầu cụ thể, anh/chị chọn “Tìm BĐS thuê” hoặc “Chính chủ ký gửi”; nếu cần xác nhận thông tin, vui lòng gọi 0906 215 365.');contactOptions()}
+    }else {append('assistant','Em có thể giúp lọc nguồn theo nhu cầu và trả lời FAQ. Anh/chị gõ loại BĐS, khu vực, ngân sách, diện tích hoặc bấm “Xem nguồn gợi ý / Điền nhu cầu”. Nếu cần đi xem trực tiếp, vui lòng gọi hoặc nhắn Zalo 0906215365.');contactOptions()}
   }
   q('#chat-form').addEventListener('submit',e=>{e.preventDefault();const input=q('#chat-input');const text=input.value.trim();if(!text||state.busy)return;input.value='';respond(text)});
   function open() {
     if(dialog.open)return;dialog.showModal();document.body.classList.add('chat-is-open');q('#chat-launcher').setAttribute('aria-expanded','true');
-    if(!state.opened){state.opened=true;append('assistant','Chào anh/chị! Em là trợ lý tư vấn của Nguồn cho thuê BĐS Hà Nội. Anh/chị đang tìm BĐS thuê hay là chính chủ muốn ký gửi cho thuê?');buttons([['Tôi đang tìm thuê',()=>start('tenant')],['Tôi là chính chủ ký gửi',()=>start('owner')],['Tôi cần hỗ trợ gấp',urgent]])}
+    if(!state.opened){state.opened=true;append('assistant','Chào anh/chị! Em là trợ lý tư vấn của Nguồn cho thuê BĐS Hà Nội. Anh/chị có thể gõ nhu cầu như “Tìm văn phòng Cầu Giấy hoặc Mỹ Đình, tối đa 30 triệu, từ 80 m²”. Em sẽ chuyển tiêu chí sang form để lọc nguồn gợi ý. Anh/chị muốn tìm thuê (nhượng) hay ký gửi?');buttons([['Lọc nguồn thuê / nhượng nhanh',()=>start('tenant')],['Tôi là chính chủ ký gửi',()=>start('owner')],['Tôi cần hỗ trợ gấp',urgent]])}
     q('#chat-input').focus({preventScroll:true});scrollLatest();
   }
   window.addEventListener('resize',()=>{if(dialog.open)scrollLatest()});
