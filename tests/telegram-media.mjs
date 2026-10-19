@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {providedImage} from '../lib/telegram-media.mjs';
+process.env.TELEGRAM_SOURCE_BOT_TOKEN='mock-token';process.env.SUPABASE_URL='https://db.test';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_test';process.env.SUPABASE_ANON_KEY='sb_publishable_test';
+let path='photos/a.jpg',fileSize=200,download=Buffer.alloc(200),uploads=0;download[0]=255;download[1]=216;
+global.fetch=async (raw,options={})=>{const url=new URL(raw);if(url.pathname.endsWith('getFile'))return Response.json({ok:true,result:{file_path:path,file_size:fileSize}});if(url.pathname.startsWith('/file/'))return new Response(download);if(url.pathname.startsWith('/storage/')){uploads++;assert.equal(options.headers['Content-Type'],'image/jpeg');return Response.json({})}if(url.pathname.endsWith('/assets'))return Response.json([{id:'asset',...JSON.parse(options.body)}]);throw Error('Unexpected URL')};
+const media={kind:'image',file_id:'id'};const saved=await providedImage(media,'source',0);assert.equal(saved.mime,'image/jpeg');assert.equal(uploads,1);
+path='../bad';await assert.rejects(()=>providedImage(media,'source',0),{status:502});assert.equal(uploads,1);
+path='photos/a.jpg';fileSize=11*1024*1024;await assert.rejects(()=>providedImage(media,'source',0),{status:502});assert.equal(uploads,1);
+fileSize=200;download=Buffer.from('<svg>not a supported image</svg>');await assert.rejects(()=>providedImage(media,'source',0),{status:422});assert.equal(uploads,1);
+await assert.rejects(()=>providedImage({kind:'video'},'source',0),{status:422});
+console.log('Telegram photo storage: signed server access, image format, path traversal, oversized files and unsupported media guards passed.');

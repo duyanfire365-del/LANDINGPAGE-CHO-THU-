@@ -33,3 +33,7 @@ Chỉ tài khoản cá nhân đã cho phép gửi riêng vào bot mới kích ho
 - Không thể bảo đảm nhận ra mọi cách viết khác nhau/địa chỉ sai/diện tích đổi. Trường hợp khác căn cùng địa chỉ và diện tích có thể bị coi là trùng; quản trị viên đối chiếu nguồn nếu cần. Không tuyên bố dò trùng tuyệt đối bằng AI.
 - Giới hạn mặc định 20 nguồn bắt đầu xử lý/ngày UTC (khuyên đặt 5 lúc thử). Giá OpenAI theo model và bảng phí hiện hành; có phí phân tích cả khi phát hiện trùng gần giống sau bước AI. Tin giống hệt nhận lại không gọi AI khi đã hoàn tất.
 - Chưa thể xác nhận chạy OpenAI/Supabase thật từ môi trường phát triển khi chưa có cấu hình. Kiểm thử dùng máy chủ giả lập; cần anh cấu hình và gửi bài thử để xác nhận đầu cuối trên tên miền.
+
+## Dùng ảnh sẵn để không cần API AI
+
+Đã có chế độ `TELEGRAM_SOURCE_MODE=provided`: tách trường bằng quy tắc và dùng ảnh Telegram gửi kèm. Xem `TELEGRAM_PROVIDED_PHOTOS.md`. Các yêu cầu nạp tiền và tạo khóa OpenAI ở trên chỉ áp dụng chế độ `ai`.

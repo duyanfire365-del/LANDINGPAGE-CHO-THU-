@@ -35,7 +35,7 @@ export default async function handler(req,res){
   const text=String(m.text||m.caption||'').slice(0,16000);
   if(text.startsWith('/start'))return send(res,200,{ok:true});
   const media=[];const photo=m.photo?.at(-1);if(photo)media.push({kind:'image',file_id:photo.file_id,unique_id:photo.file_unique_id});
-  for(const kind of ['document','video'])if(m[kind])media.push({kind,file_id:m[kind].file_id,unique_id:m[kind].file_unique_id,name:m[kind].file_name||'',mime:m[kind].mime_type||'',size:m[kind].file_size||0});
+  for(const kind of ['document','video'])if(m[kind])media.push({kind:kind==='document'&&['image/jpeg','image/png','image/webp'].includes(m[kind].mime_type)?'image':kind,file_id:m[kind].file_id,unique_id:m[kind].file_unique_id,name:m[kind].file_name||'',mime:m[kind].mime_type||'',size:m[kind].file_size||0});
   if(!text&&!media.length)return send(res,200,{ok:true});
   // Keep every caption/private address intact. Exact-content dedup only; changed prices remain for review.
   const hash=createHash('sha256').update(JSON.stringify({text:text.normalize('NFC').trim(),media:media.map(a=>a.unique_id)})).digest('hex');
