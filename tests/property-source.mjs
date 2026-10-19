@@ -9,3 +9,7 @@ assert.throws(()=>sourceInfo({ownerPhones:['not-a-phone']}),{status:400});assert
 console.log('Source fields passed: 3 owner/partner slots, labeled Telegram extraction, original instructions ignored, private-by-default flags, Google-only Maps and coordinates, phone validation.');
 
 assert.throws(()=>sourceInfo({sourceName:'Nguồn https://maps.app.goo.gl/Hidden',sourcePublic:true}),{status:400});
+
+assert.equal(extractSourceInfo('HH50%').commission,'HH50%');assert.equal(extractSourceInfo('H50%').commission,'H50%');assert.equal(extractSourceInfo('Hoa hồng: 1 tháng tiền thuê').commission,'Hoa hồng: 1 tháng tiền thuê');assert.equal(extractSourceInfo('Giá thuê 20tr. HH: 10 triệu').commission,'HH: 10 triệu');assert.equal(extractSourceInfo('Kho cao H50m').commission,'');
+
+const commissionNames=sourceInfo({sourceName:'Anh Hùng HH50%',sourcePublic:true,mapLabel:'Cổng chính HH50%'});assert.equal(commissionNames.sourceName,'Anh Hùng');assert.equal(commissionNames.mapLabel,'Cổng chính');assert(commissionNames.commission.includes('HH50%'));assert.throws(()=>mapURL('https://www.google.com/maps?q=DiaChi%20HH50%25'),{status:400});

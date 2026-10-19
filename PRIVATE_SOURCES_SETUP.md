@@ -46,3 +46,11 @@ Mỗi tin giữ tối đa 5 link còn hạn. Dữ liệu nguồn không được
 ## Kiểm thử
 
 `tests/property-source.mjs` kiểm tra trích xuất, mặc định riêng tư, số điện thoại và URL Map. `tests/platform.mjs` dùng Supabase/Telegram giả lập để kiểm tra quyền, mở/ẩn từng số, cấp/thu hồi quyền thành viên, token giả/hết hạn/thu hồi, UI quản trị/thành viên và trang khách. `tests/source-automation.mjs` xác nhận thông tin nguồn đi từ Telegram vào private_data mà không lộ ra public_data. Không gửi tin thật, không gọi AI trả phí trong kiểm thử.
+
+## Hoa hồng riêng tư
+
+Nguồn mới tự nhận các dạng HH50%, H50%, Hoa hồng: 1 tháng tiền thuê, HH: 10 triệu. Giữ nguyên thỏa thuận, không tự đoán 50% là của giá trị nào. Hoa hồng chỉ cho quản trị viên và chủ bài xem; thành viên chỉ được cấp quyền xem nguồn/Map không thấy hoa hồng. Không có chế độ công khai hoa hồng. Mẫu Excel có cột Hoa hồng (riêng tư); xuất quản trị cũng có cột này. Dùng bảng 006 đã có, không cần SQL bổ sung.
+
+## Chia sẻ Facebook/Zalo
+
+Nút Facebook/Zalo mở bảng chuẩn bị bài và tối đa 12 ảnh của tin. Thiết bị hỗ trợ Web Share có thể gửi bài và nhiều ảnh sang ứng dụng; ứng dụng nhận có thể bỏ qua phần chữ hoặc chỉ nhận liên kết. Máy tính có nút sao chép bài, sao chép ảnh PNG và tải từng ảnh. Mở Facebook để đăng bài dẫn tới Facebook; nút Chia sẻ liên kết Facebook dùng hộp chia sẻ liên kết/ảnh xem trước riêng. Facebook không cho website tự điền nội dung tùy ý và tự tải ảnh vào bài cá nhân/nhóm qua nút share; người dùng chọn nơi đăng và xác nhận. Hoa hồng bị loại khỏi bài chia sẻ, kể cả khi có trong caption cũ.
