@@ -20,7 +20,7 @@ export default async function handler(req,res){
   const hook=new URL(req.url,'https://localhost').searchParams.has('webhook');
   if(!hook){
    requireAdmin(req);if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});ready();
-   const body=await readJson(req);if(body.action==='process'){if(!/^[-\da-f]{36}$/i.test(body.id||''))throw problem(400,'Mã nguồn không hợp lệ.');if(!automationConfiguration().enabled)throw problem(503,'Chưa bật TELEGRAM_AUTO_PUBLISH=true trong Vercel.');waitUntil(processSource(body.id));return send(res,202,{queued:true});}if(body.action!=='connect')throw problem(400,'Yêu cầu không hợp lệ.');
+   const body=await readJson(req);if(body.action==='process'){if(!/^[-\da-f]{36}$/i.test(body.id||''))throw problem(400,'Mã nguồn không hợp lệ.');if(!automationConfiguration().enabled)throw problem(503,'Chưa bật TELEGRAM_AUTO_PUBLISH=true trong Vercel.');const old=(await db('source_inbox',{query:'?id=eq.'+body.id}))[0];if(old&&['review','failed','blocked'].includes(old.processing_status))await db('source_inbox',{method:'PATCH',query:'?id=eq.'+body.id+'&processing_status=eq.'+old.processing_status,body:{processing_status:'received',processing_error:'',attempts:0,parsed_data:null}});waitUntil(processSource(body.id));return send(res,202,{queued:true});}if(body.action!=='connect')throw problem(400,'Yêu cầu không hợp lệ.');
    await db('source_inbox',{query:automationConfiguration().enabled?'?select=id,processing_status&limit=1':'?select=id&limit=1'});
    const bot=await telegram('getMe',{});
    if(bot.username?.toLowerCase()!=='nguonbdschothueduy_inbox_bot')throw problem(400,'Token chưa thuộc bot @Nguonbdschothueduy_inbox_bot.');
@@ -41,7 +41,7 @@ export default async function handler(req,res){
   const hash=createHash('sha256').update(JSON.stringify({text:text.normalize('NFC').trim(),media:media.map(a=>a.unique_id)})).digest('hex');
   // Database unique constraints make Telegram redelivery and simultaneous duplicate messages safe.
   const saved=await db('source_inbox',{method:'POST',query:'?on_conflict=content_hash',body:{update_id:update.update_id,message_id:m.message_id,chat_id:String(m.chat.id),media_group_id:m.media_group_id||null,content:text,media,content_hash:hash},headers:{Prefer:'resolution=ignore-duplicates,return=representation'}});
-  if(automationConfiguration().enabled){const row=saved[0]||(await db('source_inbox',{query:'?content_hash=eq.'+hash}))[0];if(row)waitUntil(processSource(row.id));}
+  if(automationConfiguration().enabled){const row=saved[0]||(await db('source_inbox',{query:'?content_hash=eq.'+hash}))[0];if(row){if(row.processing_status==='review'&&m.message_id>row.message_id)await db('source_inbox',{method:'PATCH',query:'?id=eq.'+row.id+'&processing_status=eq.review',body:{processing_status:'received',processing_error:'',attempts:0,parsed_data:null}});waitUntil(processSource(row.id));}}
   return send(res,200,{ok:true});
  }catch(error){return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
 }

@@ -19,3 +19,11 @@ await call({...update,update_id:3,message:{...update.message,message_id:7,text:u
 await call({update_id:4,message:{message_id:8,chat:update.message.chat,from:update.message.from,photo:[{file_id:'small',file_unique_id:'small'},{file_id:'large',file_unique_id:'large'}],media_group_id:'album1'}});assert.equal(rows.size,3);assert.equal([...rows.values()][2].media[0].file_id,'large');
 await call({update_id:5,message:{...update.message,text:'/start'}});assert.equal(rows.size,3);
 console.log('Telegram inbox: secret verification, admin guard, owner-only intake, private source preservation, exact dedup, changed-price preservation, media references and Start handling passed.');
+// A fresh owner resend of a formerly blocked source should retry without requiring text changes.
+process.env.TELEGRAM_AUTO_PUBLISH='true';process.env.TELEGRAM_SOURCE_MODE='provided';
+const pending=[];globalThis[Symbol.for('@vercel/request-context')]={get:()=>({waitUntil:p=>pending.push(p)})};
+const old={id:'11111111-1111-4111-8111-111111111111',message_id:5,processing_status:'review',content:'Kho xưởng 280m2 giá thuê 16 triệu',media:[]};let resets=0;
+global.fetch=async (raw,options={})=>{const url=new URL(raw);if(url.pathname.endsWith('/rpc/claim_source_job'))return Response.json([]);if(options.method==='PATCH'){const body=JSON.parse(options.body);assert.equal(body.processing_status,'received');assert.equal(body.parsed_data,null);resets++;Object.assign(old,body);return Response.json([old])}if(options.method==='POST')return Response.json([]);return Response.json([old])};
+assert.equal((await call({...update,update_id:10,message:{...update.message,message_id:11}})).status,200);await Promise.all(pending);assert.equal(resets,1);
+old.processing_status='published';await call({...update,update_id:11,message:{...update.message,message_id:12}});await Promise.all(pending);assert.equal(resets,1);
+console.log('Resend recovery passed: reviewed sources reset for processing, published sources never reset.');

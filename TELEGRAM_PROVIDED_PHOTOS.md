@@ -27,11 +27,11 @@ Giá thuê: 20 triệu/tháng
 #hashtagcuanguon
 ```
 
-Tên đường bắt buộc khi địa chỉ có số ngõ/ngách. Khu vực theo 30 quận/huyện và thị xã cũ. Mỗi lần gửi một BĐS. Chọn đúng danh mục đã có trên website.
+Không bắt buộc có tên đường, số nhà hoặc địa chỉ đầy đủ. Địa chỉ có số ngõ/ngách được giữ riêng; nếu chưa tách được tên đường an toàn thì công khai quận/huyện nếu có. Khu vực theo 30 quận/huyện và thị xã cũ. Mỗi lần gửi một BĐS. Đây chỉ là mẫu tham khảo, không bắt buộc viết theo mẫu.
 
-Không bắt buộc dùng đúng mẫu nếu bài tự do đủ thông tin rõ ràng mà quy tắc nhận diện được. Bài thiếu dữ liệu, có nhiều mức giá hoặc nhiều diện tích sẽ giữ trong admin để kiểm tra, không tự đoán. Thuật toán chỉ ghép mô tả từ dữ kiện đã tách, không viết lại tự do như AI. Chưa đọc chữ trong ảnh/tài liệu, chưa tách bài bán. Nếu có sang nhượng, ghi riêng dòng `Sang nhượng: ... triệu` ngoài giá thuê hàng tháng.
+Không bắt buộc dùng đúng mẫu nếu bài tự do đủ thông tin rõ ràng mà quy tắc nhận diện được. Thiếu quận/huyện thì để Hà Nội và ghi liên hệ để biết vị trí; thiếu số nhà không chặn đăng. Vẫn cần một diện tích và giá thuê rõ ràng để tránh tự bịa giá. Nhiều mức giá hoặc nhiều diện tích chưa xác định được sẽ giữ trong admin để kiểm tra. Thuật toán tự ghép mô tả và giữ các tiện ích/công năng phổ biến nhận diện được như điện ba pha, chiều cao xưởng, WC, kho chứa/phân phối, sản xuất, gia công; không viết lại tùy ý như AI. Chưa đọc chữ trong ảnh/tài liệu, chưa tách bài bán. Nếu có sang nhượng, ghi riêng dòng `Sang nhượng: ... triệu` ngoài giá thuê hàng tháng.
 
-Ảnh không có bài chú thích, hoặc bài và ảnh gửi thành các tin riêng lẻ, không tự được ghép. Gửi một album có đúng một chú thích nội dung. Telegram gửi từng ảnh qua webhook; hệ thống đợi khoảng 4 giây để gom và chỉ nguồn có chú thích được làm bài chính. Ảnh album đến quá muộn sau khi bài đã xử lý được giữ để kiểm tra, không tự gắn nhầm sang bài khác.
+Bài văn bản không có ảnh vẫn được đăng bằng banner website có nhãn minh họa. Ảnh gửi rời bài viết không tự được ghép với bài trước đó. Gửi một album có đúng một chú thích nội dung. Telegram gửi từng ảnh qua webhook; hệ thống đợi khoảng 4 giây để gom và chỉ nguồn có chú thích được làm bài chính. Ảnh album đến quá muộn sau khi bài đã xử lý được giữ để kiểm tra, không tự gắn nhầm sang bài khác.
 
 ## Xử lý
 
@@ -40,6 +40,8 @@ Không bắt buộc dùng đúng mẫu nếu bài tự do đủ thông tin rõ r
 - Ảnh JPEG, PNG, WebP tối đa 10 MB mỗi ảnh, tối đa 10 ảnh mỗi bài. Ảnh gửi dạng ảnh Telegram được hỗ trợ; tài liệu JPEG/PNG/WebP cũng được nhận diện là ảnh. Video/tệp Word/PDF chưa tự đăng qua luồng này.
 - Nhãn ảnh là “Ảnh do nguồn cung cấp”, không gọi là ảnh AI hay tự xác nhận ảnh thực tế. Hệ thống không OCR hoặc tự che số nhà/ngõ/ngách, hashtag, thông tin liên hệ nằm TRONG ảnh. Anh chọn ảnh không chứa những chi tiết riêng tư này trước khi gửi. Địa chỉ và hashtag trong bài văn bản được giữ riêng như trước.
 - Bot gửi kết quả kèm liên kết sau khi đăng. Admin → Nguồn từ bot Telegram → Tải nguồn mới để xem kết quả, nguồn trùng và bài cần kiểm tra.
-- Kiểm tra trùng theo quy tắc hiện có, không bảo đảm nhận ra mọi cách ghi khác nhau. Tin trùng không đăng thêm và không tự ghi đè giá.
+- Có địa chỉ cụ thể: kiểm tra theo địa chỉ/diện tích. Chưa có địa chỉ: so nội dung chuẩn hóa, bỏ hashtag/điện thoại/liên kết khi so, không gộp hai nguồn khác nội dung chỉ vì cùng diện tích và giá. Không bảo đảm nhận ra mọi cách ghi khác nhau. Tin trùng không đăng thêm và không tự ghi đè giá.
 
-Kiểm thử dùng Telegram/Supabase giả lập: xác minh một ảnh, album hai ảnh, không có khóa OpenAI và không có cuộc gọi OpenAI; thiếu ảnh giữ lại; ảnh được lưu riêng và gắn vào bài công khai sau khi đăng. Cần gửi bài thật sau khi cấu hình Production để xác nhận đầu cuối trên website.
+Kiểm thử dùng Telegram/Supabase giả lập: xác minh một ảnh, album hai ảnh, không có khóa OpenAI và không có cuộc gọi OpenAI; bài chỉ văn bản dùng banner; ảnh được lưu riêng và gắn vào bài công khai sau khi đăng. Cần gửi bài thật sau khi cấu hình Production để xác nhận đầu cuối trên website.
+
+Bài từng bị chặn: sau khi bản sửa triển khai Ready, gửi lại nguyên bài vào bot để tự thử lại, hoặc bấm Xử lý / Thử lại trong admin. Không cần viết lại bài hay chạy SQL mới.
