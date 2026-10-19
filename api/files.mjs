@@ -1,3 +1,4 @@
+import {watermarkImage,brandingVersion} from '../lib/image-branding.mjs';
 import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {send,readJson,sameOrigin,limited} from '../lib/http.mjs';
@@ -13,6 +14,17 @@ async function asset(req,id,{publicRead=false}={}){
  const who=await actor(req);if(!who.admin&&item.owner_id!==who.id)throw problem(403,'Không có quyền truy cập tệp này.');return item;
 }
 async function signed(item){const result=await supa('/storage/v1/object/sign/rental-private/'+item.path,{method:'POST',body:{expiresIn:120}});const path=result.signedURL||result.signedUrl;return new URL(path.startsWith('/storage/')?path:'/storage/v1'+path,process.env.SUPABASE_URL).href}
+async function branded(item){
+ const variant={...item,path:'branding/'+brandingVersion+'/'+item.id+'.jpg'};
+ try{return await signed(variant)}catch{}
+ const response=await fetch(await signed(item),{signal:AbortSignal.timeout(20000)});
+ if(!response.ok||Number(response.headers.get('content-length'))>10*1024*1024)throw problem(502,'Chưa tải được ảnh nguồn.');
+ const reader=response.body.getReader(),chunks=[];let size=0;
+ while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>10*1024*1024){await reader.cancel();throw problem(413,'Ảnh nguồn vượt quá 10 MB.')}chunks.push(Buffer.from(value))}
+ const bytes=await watermarkImage(Buffer.concat(chunks)),key=process.env.SUPABASE_SERVICE_ROLE_KEY;
+ const upload=await fetch(process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1/object/rental-private/'+variant.path,{method:'POST',headers:{apikey:key,...(key.startsWith('sb_')?{}:{Authorization:'Bearer '+key}),'Content-Type':'image/jpeg','x-upsert':'true'},body:bytes,signal:AbortSignal.timeout(20000)});
+ if(!upload.ok)throw problem(502,'Chưa lưu được ảnh có dấu số điện thoại.');return signed(variant);
+}
 export default async function handler(req,res){
  try{
   const query=new URL(req.url,'http://localhost').searchParams;
@@ -23,7 +35,7 @@ export default async function handler(req,res){
     const bytes=await readFile(new URL('../public/images/'+slug+'.jpg',import.meta.url));res.writeHead(200,{'Content-Type':'image/jpeg','Content-Disposition':`attachment; filename="${slug}.jpg"`});return res.end(bytes);
    }
    const item=await asset(req,query.get('id'),{publicRead:true});if(item.kind==='document')throw problem(403,'Tài liệu nguồn chỉ dành cho chủ tài khoản và quản trị viên.');
-   let url=await signed(item);if(query.get('download')==='1')url+='&download='+encodeURIComponent(item.name);
+   let url=item.kind==='image'?await branded(item):await signed(item);if(query.get('download')==='1')url+='&download='+encodeURIComponent(item.kind==='image'?item.name.replace(/\.[^.]+$/,'')+'.jpg':item.name);
    res.writeHead(302,{Location:url,'Cache-Control':'no-store'});return res.end();
   }
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});

@@ -1,7 +1,7 @@
 window.RENTAL_LISTINGS = [
   {
     "id": 1001,
-    "code": "HN-001",
+    "code": "MB - 0001",
     "slug": "hn-001",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -23,14 +23,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-001.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Mặt bằng lô góc tại Đỗ Quang",
+    "title": "Cho thuê mặt bằng kinh doanh 60 m² — Đỗ Quang, Cầu Giấy",
     "address": "Đỗ Quang, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng lô góc tại đỗ quang",
-    "shareText": "MẶT BẰNG LÔ GÓC TẠI ĐỖ QUANG\n\nKhu vực: Đỗ Quang, Cầu Giấy, Hà Nội\nDiện tích: Tầng 1: 60 m²; tầng 2: 90 m²\nGiá thuê: 40 triệu đồng/tháng\n• Lô góc, hai mặt tiền\n• Không gian riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Đỗ Quang, Cầu Giấy\nMã tin: MB - 0001\n\nKhu vực: Đỗ Quang, Cầu Giấy, Hà Nội\nDiện tích: Tầng 1: 60 m²; tầng 2: 90 m²\nGiá thuê: 40 triệu đồng/tháng\n• Lô góc, hai mặt tiền\n• Không gian riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-001"
+    ],
+    "listingSequence": 1
   },
   {
     "id": 1002,
-    "code": "HN-002",
+    "code": "MB - 0002",
     "slug": "hn-002",
     "area": "Hà Đông",
     "type": "Mặt bằng kinh doanh",
@@ -53,14 +57,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-002.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán ăn tại Ao Sen",
+    "title": "Sang nhượng mặt bằng kinh doanh 45 m² — Ao Sen, Hà Đông",
     "address": "Ao Sen, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán ăn tại ao sen",
-    "shareText": "SANG NHƯỢNG QUÁN ĂN TẠI AO SEN\n\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nDiện tích: 45 m² × 3 tầng\nGiá thuê: 13 triệu đồng/tháng\nGiá sang nhượng: 90 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 4,5 m\n• Sang nhượng kèm trang thiết bị, gồm một tháng tiền đặt cọc\n• Hợp đồng thuê theo nguồn: 2 năm\n• Thanh toán: 1 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 45 m² — Ao Sen, Hà Đông\nMã tin: MB - 0002\n\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nDiện tích: 45 m² × 3 tầng\nGiá thuê: 13 triệu đồng/tháng\nGiá sang nhượng: 90 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 4,5 m\n• Sang nhượng kèm trang thiết bị, gồm một tháng tiền đặt cọc\n• Hợp đồng thuê theo nguồn: 2 năm\n• Thanh toán: 1 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-002"
+    ],
+    "listingSequence": 2
   },
   {
     "id": 1003,
-    "code": "HN-003",
+    "code": "MB - 0003",
     "slug": "hn-003",
     "area": "Thanh Xuân",
     "type": "Mặt bằng kinh doanh",
@@ -86,14 +94,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-003.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Mặt bằng mặt tiền 7 m tại Lê Văn Thiêm",
+    "title": "Cho thuê mặt bằng kinh doanh 60 m² — Lê Văn Thiêm, Thanh Xuân",
     "address": "Lê Văn Thiêm, Thanh Xuân, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng mặt tiền 7 m tại lê văn thiêm",
-    "shareText": "MẶT BẰNG MẶT TIỀN 7 M TẠI LÊ VĂN THIÊM\n\nKhu vực: Lê Văn Thiêm, Thanh Xuân, Hà Nội\nDiện tích: 60 m²\nGiá thuê: 33 triệu đồng/tháng\n• Mặt tiền 7 m\n• Phù hợp nhiều mô hình kinh doanh, trừ xe máy\n• Theo nguồn: miễn phí sửa chữa 10 ngày; cần làm rõ điều kiện ưu đãi\n• Hợp đồng thuê: 1 năm\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\nLưu ý: Giá chào 33 triệu/tháng; nguồn có đề cập mức thương lượng 28 triệu/tháng, cần xác nhận trước khi giao dịch.\nLưu ý: Quận Thanh Xuân được phân loại theo tên đường; cần xác nhận lại địa chỉ chi tiết.\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Lê Văn Thiêm, Thanh Xuân\nMã tin: MB - 0003\n\nKhu vực: Lê Văn Thiêm, Thanh Xuân, Hà Nội\nDiện tích: 60 m²\nGiá thuê: 33 triệu đồng/tháng\n• Mặt tiền 7 m\n• Phù hợp nhiều mô hình kinh doanh, trừ xe máy\n• Theo nguồn: miễn phí sửa chữa 10 ngày; cần làm rõ điều kiện ưu đãi\n• Hợp đồng thuê: 1 năm\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\nLưu ý: Giá chào 33 triệu/tháng; nguồn có đề cập mức thương lượng 28 triệu/tháng, cần xác nhận trước khi giao dịch.\nLưu ý: Quận Thanh Xuân được phân loại theo tên đường; cần xác nhận lại địa chỉ chi tiết.\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-003"
+    ],
+    "listingSequence": 3
   },
   {
     "id": 1004,
-    "code": "HN-004",
+    "code": "NC - 0001",
     "slug": "hn-004",
     "area": "Cầu Giấy",
     "type": "Nhà nguyên căn",
@@ -115,14 +127,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-004.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Tòa nhà 5 tầng tại Vũ Phạm Hàm",
+    "title": "Cho thuê nhà nguyên căn 83 m² — Vũ Phạm Hàm, Cầu Giấy",
     "address": "Vũ Phạm Hàm, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: tòa nhà 5 tầng tại vũ phạm hàm",
-    "shareText": "TÒA NHÀ 5 TẦNG TẠI VŨ PHẠM HÀM\n\nKhu vực: Vũ Phạm Hàm, Cầu Giấy, Hà Nội\nDiện tích: 83 m²/tầng × 5 tầng\nGiá thuê: 100 triệu đồng/tháng\n• Mặt tiền 5,5 m\n• Nhà riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê nhà nguyên căn 83 m² — Vũ Phạm Hàm, Cầu Giấy\nMã tin: NC - 0001\n\nKhu vực: Vũ Phạm Hàm, Cầu Giấy, Hà Nội\nDiện tích: 83 m²/tầng × 5 tầng\nGiá thuê: 100 triệu đồng/tháng\n• Mặt tiền 5,5 m\n• Nhà riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-004"
+    ],
+    "listingSequence": 1
   },
   {
     "id": 1005,
-    "code": "HN-005",
+    "code": "MB - 0004",
     "slug": "hn-005",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -144,14 +160,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-005.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán ăn tại Nghĩa Tân",
+    "title": "Sang nhượng mặt bằng kinh doanh 40 m² — Nghĩa Tân, Cầu Giấy",
     "address": "Nghĩa Tân, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán ăn tại nghĩa tân",
-    "shareText": "SANG NHƯỢNG QUÁN ĂN TẠI NGHĨA TÂN\n\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nDiện tích: 40 m²\nGiá thuê: 21 triệu đồng/tháng\nGiá sang nhượng: 80 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 3 m\n• Sang nhượng quán ăn: 80 triệu đồng\n• Nguồn đề cập 15 triệu đồng tiền cọc; cần xác nhận khoản này đã nằm trong giá sang nhượng hay chưa\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 40 m² — Nghĩa Tân, Cầu Giấy\nMã tin: MB - 0004\n\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nDiện tích: 40 m²\nGiá thuê: 21 triệu đồng/tháng\nGiá sang nhượng: 80 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 3 m\n• Sang nhượng quán ăn: 80 triệu đồng\n• Nguồn đề cập 15 triệu đồng tiền cọc; cần xác nhận khoản này đã nằm trong giá sang nhượng hay chưa\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-005"
+    ],
+    "listingSequence": 4
   },
   {
     "id": 1006,
-    "code": "HN-006",
+    "code": "MB - 0005",
     "slug": "hn-006",
     "area": "Ba Đình",
     "type": "Mặt bằng kinh doanh",
@@ -176,14 +196,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-006.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán cà phê tại Phạm Huy Thông",
+    "title": "Sang nhượng mặt bằng kinh doanh 80 m² — Phạm Huy Thông, Ba Đình",
     "address": "Phạm Huy Thông, Ba Đình, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán cà phê tại phạm huy thông",
-    "shareText": "SANG NHƯỢNG QUÁN CÀ PHÊ TẠI PHẠM HUY THÔNG\n\nKhu vực: Phạm Huy Thông, Ba Đình, Hà Nội\nDiện tích: Nguồn ghi 80 m² × 2 tầng; tầng 2 ghi 60 m²\nGiá thuê: 40 triệu đồng/tháng\nGiá sang nhượng: 320 triệu đồng (tách riêng tiền thuê)\n• Giá sang nhượng chào: 320 triệu đồng\n• Nguồn nêu có thể thương lượng còn 300 triệu đồng\n• Không lấy máy móc: nguồn nêu giảm 50 triệu đồng\n• Thanh toán: 3 tháng, đặt cọc 3 tháng\nLưu ý: Cần xác nhận diện tích từng tầng: thông tin 80 m² × 2 tầng chưa khớp với dòng tầng 2 là 60 m².\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 80 m² — Phạm Huy Thông, Ba Đình\nMã tin: MB - 0005\n\nKhu vực: Phạm Huy Thông, Ba Đình, Hà Nội\nDiện tích: Nguồn ghi 80 m² × 2 tầng; tầng 2 ghi 60 m²\nGiá thuê: 40 triệu đồng/tháng\nGiá sang nhượng: 320 triệu đồng (tách riêng tiền thuê)\n• Giá sang nhượng chào: 320 triệu đồng\n• Nguồn nêu có thể thương lượng còn 300 triệu đồng\n• Không lấy máy móc: nguồn nêu giảm 50 triệu đồng\n• Thanh toán: 3 tháng, đặt cọc 3 tháng\nLưu ý: Cần xác nhận diện tích từng tầng: thông tin 80 m² × 2 tầng chưa khớp với dòng tầng 2 là 60 m².\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-006"
+    ],
+    "listingSequence": 5
   },
   {
     "id": 1007,
-    "code": "HN-007",
+    "code": "MB - 0006",
     "slug": "hn-007",
     "area": "Hà Đông",
     "type": "Mặt bằng kinh doanh",
@@ -206,14 +230,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-007.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán cà phê lô góc tại Ao Sen",
+    "title": "Sang nhượng mặt bằng kinh doanh 40 m² — Ao Sen, Hà Đông",
     "address": "Ao Sen, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán cà phê lô góc tại ao sen",
-    "shareText": "SANG NHƯỢNG QUÁN CÀ PHÊ LÔ GÓC TẠI AO SEN\n\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nDiện tích: Tầng 1: 40 m²; tầng 2: 90 m²\nGiá thuê: 28 triệu đồng/tháng\nGiá sang nhượng: 220 triệu đồng (tách riêng tiền thuê)\n• Lô góc, hai mặt tiền 10 m và 3 m\n• Nhà riêng biệt\n• Trang thiết bị đầy đủ theo nguồn; giá sang nhượng gồm 30 triệu đồng tiền cọc\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 40 m² — Ao Sen, Hà Đông\nMã tin: MB - 0006\n\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nDiện tích: Tầng 1: 40 m²; tầng 2: 90 m²\nGiá thuê: 28 triệu đồng/tháng\nGiá sang nhượng: 220 triệu đồng (tách riêng tiền thuê)\n• Lô góc, hai mặt tiền 10 m và 3 m\n• Nhà riêng biệt\n• Trang thiết bị đầy đủ theo nguồn; giá sang nhượng gồm 30 triệu đồng tiền cọc\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-007"
+    ],
+    "listingSequence": 6
   },
   {
     "id": 1008,
-    "code": "HN-008",
+    "code": "MB - 0007",
     "slug": "hn-008",
     "area": "Đống Đa",
     "type": "Mặt bằng kinh doanh",
@@ -235,14 +263,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-008.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Mặt bằng 60 m² tại Hồ Đắc Di",
+    "title": "Cho thuê mặt bằng kinh doanh 60 m² — Hồ Đắc Di, Đống Đa",
     "address": "Hồ Đắc Di, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng 60 m² tại hồ đắc di",
-    "shareText": "MẶT BẰNG 60 M² TẠI HỒ ĐẮC DI\n\nKhu vực: Hồ Đắc Di, Đống Đa, Hà Nội\nDiện tích: 60 m²\nGiá thuê: 20 triệu đồng/tháng\n• Mặt tiền 3 m\n• Chung chủ, lối đi chung\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Hồ Đắc Di, Đống Đa\nMã tin: MB - 0007\n\nKhu vực: Hồ Đắc Di, Đống Đa, Hà Nội\nDiện tích: 60 m²\nGiá thuê: 20 triệu đồng/tháng\n• Mặt tiền 3 m\n• Chung chủ, lối đi chung\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-008"
+    ],
+    "listingSequence": 7
   },
   {
     "id": 1009,
-    "code": "HN-009",
+    "code": "MB - 0008",
     "slug": "hn-009",
     "area": "Đống Đa",
     "type": "Mặt bằng kinh doanh",
@@ -264,14 +296,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-009.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Mặt bằng hai tầng tại Nguyễn Chí Thanh",
+    "title": "Cho thuê mặt bằng kinh doanh 250 m² — Nguyễn Chí Thanh, Đống Đa",
     "address": "Nguyễn Chí Thanh, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng hai tầng tại nguyễn chí thanh",
-    "shareText": "MẶT BẰNG HAI TẦNG TẠI NGUYỄN CHÍ THANH\n\nKhu vực: Nguyễn Chí Thanh, Đống Đa, Hà Nội\nDiện tích: 250 m² × 2 tầng; thêm gác xép 30 m²\nGiá thuê: 55 triệu đồng/tháng\n• Mặt tiền 10 m\n• Phù hợp nhiều mô hình kinh doanh theo nguồn\n• Hợp đồng thuê: 3–5 năm\n• Thanh toán: 4 tháng, đặt cọc 2 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 250 m² — Nguyễn Chí Thanh, Đống Đa\nMã tin: MB - 0008\n\nKhu vực: Nguyễn Chí Thanh, Đống Đa, Hà Nội\nDiện tích: 250 m² × 2 tầng; thêm gác xép 30 m²\nGiá thuê: 55 triệu đồng/tháng\n• Mặt tiền 10 m\n• Phù hợp nhiều mô hình kinh doanh theo nguồn\n• Hợp đồng thuê: 3–5 năm\n• Thanh toán: 4 tháng, đặt cọc 2 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-009"
+    ],
+    "listingSequence": 8
   },
   {
     "id": 1010,
-    "code": "HN-010",
+    "code": "MB - 0009",
     "slug": "hn-010",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -306,14 +342,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-010.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Quán cà phê và nhà 5 tầng tại Đỗ Quang",
+    "title": "Sang nhượng mặt bằng kinh doanh 70 m² — Đỗ Quang, Cầu Giấy",
     "address": "Đỗ Quang, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: quán cà phê và nhà 5 tầng tại đỗ quang",
-    "shareText": "QUÁN CÀ PHÊ VÀ NHÀ 5 TẦNG TẠI ĐỖ QUANG\n\nKhu vực: Đỗ Quang, Cầu Giấy, Hà Nội\nDiện tích: 70 m² × 5 tầng\nThuê riêng tầng 1: 25 triệu đồng/tháng\nThuê cả nhà: 50 triệu đồng/tháng\nGiá sang nhượng: 200 triệu đồng (tách riêng tiền thuê)\n• Lô góc, mặt tiền 10 m\n• Sang nhượng quán cà phê tầng 1: 200 triệu đồng, kèm trang thiết bị theo nguồn\n• Có lựa chọn thuê riêng tầng 1 hoặc cả nhà\n• Phù hợp cà phê, văn phòng và kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 70 m² — Đỗ Quang, Cầu Giấy\nMã tin: MB - 0009\n\nKhu vực: Đỗ Quang, Cầu Giấy, Hà Nội\nDiện tích: 70 m² × 5 tầng\nThuê riêng tầng 1: 25 triệu đồng/tháng\nThuê cả nhà: 50 triệu đồng/tháng\nGiá sang nhượng: 200 triệu đồng (tách riêng tiền thuê)\n• Lô góc, mặt tiền 10 m\n• Sang nhượng quán cà phê tầng 1: 200 triệu đồng, kèm trang thiết bị theo nguồn\n• Có lựa chọn thuê riêng tầng 1 hoặc cả nhà\n• Phù hợp cà phê, văn phòng và kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-010"
+    ],
+    "listingSequence": 9
   },
   {
     "id": 1011,
-    "code": "HN-011",
+    "code": "MB - 0010",
     "slug": "hn-011",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -335,14 +375,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-011.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Mặt bằng tầng 1 tại Nguyễn Chánh",
+    "title": "Cho thuê mặt bằng kinh doanh 45 m² — Nguyễn Chánh, Cầu Giấy",
     "address": "Nguyễn Chánh, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng tầng 1 tại nguyễn chánh",
-    "shareText": "MẶT BẰNG TẦNG 1 TẠI NGUYỄN CHÁNH\n\nKhu vực: Nguyễn Chánh, Cầu Giấy, Hà Nội\nDiện tích: Tầng 1: 45 m²\nGiá thuê: 14 triệu đồng/tháng\n• Chỉ kinh doanh hàng sạch\n• Không kinh doanh ăn uống hoặc xổ số\n• Có thể trao đổi nhu cầu làm văn phòng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 45 m² — Nguyễn Chánh, Cầu Giấy\nMã tin: MB - 0010\n\nKhu vực: Nguyễn Chánh, Cầu Giấy, Hà Nội\nDiện tích: Tầng 1: 45 m²\nGiá thuê: 14 triệu đồng/tháng\n• Chỉ kinh doanh hàng sạch\n• Không kinh doanh ăn uống hoặc xổ số\n• Có thể trao đổi nhu cầu làm văn phòng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-011"
+    ],
+    "listingSequence": 10
   },
   {
     "id": 1012,
-    "code": "HN-012",
+    "code": "NC - 0002",
     "slug": "hn-012",
     "area": "Đống Đa",
     "type": "Nhà nguyên căn",
@@ -365,14 +409,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-012.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Nhà kinh doanh riêng biệt tại Đường Láng",
+    "title": "Cho thuê nhà nguyên căn 21 m² — Đường Láng, Đống Đa",
     "address": "Đường Láng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: nhà kinh doanh riêng biệt tại đường láng",
-    "shareText": "NHÀ KINH DOANH RIÊNG BIỆT TẠI ĐƯỜNG LÁNG\n\nKhu vực: Đường Láng, Đống Đa, Hà Nội\nDiện tích: 21 m² × 3,5 tầng\nGiá thuê: 22 triệu đồng/tháng\n• Mặt tiền 4,5 m\n• Nhà riêng biệt\n• Thời hạn thuê theo nguồn: dưới 20 tháng\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê nhà nguyên căn 21 m² — Đường Láng, Đống Đa\nMã tin: NC - 0002\n\nKhu vực: Đường Láng, Đống Đa, Hà Nội\nDiện tích: 21 m² × 3,5 tầng\nGiá thuê: 22 triệu đồng/tháng\n• Mặt tiền 4,5 m\n• Nhà riêng biệt\n• Thời hạn thuê theo nguồn: dưới 20 tháng\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-012"
+    ],
+    "listingSequence": 2
   },
   {
     "id": 1013,
-    "code": "HN-013",
+    "code": "MB - 0011",
     "slug": "hn-013",
     "area": "Đống Đa",
     "type": "Mặt bằng kinh doanh",
@@ -394,14 +442,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-013.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Mặt bằng ba tầng tại Huỳnh Thúc Kháng",
+    "title": "Cho thuê mặt bằng kinh doanh 45 m² — Huỳnh Thúc Kháng, Đống Đa",
     "address": "Huỳnh Thúc Kháng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng ba tầng tại huỳnh thúc kháng",
-    "shareText": "MẶT BẰNG BA TẦNG TẠI HUỲNH THÚC KHÁNG\n\nKhu vực: Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nDiện tích: Tầng 1: 45 m²; tầng 2–3: 88 m²/tầng\nGiá thuê: 55 triệu đồng/tháng\n• Mặt tiền 4,5 m\n• Không gian riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 45 m² — Huỳnh Thúc Kháng, Đống Đa\nMã tin: MB - 0011\n\nKhu vực: Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nDiện tích: Tầng 1: 45 m²; tầng 2–3: 88 m²/tầng\nGiá thuê: 55 triệu đồng/tháng\n• Mặt tiền 4,5 m\n• Không gian riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-013"
+    ],
+    "listingSequence": 11
   },
   {
     "id": 1014,
-    "code": "HN-014",
+    "code": "MB - 0012",
     "slug": "hn-014",
     "area": "Hà Đông",
     "type": "Mặt bằng kinh doanh",
@@ -423,14 +475,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-014.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán ăn lô góc tại Nguyễn Viết Xuân",
+    "title": "Sang nhượng mặt bằng kinh doanh 60 m² — Nguyễn Viết Xuân, Hà Đông",
     "address": "Nguyễn Viết Xuân, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán ăn lô góc tại nguyễn viết xuân",
-    "shareText": "SANG NHƯỢNG QUÁN ĂN LÔ GÓC TẠI NGUYỄN VIẾT XUÂN\n\nKhu vực: Nguyễn Viết Xuân, Hà Đông, Hà Nội\nDiện tích: 60 m² × 2 tầng\nGiá thuê: 15 triệu đồng/tháng\nGiá sang nhượng: 200 triệu đồng (tách riêng tiền thuê)\n• Lô góc, đối diện Bệnh viện Mắt Hà Đông theo nguồn\n• Nhà riêng biệt\n• Sang nhượng kèm trang thiết bị, một tháng tiền cọc và một tháng tiền nhà theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Nguyễn Viết Xuân, Hà Đông\nMã tin: MB - 0012\n\nKhu vực: Nguyễn Viết Xuân, Hà Đông, Hà Nội\nDiện tích: 60 m² × 2 tầng\nGiá thuê: 15 triệu đồng/tháng\nGiá sang nhượng: 200 triệu đồng (tách riêng tiền thuê)\n• Lô góc, đối diện Bệnh viện Mắt Hà Đông theo nguồn\n• Nhà riêng biệt\n• Sang nhượng kèm trang thiết bị, một tháng tiền cọc và một tháng tiền nhà theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-014"
+    ],
+    "listingSequence": 12
   },
   {
     "id": 1015,
-    "code": "HN-015",
+    "code": "MB - 0013",
     "slug": "hn-015",
     "area": "Thanh Trì",
     "type": "Mặt bằng kinh doanh",
@@ -451,14 +507,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-015.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Mặt bằng tầng 1 tại Triều Khúc",
+    "title": "Cho thuê mặt bằng kinh doanh 70 m² — Triều Khúc, Thanh Trì",
     "address": "Triều Khúc, Thanh Trì, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng tầng 1 tại triều khúc",
-    "shareText": "MẶT BẰNG TẦNG 1 TẠI TRIỀU KHÚC\n\nKhu vực: Triều Khúc, Thanh Trì, Hà Nội\nDiện tích: Tầng 1: 70 m²\nGiá thuê: 12 triệu đồng/tháng\n• Đang kinh doanh quán lẩu theo nguồn\n• Phù hợp mô hình ăn uống hoặc F&B\n• Nguồn mô tả có chỗ đỗ xe máy, ô tô; cần kiểm tra trực tiếp\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 70 m² — Triều Khúc, Thanh Trì\nMã tin: MB - 0013\n\nKhu vực: Triều Khúc, Thanh Trì, Hà Nội\nDiện tích: Tầng 1: 70 m²\nGiá thuê: 12 triệu đồng/tháng\n• Đang kinh doanh quán lẩu theo nguồn\n• Phù hợp mô hình ăn uống hoặc F&B\n• Nguồn mô tả có chỗ đỗ xe máy, ô tô; cần kiểm tra trực tiếp\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-015"
+    ],
+    "listingSequence": 13
   },
   {
     "id": 1016,
-    "code": "HN-016",
+    "code": "MB - 0014",
     "slug": "hn-016",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -481,14 +541,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-016.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán cà phê workshop tại Nghĩa Tân",
+    "title": "Sang nhượng mặt bằng kinh doanh 110 m² — Nghĩa Tân, Cầu Giấy",
     "address": "Nghĩa Tân, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán cà phê workshop tại nghĩa tân",
-    "shareText": "SANG NHƯỢNG QUÁN CÀ PHÊ WORKSHOP TẠI NGHĨA TÂN\n\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nDiện tích: 110 m²: 70 m² trong nhà + 40 m² sân vườn\nGiá thuê: 15 triệu đồng/tháng\nGiá sang nhượng: 250 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 6 m\n• Có sân vườn\n• Sang nhượng kèm trang thiết bị, một tháng tiền cọc và ba tháng tiền nhà theo nguồn\n• Phù hợp cà phê, workshop hoặc không gian sáng tạo\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 110 m² — Nghĩa Tân, Cầu Giấy\nMã tin: MB - 0014\n\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nDiện tích: 110 m²: 70 m² trong nhà + 40 m² sân vườn\nGiá thuê: 15 triệu đồng/tháng\nGiá sang nhượng: 250 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 6 m\n• Có sân vườn\n• Sang nhượng kèm trang thiết bị, một tháng tiền cọc và ba tháng tiền nhà theo nguồn\n• Phù hợp cà phê, workshop hoặc không gian sáng tạo\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-016"
+    ],
+    "listingSequence": 14
   },
   {
     "id": 1017,
-    "code": "HN-017",
+    "code": "MB - 0015",
     "slug": "hn-017",
     "area": "Đống Đa",
     "type": "Mặt bằng kinh doanh",
@@ -509,14 +573,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-017.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán cà phê lô góc tại Chùa Láng",
+    "title": "Sang nhượng mặt bằng kinh doanh 70 m² — Chùa Láng, Đống Đa",
     "address": "Chùa Láng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán cà phê lô góc tại chùa láng",
-    "shareText": "SANG NHƯỢNG QUÁN CÀ PHÊ LÔ GÓC TẠI CHÙA LÁNG\n\nKhu vực: Chùa Láng, Đống Đa, Hà Nội\nDiện tích: 70 m² × 2 tầng\nGiá thuê: 28 triệu đồng/tháng\nGiá sang nhượng: 250 triệu đồng (tách riêng tiền thuê)\n• Lô góc\n• Sang nhượng quán cà phê kèm trang thiết bị theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 70 m² — Chùa Láng, Đống Đa\nMã tin: MB - 0015\n\nKhu vực: Chùa Láng, Đống Đa, Hà Nội\nDiện tích: 70 m² × 2 tầng\nGiá thuê: 28 triệu đồng/tháng\nGiá sang nhượng: 250 triệu đồng (tách riêng tiền thuê)\n• Lô góc\n• Sang nhượng quán cà phê kèm trang thiết bị theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-017"
+    ],
+    "listingSequence": 15
   },
   {
     "id": 1018,
-    "code": "HN-018",
+    "code": "MB - 0016",
     "slug": "hn-018",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -540,14 +608,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-018.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Sang nhượng quán bún tại Trần Duy Hưng",
+    "title": "Sang nhượng mặt bằng kinh doanh 50 m² — Trần Duy Hưng, Cầu Giấy",
     "address": "Trần Duy Hưng, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán bún tại trần duy hưng",
-    "shareText": "SANG NHƯỢNG QUÁN BÚN TẠI TRẦN DUY HƯNG\n\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nDiện tích: 50 m² × 3,5 tầng\nGiá thuê: 24 triệu đồng/tháng\nGiá sang nhượng: 100 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 4 m\n• Nhà riêng biệt\n• Sang nhượng quán bún kèm trang thiết bị theo nguồn\n• Thời hạn thuê còn trên 20 tháng theo nguồn\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 50 m² — Trần Duy Hưng, Cầu Giấy\nMã tin: MB - 0016\n\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nDiện tích: 50 m² × 3,5 tầng\nGiá thuê: 24 triệu đồng/tháng\nGiá sang nhượng: 100 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 4 m\n• Nhà riêng biệt\n• Sang nhượng quán bún kèm trang thiết bị theo nguồn\n• Thời hạn thuê còn trên 20 tháng theo nguồn\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-018"
+    ],
+    "listingSequence": 16
   },
   {
     "id": 1019,
-    "code": "HN-019",
+    "code": "KX - 0001",
     "slug": "hn-019",
     "area": "Nam Từ Liêm",
     "type": "Kho xưởng",
@@ -571,14 +643,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-019.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Kho xưởng riêng biệt 200 m² tại Mỹ Đình",
+    "title": "Cho thuê kho xưởng 200 m² — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm",
     "address": "Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: kho xưởng riêng biệt 200 m² tại mỹ đình",
-    "shareText": "KHO XƯỞNG RIÊNG BIỆT 200 M² TẠI MỸ ĐÌNH\n\nKhu vực: Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội\nDiện tích: 200 m²\nGiá thuê: 16 triệu đồng/tháng\n• Mặt tiền 10,3 m\n• Nhà riêng biệt\n• Phù hợp kho chứa hàng, kho trung chuyển hoặc xưởng phù hợp điều kiện sử dụng\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\nLưu ý: Cần kiểm tra công năng và điều kiện pháp lý, phòng cháy chữa cháy phù hợp với hoạt động dự kiến.\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê kho xưởng 200 m² — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm\nMã tin: KX - 0001\n\nKhu vực: Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội\nDiện tích: 200 m²\nGiá thuê: 16 triệu đồng/tháng\n• Mặt tiền 10,3 m\n• Nhà riêng biệt\n• Phù hợp kho chứa hàng, kho trung chuyển hoặc xưởng phù hợp điều kiện sử dụng\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\nLưu ý: Cần kiểm tra công năng và điều kiện pháp lý, phòng cháy chữa cháy phù hợp với hoạt động dự kiến.\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-019"
+    ],
+    "listingSequence": 1
   },
   {
     "id": 1020,
-    "code": "HN-020",
+    "code": "NC - 0003",
     "slug": "hn-020",
     "area": "Cầu Giấy",
     "type": "Nhà nguyên căn",
@@ -600,14 +676,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-020.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Nhà 5,5 tầng tại Trần Duy Hưng",
+    "title": "Cho thuê nhà nguyên căn 85 m² — Trần Duy Hưng, Cầu Giấy",
     "address": "Trần Duy Hưng, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: nhà 5,5 tầng tại trần duy hưng",
-    "shareText": "NHÀ 5,5 TẦNG TẠI TRẦN DUY HƯNG\n\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nDiện tích: 85 m² × 5,5 tầng\nGiá thuê: 70 triệu đồng/tháng\n• Mặt tiền 5 m\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n• Thanh toán: 6 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê nhà nguyên căn 85 m² — Trần Duy Hưng, Cầu Giấy\nMã tin: NC - 0003\n\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nDiện tích: 85 m² × 5,5 tầng\nGiá thuê: 70 triệu đồng/tháng\n• Mặt tiền 5 m\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n• Thanh toán: 6 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-020"
+    ],
+    "listingSequence": 3
   },
   {
     "id": 1021,
-    "code": "HN-021",
+    "code": "NC - 0004",
     "slug": "hn-021",
     "area": "Hà Đông",
     "type": "Nhà nguyên căn",
@@ -630,14 +710,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-021.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Nhà 4 tầng, 6 phòng tại khu đô thị Xa La",
+    "title": "Cho thuê nhà nguyên căn 56 m² — Khu đô thị Xa La, Hà Đông",
     "address": "Khu đô thị Xa La, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: nhà 4 tầng, 6 phòng tại khu đô thị xa la",
-    "shareText": "NHÀ 4 TẦNG, 6 PHÒNG TẠI KHU ĐÔ THỊ XA LA\n\nKhu vực: Khu đô thị Xa La, Hà Đông, Hà Nội\nDiện tích: 56 m² × 4 tầng\nGiá thuê: 18 triệu đồng/tháng\n• Có 6 phòng và vỉa hè\n• Ô tô đỗ cửa theo nguồn\n• Phù hợp văn phòng, kinh doanh hàng sạch; không kinh doanh hàng ăn\n• Nguồn có phương án thanh toán 3 hoặc 6 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê nhà nguyên căn 56 m² — Khu đô thị Xa La, Hà Đông\nMã tin: NC - 0004\n\nKhu vực: Khu đô thị Xa La, Hà Đông, Hà Nội\nDiện tích: 56 m² × 4 tầng\nGiá thuê: 18 triệu đồng/tháng\n• Có 6 phòng và vỉa hè\n• Ô tô đỗ cửa theo nguồn\n• Phù hợp văn phòng, kinh doanh hàng sạch; không kinh doanh hàng ăn\n• Nguồn có phương án thanh toán 3 hoặc 6 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-021"
+    ],
+    "listingSequence": 4
   },
   {
     "id": 1022,
-    "code": "HN-022",
+    "code": "NC - 0005",
     "slug": "hn-022",
     "area": "Đống Đa",
     "type": "Nhà nguyên căn",
@@ -659,14 +743,18 @@ window.RENTAL_LISTINGS = [
     "shareImage": "/images/hn-022.jpg",
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
-    "title": "Tòa nhà có hầm tại Huỳnh Thúc Kháng",
+    "title": "Cho thuê nhà nguyên căn 115 m² — Huỳnh Thúc Kháng, Đống Đa",
     "address": "Huỳnh Thúc Kháng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: tòa nhà có hầm tại huỳnh thúc kháng",
-    "shareText": "TÒA NHÀ CÓ HẦM TẠI HUỲNH THÚC KHÁNG\n\nKhu vực: Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nDiện tích: 115 m²/tầng; 6 tầng + 1 tum + 1 hầm\nGiá thuê: 160 triệu đồng/tháng\n• Mặt tiền 6 m\n• Nhà riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê nhà nguyên căn 115 m² — Huỳnh Thúc Kháng, Đống Đa\nMã tin: NC - 0005\n\nKhu vực: Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nDiện tích: 115 m²/tầng; 6 tầng + 1 tum + 1 hầm\nGiá thuê: 160 triệu đồng/tháng\n• Mặt tiền 6 m\n• Nhà riêng biệt\n• Phù hợp văn phòng và mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-022"
+    ],
+    "listingSequence": 5
   },
   {
     "id": 1023,
-    "code": "HN-023",
+    "code": "MB - 0017",
     "slug": "hn-023",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -691,14 +779,18 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Sang nhượng mặt bằng có sân rộng tại Trung Kính",
+    "title": "Sang nhượng mặt bằng kinh doanh 100 m² — Trung Kính, Cầu Giấy",
     "address": "Trung Kính, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng mặt bằng có sân rộng tại trung kính",
-    "shareText": "SANG NHƯỢNG MẶT BẰNG CÓ SÂN RỘNG TẠI TRUNG KÍNH\n\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nDiện tích: Trong nhà: 100 m²; sân ngoài trời: 150 m²; có thêm gác\nGiá thuê: 33 triệu đồng/tháng\nGiá sang nhượng: 280 triệu đồng (tách riêng tiền thuê)\n• Có sân ngoài trời 150 m² và gác theo nguồn\n• Giá sang nhượng gồm một tháng tiền cọc theo nguồn\n• Thời hạn hợp đồng theo nguồn: 3–5 năm\n• Thanh toán: 3 tháng, đặt cọc 2 tháng\n• Có thể trao đổi chuyển đổi sang mô hình hàng ăn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 100 m² — Trung Kính, Cầu Giấy\nMã tin: MB - 0017\n\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nDiện tích: Trong nhà: 100 m²; sân ngoài trời: 150 m²; có thêm gác\nGiá thuê: 33 triệu đồng/tháng\nGiá sang nhượng: 280 triệu đồng (tách riêng tiền thuê)\n• Có sân ngoài trời 150 m² và gác theo nguồn\n• Giá sang nhượng gồm một tháng tiền cọc theo nguồn\n• Thời hạn hợp đồng theo nguồn: 3–5 năm\n• Thanh toán: 3 tháng, đặt cọc 2 tháng\n• Có thể trao đổi chuyển đổi sang mô hình hàng ăn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-023"
+    ],
+    "listingSequence": 17
   },
   {
     "id": 1024,
-    "code": "HN-024",
+    "code": "MB - 0018",
     "slug": "hn-024",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -720,14 +812,18 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Sang nhượng quán bi-a có trang thiết bị tại Quan Hoa",
+    "title": "Sang nhượng mặt bằng kinh doanh 150 m² — Quan Hoa, Cầu Giấy",
     "address": "Quan Hoa, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán bi-a có trang thiết bị tại quan hoa",
-    "shareText": "SANG NHƯỢNG QUÁN BI-A CÓ TRANG THIẾT BỊ TẠI QUAN HOA\n\nKhu vực: Quan Hoa, Cầu Giấy, Hà Nội\nDiện tích: 150 m²\nGiá thuê: 23 triệu đồng/tháng\nGiá sang nhượng: 250 triệu đồng (tách riêng tiền thuê)\n• Sang nhượng quán bi-a kèm trang thiết bị theo nguồn\n• Nguồn nêu giá sang nhượng gồm một tháng tiền cọc và một tháng tiền nhà\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 150 m² — Quan Hoa, Cầu Giấy\nMã tin: MB - 0018\n\nKhu vực: Quan Hoa, Cầu Giấy, Hà Nội\nDiện tích: 150 m²\nGiá thuê: 23 triệu đồng/tháng\nGiá sang nhượng: 250 triệu đồng (tách riêng tiền thuê)\n• Sang nhượng quán bi-a kèm trang thiết bị theo nguồn\n• Nguồn nêu giá sang nhượng gồm một tháng tiền cọc và một tháng tiền nhà\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-024"
+    ],
+    "listingSequence": 18
   },
   {
     "id": 1025,
-    "code": "HN-025",
+    "code": "MB - 0019",
     "slug": "hn-025",
     "area": "Hoàng Mai",
     "type": "Mặt bằng kinh doanh",
@@ -751,14 +847,18 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Sang nhượng nhà hàng ba tầng tại Trần Điền",
+    "title": "Sang nhượng mặt bằng kinh doanh 200 m² — Trần Điền, Hoàng Mai",
     "address": "Trần Điền, Hoàng Mai, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng nhà hàng ba tầng tại trần điền",
-    "shareText": "SANG NHƯỢNG NHÀ HÀNG BA TẦNG TẠI TRẦN ĐIỀN\n\nKhu vực: Trần Điền, Hoàng Mai, Hà Nội\nDiện tích: 200 m² × 3 tầng theo nguồn\nGiá thuê: 50 triệu đồng/tháng\nGiá sang nhượng: 600 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 10 m\n• Sang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn\n• Thời hạn hợp đồng theo nguồn: 5 năm\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 200 m² — Trần Điền, Hoàng Mai\nMã tin: MB - 0019\n\nKhu vực: Trần Điền, Hoàng Mai, Hà Nội\nDiện tích: 200 m² × 3 tầng theo nguồn\nGiá thuê: 50 triệu đồng/tháng\nGiá sang nhượng: 600 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 10 m\n• Sang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn\n• Thời hạn hợp đồng theo nguồn: 5 năm\n• Thanh toán: 3 tháng, đặt cọc 1 tháng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-025"
+    ],
+    "listingSequence": 19
   },
   {
     "id": 1026,
-    "code": "HN-026",
+    "code": "MB - 0020",
     "slug": "hn-026",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -781,14 +881,18 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Mặt bằng hai tầng và gác xép tại Doãn Kế Thiện",
+    "title": "Cho thuê mặt bằng kinh doanh 70 m² — Doãn Kế Thiện, Cầu Giấy",
     "address": "Doãn Kế Thiện, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng hai tầng và gác xép tại doãn kế thiện",
-    "shareText": "MẶT BẰNG HAI TẦNG VÀ GÁC XÉP TẠI DOÃN KẾ THIỆN\n\nKhu vực: Doãn Kế Thiện, Cầu Giấy, Hà Nội\nDiện tích: 70 m² × 2 tầng; thêm một gác xép\nGiá thuê: 25 triệu đồng/tháng\n• Mặt tiền 6 m\n• Có một gác xép theo nguồn\n• Phù hợp kinh doanh hoặc làm văn phòng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 70 m² — Doãn Kế Thiện, Cầu Giấy\nMã tin: MB - 0020\n\nKhu vực: Doãn Kế Thiện, Cầu Giấy, Hà Nội\nDiện tích: 70 m² × 2 tầng; thêm một gác xép\nGiá thuê: 25 triệu đồng/tháng\n• Mặt tiền 6 m\n• Có một gác xép theo nguồn\n• Phù hợp kinh doanh hoặc làm văn phòng\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-026"
+    ],
+    "listingSequence": 20
   },
   {
     "id": 1027,
-    "code": "HN-027",
+    "code": "NC - 0006",
     "slug": "hn-027",
     "area": "Cầu Giấy",
     "type": "Nhà nguyên căn",
@@ -813,14 +917,18 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Nhà năm tầng có hai lối đi tại Trung Kính",
+    "title": "Cho thuê nhà nguyên căn 76 m² — Trung Kính, Cầu Giấy",
     "address": "Trung Kính, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: nhà năm tầng có hai lối đi tại trung kính",
-    "shareText": "NHÀ NĂM TẦNG CÓ HAI LỐI ĐI TẠI TRUNG KÍNH\n\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nDiện tích: 76 m² × 5 tầng; sân sau: 20 m²\nGiá thuê: 35 triệu đồng/tháng\n• Mặt tiền 4,6 m\n• Có hai lối đi trước và sau\n• Có sân sau 20 m² theo nguồn\n• Nhà riêng biệt, phù hợp văn phòng hoặc mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê nhà nguyên căn 76 m² — Trung Kính, Cầu Giấy\nMã tin: NC - 0006\n\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nDiện tích: 76 m² × 5 tầng; sân sau: 20 m²\nGiá thuê: 35 triệu đồng/tháng\n• Mặt tiền 4,6 m\n• Có hai lối đi trước và sau\n• Có sân sau 20 m² theo nguồn\n• Nhà riêng biệt, phù hợp văn phòng hoặc mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-027"
+    ],
+    "listingSequence": 6
   },
   {
     "id": 1028,
-    "code": "HN-028",
+    "code": "MB - 0021",
     "slug": "hn-028",
     "area": "Thanh Xuân",
     "type": "Mặt bằng kinh doanh",
@@ -843,14 +951,18 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Sang nhượng quán cà phê tầng một tại Hoàng Ngân",
+    "title": "Sang nhượng mặt bằng kinh doanh 60 m² — Hoàng Ngân, Thanh Xuân",
     "address": "Hoàng Ngân, Thanh Xuân, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán cà phê tầng một tại hoàng ngân",
-    "shareText": "SANG NHƯỢNG QUÁN CÀ PHÊ TẦNG MỘT TẠI HOÀNG NGÂN\n\nKhu vực: Hoàng Ngân, Thanh Xuân, Hà Nội\nDiện tích: Tầng 1: 60 m²\nGiá thuê: 27 triệu đồng/tháng\nGiá sang nhượng: 270 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 8 m\n• Có lối đi riêng\n• Sang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Hoàng Ngân, Thanh Xuân\nMã tin: MB - 0021\n\nKhu vực: Hoàng Ngân, Thanh Xuân, Hà Nội\nDiện tích: Tầng 1: 60 m²\nGiá thuê: 27 triệu đồng/tháng\nGiá sang nhượng: 270 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 8 m\n• Có lối đi riêng\n• Sang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-028"
+    ],
+    "listingSequence": 21
   },
   {
     "id": 1029,
-    "code": "HN-029",
+    "code": "MB - 0022",
     "slug": "hn-029",
     "area": "Cầu Giấy",
     "type": "Mặt bằng kinh doanh",
@@ -873,14 +985,18 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Mặt bằng riêng biệt phù hợp văn phòng tại Trung Kính",
+    "title": "Cho thuê mặt bằng kinh doanh 80 m² — Trung Kính, Cầu Giấy",
     "address": "Trung Kính, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng riêng biệt phù hợp văn phòng tại trung kính",
-    "shareText": "MẶT BẰNG RIÊNG BIỆT PHÙ HỢP VĂN PHÒNG TẠI TRUNG KÍNH\n\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nDiện tích: 80 m²\nGiá thuê: 35 triệu đồng/tháng\n• Mặt tiền 5 m\n• Không gian riêng biệt\n• Phù hợp làm văn phòng hoặc mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Cho thuê mặt bằng kinh doanh 80 m² — Trung Kính, Cầu Giấy\nMã tin: MB - 0022\n\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nDiện tích: 80 m²\nGiá thuê: 35 triệu đồng/tháng\n• Mặt tiền 5 m\n• Không gian riêng biệt\n• Phù hợp làm văn phòng hoặc mô hình kinh doanh sạch\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-029"
+    ],
+    "listingSequence": 22
   },
   {
     "id": 1030,
-    "code": "HN-030",
+    "code": "MB - 0023",
     "slug": "hn-030",
     "area": "Đống Đa",
     "type": "Mặt bằng kinh doanh",
@@ -904,9 +1020,13 @@ window.RENTAL_LISTINGS = [
     "status": "Cần xác nhận tình trạng cho thuê",
     "contactPhone": "0906215365",
     "publishedDate": "2026-10-19",
-    "title": "Sang nhượng quán cà phê bốn tầng tại Yên Lãng",
+    "title": "Sang nhượng mặt bằng kinh doanh 50 m² — Yên Lãng, Đống Đa",
     "address": "Yên Lãng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng quán cà phê bốn tầng tại yên lãng",
-    "shareText": "SANG NHƯỢNG QUÁN CÀ PHÊ BỐN TẦNG TẠI YÊN LÃNG\n\nKhu vực: Yên Lãng, Đống Đa, Hà Nội\nDiện tích: 50 m² × 4 tầng\nGiá thuê: 10 triệu đồng/tháng\nGiá sang nhượng: 120 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 3 m\n• Nhà riêng biệt\n• Sang nhượng kèm trang thiết bị và hai tháng tiền nhà theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
+    "shareText": "Sang nhượng mặt bằng kinh doanh 50 m² — Yên Lãng, Đống Đa\nMã tin: MB - 0023\n\nKhu vực: Yên Lãng, Đống Đa, Hà Nội\nDiện tích: 50 m² × 4 tầng\nGiá thuê: 10 triệu đồng/tháng\nGiá sang nhượng: 120 triệu đồng (tách riêng tiền thuê)\n• Mặt tiền 3 m\n• Nhà riêng biệt\n• Sang nhượng kèm trang thiết bị và hai tháng tiền nhà theo nguồn\n\nLiên hệ 0906 215 365 để nhận địa chỉ chi tiết và xác nhận tình trạng cho thuê.\nẢnh minh họa bằng AI, không phải ảnh hiện trạng BĐS.",
+    "legacyCodes": [
+      "HN-030"
+    ],
+    "listingSequence": 23
   }
 ];

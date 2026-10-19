@@ -36,7 +36,8 @@ global.fetch=async (raw,options={})=>{
   if(method==='PATCH')Object.assign(target,body);return response([target]);
  }
  if(table==='posts'){
-  if(method==='POST'){assert.equal(body.status,'published');posts.push({id:'post1',...body});return response([posts.at(-1)])}
+  if(method==='PATCH'){const row=posts.find(p=>'eq.'+p.id===url.searchParams.get('id'));Object.assign(row,body);return response([row])}
+  if(method==='POST'){assert.equal(body.status,'published');posts.push({id:'post'+(posts.length+1),created_at:new Date().toISOString(),...body});return response([posts.at(-1)])}
   if(url.searchParams.has('source_inbox_id'))return response(posts.filter(p=>p.source_inbox_id===url.searchParams.get('source_inbox_id').slice(3)));
   return response(posts);
  }

@@ -9,9 +9,9 @@ titles = ['Mặt bằng lô góc tại Đỗ Quang','Sang nhượng quán ăn t�
 
 def public_records(records):
     result = []
-    fields = ['id','code','slug','area','type','categories','price','size','areaText','facts','description','notes','transferPrice','priceOptions','image','shareImage','status','contactPhone','publishedDate']
+    fields = ['id','code','legacyCodes','listingSequence','slug','area','type','categories','price','size','areaText','facts','description','notes','transferPrice','priceOptions','image','shareImage','status','contactPhone','publishedDate']
     for original in records:
-        n = int(original['code'].split('-')[1])-1
+        n = int(original['slug'].split('-')[1])-1
         row = {key: original[key] for key in fields if key in original}
         public_title = original.get('publicTitle') or (titles[n] if n < len(titles) else None)
         public_location = original.get('publicLocation') or (locations[n] if n < len(locations) else None)
@@ -21,7 +21,7 @@ def public_records(records):
         row['address'] = f"{public_location}, {row['area']}, Hà Nội"
         row['notes'] = [note for note in row['notes'] if 'hashtag' not in note.lower()]
         row['imageAlt'] = 'Ảnh minh họa bằng AI: ' + row['title'].lower()
-        lines = [row['title'].upper(), '', 'Khu vực: '+row['address'], 'Diện tích: '+row['areaText']]
+        lines = [row['title'].upper(), 'Mã tin: '+row['code'], '', 'Khu vực: '+row['address'], 'Diện tích: '+row['areaText']]
         for price in row.get('priceOptions', [{'label':'Giá thuê','price':row['price']}]):
             lines.append(f"{price['label']}: {price['price']} triệu đồng/tháng")
         if row.get('transferPrice'):

@@ -5,7 +5,7 @@
  function clear(){privateRows=[];window.RENTAL_LISTINGS=publicRows;$('#admin-records').replaceChildren();$('#admin-query').value='';$('#admin-count').textContent='';$('#admin-workspace').hidden=true;$('#admin-login').hidden=false;window.dispatchEvent(new CustomEvent('admin-session',{detail:false}))}
  function render(){
   const query=$('#admin-query').value.trim().toLocaleLowerCase('vi');
-  const rows=privateRows.filter(r=>`${r.code} ${r.title} ${r.address}`.toLocaleLowerCase('vi').includes(query));
+  const rows=privateRows.filter(r=>`${r.code} ${(r.legacyCodes||[]).join(' ')} ${r.title} ${r.address}`.toLocaleLowerCase('vi').includes(query)||[r.code,...(r.legacyCodes||[])].some(code=>String(code).toLocaleLowerCase('vi').replace(/[\s–—-]+/g,'')===query.replace(/[\s–—-]+/g,'')));
   $('#admin-count').textContent=`${rows.length} BĐS`;
   $('#admin-records').innerHTML=rows.map(r=>`<article class="admin-record"><p class="eyebrow">${esc(r.code)} · ${esc(r.type)}</p><h2>${esc(r.privateTitle)}</h2><p class="admin-address"><strong>Địa chỉ riêng tư:</strong> ${esc(r.address)}</p><p class="admin-hashtags"><strong>Hashtag gốc:</strong> ${esc(r.hashtags.join(' '))}</p>${r.privateNotes?.length?`<details><summary>Ghi chú nguồn riêng tư</summary><ul>${r.privateNotes.map(note=>`<li>${esc(note)}</li>`).join('')}</ul></details>`:''}<a href="/bds/${esc(r.slug)}" target="_blank" rel="noopener noreferrer">Xem trang khách hàng</a>${RentalSharing.markup(r)}<details class="share-caption"><summary>Bài chia sẻ kèm hashtag (đã lược số nhà/ngõ/ngách)</summary><pre>${esc(RentalSharing.text(r))}</pre></details></article>`).join('');
  }

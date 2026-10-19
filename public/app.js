@@ -108,7 +108,8 @@ function card(home){
 }
 function render(){
   const area=$('#area').value,type=$('#type').value,budget=$('#budget').value,query=($('#property-query')?.value||'').trim().toLocaleLowerCase('vi');
-  const selected=homes.filter(home=>(area==='all'||home.area===area)&&inCategory(home,type)&&rentMatches(home,budget)&&(!query||`${home.code} ${home.title} ${home.address} ${home.categories.join(' ')}`.toLocaleLowerCase('vi').includes(query)));
+  const queryCode=query.replace(/[\s–—-]+/g,'');
+  const selected=homes.filter(home=>(area==='all'||home.area===area)&&inCategory(home,type)&&rentMatches(home,budget)&&(!query||`${home.code} ${(home.legacyCodes||[]).join(' ')} ${home.title} ${home.address} ${home.categories.join(' ')}`.toLocaleLowerCase('vi').includes(query)||[home.code,...(home.legacyCodes||[])].some(code=>String(code).toLocaleLowerCase('vi').replace(/[\s–—-]+/g,'')===queryCode)));
   selected.sort((a,b)=>(b.publishedDate||'').localeCompare(a.publishedDate||''));
   $('#result-count').textContent=`${selected.length} BĐS phù hợp`;
   $('#properties').innerHTML=selected.length?selected.slice(0,visibleLimit).map(card).join(''):'<div class="empty"></div>';
