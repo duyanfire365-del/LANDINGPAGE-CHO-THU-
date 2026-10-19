@@ -13,7 +13,7 @@ const fs=require('node:fs');
   response=await context.request.post(base+'/api/admin',{headers:{origin:'https://untrusted.example'},data:{action:'login',password:secret}});assert.equal(response.status(),403);
   await page.goto(base+'/admin');assert(await page.locator('#admin-workspace').isHidden());assert(!(await page.content()).includes('#DuyHome'));
   await page.locator('#admin-password').fill(secret);await page.locator('#admin-login button').click();await page.locator('#admin-workspace').waitFor();
-  assert.equal(await page.locator('.admin-record').count(),22);
+  assert.equal(await page.locator('.admin-record').count(),30);
   const cookies=await context.cookies();const session=cookies.find(c=>c.name==='rental_admin');assert(session.httpOnly);assert.equal(session.sameSite,'Strict');
   response=await context.request.get(base+'/api/admin');assert.equal(response.status(),200);assert.match(response.headers()['cache-control'],/no-store/);
   const records=(await response.json()).listings;assert.equal(records[5].address,'10A Phạm Huy Thông, Ba Đình, Hà Nội');assert(records[5].hashtags.includes('#DongDa'));
@@ -31,6 +31,6 @@ const fs=require('node:fs');
    const html=fs.readFileSync('public/bds/'+r.slug+'/index.html','utf8');assert(!html.includes('#DuyHome'));assert(!html.includes('hashtag gốc'));
    assert(!/(?:số \d|ngõ \d|ngách \d|15B|10A|49A|LK13)/i.test(html));
   }
-  assert.deepEqual(errors,[]);console.log('PASS: private API denies anonymous/wrong/cross-origin/forged sessions; authenticated admin sees 22 private addresses/hashtags; sharing omits exact address; logout clears data; public routes exclude private details');
+  assert.deepEqual(errors,[]);console.log('PASS: private API denies anonymous/wrong/cross-origin/forged sessions; authenticated admin sees 30 private addresses/hashtags; sharing omits exact address; logout clears data; public routes exclude private details');
  }finally{await browser.close()}
 })().catch(error=>{console.error(error);process.exit(1)});

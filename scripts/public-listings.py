@@ -9,12 +9,16 @@ titles = ['Mặt bằng lô góc tại Đỗ Quang','Sang nhượng quán ăn t�
 
 def public_records(records):
     result = []
-    fields = ['id','code','slug','area','type','categories','price','size','areaText','facts','description','notes','transferPrice','priceOptions','image','shareImage','status','contactPhone']
+    fields = ['id','code','slug','area','type','categories','price','size','areaText','facts','description','notes','transferPrice','priceOptions','image','shareImage','status','contactPhone','publishedDate']
     for original in records:
         n = int(original['code'].split('-')[1])-1
         row = {key: original[key] for key in fields if key in original}
-        row['title'] = titles[n]
-        row['address'] = f"{locations[n]}, {row['area']}, Hà Nội"
+        public_title = original.get('publicTitle') or (titles[n] if n < len(titles) else None)
+        public_location = original.get('publicLocation') or (locations[n] if n < len(locations) else None)
+        if not public_title or not public_location:
+            raise ValueError('A reviewed public title and location are required: '+original['code'])
+        row['title'] = public_title
+        row['address'] = f"{public_location}, {row['area']}, Hà Nội"
         row['notes'] = [note for note in row['notes'] if 'hashtag' not in note.lower()]
         row['imageAlt'] = 'Ảnh minh họa bằng AI: ' + row['title'].lower()
         lines = [row['title'].upper(), '', 'Khu vực: '+row['address'], 'Diện tích: '+row['areaText']]

@@ -101,3 +101,7 @@ Trang quản trị ưu tiên mục Khách gửi thông tin, có tìm kiếm/lọ
 ## Ảnh xem trước trang chủ khi chia sẻ
 
 Trang chủ trả sẵn Open Graph (website, tiêu đề, mô tả, banner JPEG công khai 1536×1024) và Twitter card trong HTML, không cần JavaScript hay đăng nhập. Hotline/Zalo có trong tiêu đề, mô tả và banner gốc do chủ website cung cấp. Ảnh `public/share-banner-v1.jpg` chỉ chuyển định dạng/tối ưu dung lượng từ banner gốc. Zalo quyết định cách cắt ảnh, rút gọn chữ và lưu cache; tin đã gửi trước đó không tự cập nhật. Sau triển khai có thể thử gửi liên kết mới `https://nguonchothue.vn/?v=2`. Muốn đổi banner cần đổi tên/version ảnh và cập nhật metadata. Không có nút Zalo riêng trong thẻ xem trước: người nhận bấm thẻ để mở website và gọi/chat từ đó.
+
+## Đợt nguồn 19/10/2026
+
+Nhận 10 tệp, thêm 8 tin HN-023–HN-030 và bỏ qua 2 bản trùng HN-018/HN-017. Xem `IMPORT_2026-10-19.md`. Tổng bộ nguồn tĩnh hiện có 30 tin, từng tin có ảnh minh họa AI riêng và dữ liệu chính xác/hashtag được mã hóa cho quản trị. Phí và tên nguồn mới chỉ ở ghi chú riêng. Tin có ngày bổ sung mới được ưu tiên đầu danh sách; bộ lọc vẫn dùng giá thuê tháng.

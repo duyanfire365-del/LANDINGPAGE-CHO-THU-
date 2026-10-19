@@ -16,17 +16,17 @@ const assert = require('node:assert/strict');
     assert.deepEqual(await page.locator('[name=preferredBudget] option').evaluateAll(els=>els.slice(1).map(o=>o.value)),ranges);
     const boundaries = [[4.9,[true,true,false,false,false,false]],[5,[false,true,false,false,false,false]],[10,[false,false,true,false,false,false]],[20,[false,false,false,true,false,false]],[30,[false,false,false,false,true,false]],[50,[false,false,false,false,true,false]],[50.1,[false,false,false,false,false,true]]];
     for (const [price, expected] of boundaries) assert.deepEqual(await page.evaluate(({price,ranges})=>ranges.map(r=>matchesBudget(price,r)),{price,ranges}),expected);
-    for(const [range,count] of [['under-5',0],['under-10',0],['10-20',7],['20-30',7],['30-50',4],['over-50',5]]) {
+    for(const [range,count] of [['under-5',0],['under-10',0],['10-20',8],['20-30',9],['30-50',8],['over-50',5]]) {
       await page.selectOption('#budget',range);
       await page.locator('#search button').click();
       assert.equal(await page.locator('.card').count(),count,range);
     }
     await page.selectOption('#budget','all');
-    for(const area of expected) {await page.selectOption('#area',area);await page.locator('#search button').click();assert.equal(await page.locator('.card').count(),({'Cầu Giấy':8,'Đống Đa':6,'Hà Đông':4,'Ba Đình':1,'Thanh Trì':1,'Thanh Xuân':1,'Nam Từ Liêm':1})[area]||0);}
+    for(const area of expected) {await page.selectOption('#area',area);await page.locator('#search button').click();assert.equal(await page.locator('.card').count(),({'Cầu Giấy':9,'Đống Đa':7,'Hà Đông':4,'Ba Đình':1,'Thanh Trì':1,'Thanh Xuân':2,'Nam Từ Liêm':1,'Hoàng Mai':1})[area]||0);}
     await page.selectOption('#area','all');
     for(const type of ['Mặt bằng kinh doanh','Văn phòng','Kho xưởng','Nhà nguyên căn','Căn hộ chung cư','Căn hộ dịch vụ','Phòng trọ']) {
       await page.selectOption('#type',type);await page.locator('#search button').click();
-      assert.equal(await page.locator('.card').count(),({'Mặt bằng kinh doanh':9,'Văn phòng':9,'Kho xưởng':1,'Nhà nguyên căn':6})[type]||0);
+      assert.equal(await page.locator('.card').count(),({'Mặt bằng kinh doanh':9,'Văn phòng':9,'Kho xưởng':1,'Nhà nguyên căn':8})[type]||0);
     }
     await page.selectOption('#type','all');await page.selectOption('#area','Cầu Giấy');await page.selectOption('#budget','10-20');await page.locator('#search button').click();assert.equal(await page.locator('.card').count(),2);
     for(const width of [375,768,1440]) {await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'overflow '+width)}
