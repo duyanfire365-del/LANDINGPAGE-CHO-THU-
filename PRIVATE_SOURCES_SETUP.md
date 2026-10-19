@@ -54,3 +54,6 @@ Nguồn mới tự nhận các dạng HH50%, H50%, Hoa hồng: 1 tháng tiền t
 ## Chia sẻ Facebook/Zalo
 
 Nút Facebook/Zalo mở bảng chuẩn bị bài và tối đa 12 ảnh của tin. Thiết bị hỗ trợ Web Share có thể gửi bài và nhiều ảnh sang ứng dụng; ứng dụng nhận có thể bỏ qua phần chữ hoặc chỉ nhận liên kết. Máy tính có nút sao chép bài, sao chép ảnh PNG và tải từng ảnh. Mở Facebook để đăng bài dẫn tới Facebook; nút Chia sẻ liên kết Facebook dùng hộp chia sẻ liên kết/ảnh xem trước riêng. Facebook không cho website tự điền nội dung tùy ý và tự tải ảnh vào bài cá nhân/nhóm qua nút share; người dùng chọn nơi đăng và xác nhận. Hoa hồng bị loại khỏi bài chia sẻ, kể cả khi có trong caption cũ.
+
+### Kiểm soát người được chia sẻ
+Trong Nguồn BĐS và Map riêng, tìm thành viên theo họ tên, số điện thoại hoặc email đã đăng ký, bấm tên để chọn. Ghi năm sinh, địa chỉ và mục đích chia sẻ cho từng người, rồi bấm Lưu thông tin nguồn. Bỏ quyền xem rồi lưu để thu hồi. Loại Khách hàng/Sale lấy từ tài khoản; các ghi chú là thông tin người quản lý ghi nhận, chưa xác minh danh tính. Chỉ người có quyền quản lý nguồn xem danh sách và ghi chú, người được chia sẻ không xem được. Dữ liệu nằm trong bảng property_sources hiện có, không cần chạy SQL mới nếu đã chạy 006.

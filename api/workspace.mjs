@@ -1,4 +1,4 @@
-import {getSource,publicSource,saveSource,createMapShare,revokeMapShares,mapShare,sharedSources,sourceAccess} from '../lib/property-source.mjs';
+import {findSourceMembers,getSource,publicSource,saveSource,createMapShare,revokeMapShares,mapShare,sharedSources,sourceAccess} from '../lib/property-source.mjs';
 import {formPricing} from '../lib/source-pricing.mjs';
 import {updateInventory} from '../lib/inventory.mjs';
 import {waitUntil} from '@vercel/functions';
@@ -13,6 +13,7 @@ export default async function handler(req,res){
    const params=new URL(req.url,'http://localhost').searchParams;
    if(params.get('view')==='source-public')return send(res,200,await publicSource(params.get('slug')));
    if(params.get('view')==='source-access')return send(res,200,await sourceAccess(req,params.get('slug')));
+   if(params.get('view')==='source-members')return send(res,200,{members:await findSourceMembers(req,params.get('slug'),params.get('q'))});
    if(params.get('view')==='source-private')return send(res,200,await getSource(req,params.get('slug')));
    if(params.get('view')==='source-shared')return send(res,200,{sources:await sharedSources(req)});
    if(params.get('view')==='source-map'){
