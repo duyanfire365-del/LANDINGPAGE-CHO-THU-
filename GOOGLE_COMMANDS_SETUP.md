@@ -53,7 +53,9 @@ Chọn dữ liệu Tin BĐS rồi xem trước. Mặc định tin vào chờ duy
 - Ngăn các khách hoặc BĐS bằng một dòng `---`.
 - Khách cũng có thể dùng mẫu Tên/SĐT/Khu vực/Nhu cầu trong hướng dẫn bot khách.
 - Với bài nguồn BĐS tự do, phải có giá thuê, diện tích và nhận diện được từng BĐS. Hệ thống dùng quy tắc đọc tin hiện có, không tự thực hiện chỉ thị nằm trong tài liệu.
-- Ảnh nhúng trong Docs chưa tự ghép vào tin; tin thiếu ảnh dùng banner minh họa. Đây không phải chức năng OCR mọi loại ảnh/tệp.
+- Ảnh chèn trực tiếp cùng bài được tải vào kho website và ghép vào đúng tin. Chọn ảnh → Trong dòng văn bản (In line) để thứ tự rõ ràng. Đặt ảnh trước dòng `---` kết thúc bài; ảnh sau dòng đó thuộc bài tiếp theo.
+- Tối đa 12 ảnh/tin, 24 ảnh/tài liệu/lượt. Chỉ đọc chữ thật trong Docs, không OCR nội dung chữ nằm trong ảnh.
+- Muốn dán chữ + ảnh rồi tự đăng theo lịch 5 phút: làm [hướng dẫn tự đăng từ Docs](GOOGLE_DOCS_AUTO_POST_SETUP.md). Tích chờ ảnh để không đăng lúc chỉ mới dán chữ.
 - Mỗi lần tối đa 60.000 ký tự, 50 hồ sơ. Nội dung chưa tách rõ giữ trong lỗi xem trước; anh sửa tài liệu rồi đọc lại.
 
 ## Xuất từ website sang Google

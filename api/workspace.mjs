@@ -14,6 +14,7 @@ import {intentLabels} from '../lib/inquiries.mjs';
 export default async function handler(req,res){
  try{
   const customerParams=new URL(req.url,'http://localhost').searchParams;
+  if(customerParams.has('google-docs-hook'))return await (await import('../lib/google-doc-automation.mjs')).googleDocsHook(req,res,p=>waitUntil(p));
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
