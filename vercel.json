@@ -54,12 +54,26 @@
     "api/*.mjs": {
       "maxDuration": 30,
       "includeFiles": "{lib/**,public/listings.json,public/tin.html,public/images/*.jpg,node_modules/pdf-parse/dist/worker/**,node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs}"
+    },
+    "api/telegram-inbox.mjs": {
+      "maxDuration": 300,
+      "includeFiles": "{lib/**,public/listings.json,public/tin.html,public/images/*.jpg,node_modules/pdf-parse/dist/worker/**,node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs}"
+    },
+    "api/source-recovery.mjs": {
+      "maxDuration": 300,
+      "includeFiles": "{lib/**,public/listings.json,public/tin.html,public/images/*.jpg,node_modules/pdf-parse/dist/worker/**,node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs}"
     }
   },
   "rewrites": [
     {
       "source": "/tin",
       "destination": "/api/property"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/source-recovery",
+      "schedule": "0 2 * * *"
     }
   ]
 }

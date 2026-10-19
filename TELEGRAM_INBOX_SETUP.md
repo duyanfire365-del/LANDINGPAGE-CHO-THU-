@@ -22,3 +22,7 @@ Nguồn văn bản có nút sao chép để soạn tin thủ công. Chưa tự t
 Bot chưa gửi tin xác nhận khi nhận nguồn; kiểm tra bằng nút Tải nguồn mới. Hộp hiển thị 50 nguồn gần nhất, bản ghi cũ vẫn còn trong cơ sở dữ liệu.
 
 Webhook có chữ ký bí mật dẫn xuất từ token và kiểm tra cả người gửi, cuộc trò chuyện riêng. Không ghi token vào mã, log hoặc chat. Nếu token bị lộ, thu hồi qua BotFather, thay biến Vercel, Redeploy rồi bấm Kết nối lại. Không dùng cùng bot với dịch vụ webhook khác vì Telegram chỉ hỗ trợ một webhook cho một bot.
+
+## Nâng cấp tự đăng
+
+Đã bổ sung chế độ tự phân tích văn bản, tạo ảnh AI và đăng tự động khi bật riêng. Xem `TELEGRAM_AUTO_PUBLISH.md`, chạy migration 005 và nhập khóa OpenAI có số dư. Những giới hạn về soạn thủ công ở trên áp dụng khi chưa bật chế độ này.
