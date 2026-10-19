@@ -1,3 +1,4 @@
+import {getSource,publicSource,saveSource,createMapShare,revokeMapShares,mapShare,sharedSources,sourceAccess} from '../lib/property-source.mjs';
 import {formPricing} from '../lib/source-pricing.mjs';
 import {updateInventory} from '../lib/inventory.mjs';
 import {waitUntil} from '@vercel/functions';
@@ -10,6 +11,14 @@ export default async function handler(req,res){
  try{
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='source-public')return send(res,200,await publicSource(params.get('slug')));
+   if(params.get('view')==='source-access')return send(res,200,await sourceAccess(req,params.get('slug')));
+   if(params.get('view')==='source-private')return send(res,200,await getSource(req,params.get('slug')));
+   if(params.get('view')==='source-shared')return send(res,200,{sources:await sharedSources(req)});
+   if(params.get('view')==='source-map'){
+    const entry=await mapShare(params.get('slug'),params.get('token')),esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, private','X-Robots-Tag':'noindex, nofollow, noarchive','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'"});return res.end(`<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>Vị trí được chia sẻ riêng</title><style>body{font:17px/1.7 Arial;background:#fff9f3;color:#382820;margin:10vh auto;padding:24px;max-width:620px}a{display:inline-block;padding:14px 22px;background:#a73228;color:white;border-radius:8px;text-decoration:none}</style><h1>Vị trí Map chỉ đường</h1><p>Mã BĐS: ${esc(entry.code)}</p><p>${esc(entry.mapLabel)}</p><a href="${esc(entry.mapUrl)}" target="_blank" rel="noopener noreferrer">Mở Google Maps để chỉ đường</a><p>Được chia sẻ riêng bởi người quản lý nguồn BĐS.</p></html>`);
+   }
    if(params.get('view')==='connections'){
     requireAdmin(req);let storageReady=false;
     if(configured())try{await Promise.all([db('inquiries',{query:'?select=id&limit=1'}),db('profiles',{query:'?select=id&limit=1'})]);storageReady=true}catch{}
@@ -34,6 +43,9 @@ export default async function handler(req,res){
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
   const body=await readJson(req,20000);
+  if(body.action==='source-save')return send(res,200,await saveSource(req,body));
+  if(body.action==='source-link')return send(res,200,await createMapShare(req,body));
+  if(body.action==='source-revoke')return send(res,200,await revokeMapShares(req,body));
   if(body.action==='inventory')return send(res,200,await updateInventory(req,body));
   if(body.action==='submit'){
    const who=await actor(req,{posting:true}),record=await draft(body,who),rows=await db('posts',{method:'POST',body:record});

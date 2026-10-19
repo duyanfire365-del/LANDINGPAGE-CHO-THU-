@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright');
 import {exportDocument,extractDocument,spreadsheetDrafts} from '../lib/documents.mjs';
 // Local Supabase/Telegram doubles exercise the real handlers, not production services.
-const tables={profiles:[],posts:[],inquiries:[],assets:[],notification_log:[]},users=[],files=new Map();
+const tables={profiles:[],posts:[],inquiries:[],assets:[],notification_log:[],property_sources:[]},users=[],files=new Map();
 const fake=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');const chunks=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));const rawBuffer=Buffer.concat(chunks),raw=rawBuffer.toString('utf8');
  let body;try{body=JSON.parse(raw)}catch{body=null}
@@ -33,9 +33,11 @@ const fake=http.createServer(async(req,res)=>{
    if(key==='public_data->>slug')return row.public_data.slug===value.slice(3);
    if(key==='public_data->media')return (row.public_data.media||[]).some(a=>JSON.parse(value.slice(3)).some(b=>a.id===b.id));
    if(value.startsWith('like.'))return String(row[key]||'').startsWith(value.slice(5).replace('*',''));
+   if(value.startsWith('cs.{'))return value.slice(4,-1).split(',').every(id=>(row[key]||[]).includes(id));
    if(value.startsWith('eq.'))return String(row[key])===value.slice(3);
    if(value.startsWith('in.('))return value.slice(4,-1).split(',').includes(row[key]);return true;
   });
+  if(req.method==='POST'&&name==='property_sources'&&url.searchParams.get('on_conflict')==='slug'){const old=table.find(r=>r.slug===body.slug);if(old){Object.assign(old,body);return reply(200,[old])}}
   if(req.method==='POST'){const row={id:randomUUID(),created_at:new Date().toISOString(),...(name==='inquiries'?{management_status:'new',admin_notes:''}:{}),...body};table.push(row);return reply(201,[row])}
   let rows=table.filter(matches);if((url.searchParams.get('order')||'').startsWith('created_at.desc'))rows=[...rows].reverse();
   if(req.method==='PATCH')rows.forEach(row=>Object.assign(row,body));
@@ -57,7 +59,8 @@ globalThis.fetch=async(url,options)=>String(url).startsWith('https://api.telegra
 await import('../server.mjs');
 const base='http://127.0.0.1:3006';
 const cookie=response=>(response.headers.get('set-cookie')||'').split(';')[0];
-async function post(path,data,session=''){const response=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json',cookie:session},body:JSON.stringify(data)});return {response,data:await response.json()}}
+let clientIP='198.51.100.1';
+async function post(path,data,session=''){const response=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json',cookie:session,'x-forwarded-for':clientIP},body:JSON.stringify(data)});return {response,data:await response.json()}}
 const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium'});
 try{
  const name='Nguyễn Văn An',email='sale@example.test',password='Test-password-123!';
@@ -152,5 +155,32 @@ try{
  const unitDraft=await post('/api/workspace',{...input,priceMode:'per_m2',pricePerM2:110000,size:1600,price:1},salesCookie);assert.equal(unitDraft.response.status,201);const savedUnit=tables.posts.find(p=>p.id===unitDraft.data.id);assert.equal(savedUnit.public_data.price,176);assert.equal(savedUnit.public_data.pricePerM2,110000);
  const unitEdit=await post('/api/workspace',{action:'edit-post',id:unitDraft.data.id,priceMode:'per_m2',pricePerM2:125000,size:1600,price:1,description:'Kho rộng, thuận tiện vận chuyển.',privateAddress:'Địa chỉ riêng',hashtags:'#Nguon'},adminCookie);assert.equal(unitEdit.response.status,200);assert.equal(tables.posts.find(p=>p.id===unitDraft.data.id).public_data.price,200);
  await page.screenshot({path:'/tmp/management-platform.png'});assert.deepEqual(errors,[]);
+ clientIP='198.51.100.2';
+ // Source contacts/maps: enforce privacy at the real HTTP API, not only in the UI.
+ const sourceSlug=tables.posts[0].public_data.slug;
+ const secretInfo={ownerPhones:['0911111111','0922222222',''],partnerPhones:['0933333333','',''],sourceName:'Đối tác nguồn riêng',mapUrl:'https://www.google.com/maps?q=21.03,105.85',mapLabel:'Cổng riêng',ownerPublic:[false,false,false],partnerPublic:[false,false,false],sourcePublic:false};
+ const viewerId=randomUUID();users.push({id:viewerId,email:'viewer@example.test',password:'Viewer-password-123!'});tables.profiles.push({id:viewerId,email:'viewer@example.test',full_name:'Người được chia sẻ',kind:'customer',can_post:false});const viewerCookie='rental_member='+viewerId;
+ assert.equal((await fetch(base+'/api/workspace?view=source-private&slug='+sourceSlug)).status,401);
+ assert.equal((await post('/api/workspace',{action:'source-save',slug:sourceSlug,data:secretInfo,sharedEmails:''},salesCookie)).response.status,200);
+ let privateSource=await (await fetch(base+'/api/workspace?view=source-private&slug='+sourceSlug,{headers:{cookie:salesCookie}})).json();assert.equal(privateSource.data.mapUrl,secretInfo.mapUrl);assert.equal(privateSource.data.ownerPhones[0],secretInfo.ownerPhones[0]);assert(privateSource.canEdit);
+ let openSource=await (await fetch(base+'/api/workspace?view=source-public&slug='+sourceSlug)).json();assert.deepEqual(openSource,{ownerPhones:[],partnerPhones:[],sourceName:''});assert(!JSON.stringify(await (await fetch(base+'/api/catalog')).json()).includes(secretInfo.ownerPhones[0]));
+ assert.equal((await fetch(base+'/api/workspace?view=source-private&slug='+sourceSlug,{headers:{cookie:viewerCookie}})).status,403);
+ assert.equal((await post('/api/workspace',{action:'source-save',slug:sourceSlug,data:secretInfo,sharedEmails:'viewer@example.test'},salesCookie)).response.status,200);
+ const shared=await (await fetch(base+'/api/workspace?view=source-shared',{headers:{cookie:viewerCookie}})).json();assert(shared.sources.some(r=>r.slug===sourceSlug));privateSource=await (await fetch(base+'/api/workspace?view=source-private&slug='+sourceSlug,{headers:{cookie:viewerCookie}})).json();assert(!privateSource.canEdit);assert.equal(privateSource.data.partnerPhones[0],secretInfo.partnerPhones[0]);
+ for(const action of ['source-save','source-link','source-revoke'])assert.equal((await post('/api/workspace',{action,slug:sourceSlug,data:secretInfo,sharedEmails:''},viewerCookie)).response.status,403);
+ const privateLink=await post('/api/workspace',{action:'source-link',slug:sourceSlug,hours:24},salesCookie);assert.equal(privateLink.response.status,200);const mapPath=new URL(privateLink.data.url);let shareResponse=await fetch(base+mapPath.pathname+mapPath.search);assert.equal(shareResponse.status,200);assert.match(shareResponse.headers.get('x-robots-tag'),/noindex/);assert.equal(shareResponse.headers.get('referrer-policy'),'no-referrer');const shareHTML=await shareResponse.text();assert(shareHTML.includes('Google Maps'));assert(!shareHTML.includes(secretInfo.ownerPhones[0]));assert(!shareHTML.includes(secretInfo.partnerPhones[0]));
+ const forged=new URL(mapPath);forged.searchParams.set('token','A'.repeat(43));assert.equal((await fetch(base+forged.pathname+forged.search)).status,404);
+ assert.equal((await post('/api/workspace',{action:'source-revoke',slug:sourceSlug},adminCookie)).response.status,200);assert.equal((await fetch(base+mapPath.pathname+mapPath.search)).status,404);
+ secretInfo.ownerPublic[1]=true;assert.equal((await post('/api/workspace',{action:'source-save',slug:sourceSlug,data:secretInfo,sharedEmails:''},adminCookie)).response.status,200);openSource=await (await fetch(base+'/api/workspace?view=source-public&slug='+sourceSlug)).json();assert.deepEqual(openSource.ownerPhones,[secretInfo.ownerPhones[1]]);assert.deepEqual(openSource.partnerPhones,[]);assert(!JSON.stringify(openSource).includes('maps'));
+ assert.equal((await fetch(base+'/api/workspace?view=source-private&slug='+sourceSlug,{headers:{cookie:viewerCookie}})).status,403);
+ assert.equal((await post('/api/workspace',{action:'source-save',slug:sourceSlug,data:{...secretInfo,mapUrl:'javascript:alert(1)'},sharedEmails:''},adminCookie)).response.status,400);
+ const otherSource={id:randomUUID(),author_id:viewerId,status:'published',public_data:{...tables.posts[0].public_data,id:1790000000000999,slug:'live-1790000000000999'},private_data:{}};tables.posts.push(otherSource);assert.equal((await fetch(base+'/api/workspace?view=source-private&slug='+otherSource.public_data.slug,{headers:{cookie:salesCookie}})).status,403);assert.equal((await fetch(base+'/api/workspace?view=source-private&slug='+otherSource.public_data.slug,{headers:{cookie:adminCookie}})).status,200);
+ assert.equal((await fetch(base+'/api/workspace?view=source-private&slug=hn-001',{headers:{cookie:adminCookie}})).status,200);
+ await page.setExtraHTTPHeaders({'x-forwarded-for':'198.51.100.3'});await page.locator('[data-admin-view=posts]').click();await page.locator('#management-posts .source-row').first().evaluate(el=>el.open=true);await page.locator('#management-posts [data-source-open]').first().click();await page.locator('#source-info-dialog form').waitFor();await page.locator('#source-info-dialog [name=ownerPhone1]').fill('0944444444');await page.locator('#source-info-dialog button[type=submit]').click();await page.waitForFunction(()=>document.querySelector('#source-info-dialog [data-source-status]').textContent.includes('Đã lưu'));await page.locator('#source-info-dialog [data-source-close]').click();
+ const expiredLink=await post('/api/workspace',{action:'source-link',slug:sourceSlug,hours:24},adminCookie);const expiredPath=new URL(expiredLink.data.url);tables.property_sources.find(r=>r.slug===sourceSlug).map_shares[0].expiresAt=Date.now()-1000;assert.equal((await fetch(base+expiredPath.pathname+expiredPath.search)).status,404);
+ const anonContext=await browser.newContext(),anonPage=await anonContext.newPage();await anonPage.goto(base+'/tin?slug='+sourceSlug);await anonPage.locator('[data-source-panel] a[href="tel:0922222222"]').waitFor();assert.equal(await anonPage.locator('[data-source-open]').count(),0);assert(!(await anonPage.content()).includes('0911111111'));assert(!(await anonPage.content()).includes('maps?q=21.03'));await anonContext.close();
+ const memberContext=await browser.newContext();await memberContext.addCookies([{name:'rental_member',value:salesCookie.split('=')[1],url:base}]);const memberPage=await memberContext.newPage();await memberPage.goto(base+'/thanh-vien');await memberPage.locator('#member-posting .editor-form').waitFor();const sourceForm=memberPage.locator('#member-posting .editor-form');await sourceForm.locator('.source-draft-details>summary').click();for(const [key,value]of Object.entries({title:'Kho cho thuê',location:'Đội Cấn',price:'25',size:'100',description:'Tin thử nguồn riêng.',ownerPhone1:'0966666666',partnerPhone1:'0977777777',sourceName:'Nguồn từ thành viên',mapUrl:'21.04,105.86'}))await sourceForm.locator('[name='+key+']').fill(value);await sourceForm.locator('[name=area]').selectOption('Ba Đình');await sourceForm.locator('[name=type]').selectOption('Kho xưởng');await sourceForm.locator('button[type=submit]').click();await memberPage.waitForFunction(()=>document.querySelector('#member-posting .editor-status').textContent.includes('Đã gửi tin'));const memberSource=tables.posts.find(p=>p.private_data.sourceInfo?.sourceName==='Nguồn từ thành viên');assert(memberSource);assert.equal(memberSource.author_id,tables.profiles[0].id);assert.equal(memberSource.private_data.sourceInfo.ownerPhones[0],'0966666666');assert(!JSON.stringify(memberSource.public_data).includes('0966666666'));await memberContext.close();
+ assert.deepEqual(errors,[]);
+ console.log('PASS: private contacts/maps, owner/admin access, member read grants, public opt-in slots only, revocable opaque Map links, no public map/phone leak, cross-owner denial and source editor UI.');
  console.log('PASS: real API/member UI with local Supabase doubles; permissions, pending/review/publish, private field isolation, document upload/import, AI missing-key behavior, saved leads despite Telegram failure, 3 Vietnamese export formats, browser downloads and responsive portals');
 }finally{await browser.close();fake.close();setTimeout(()=>process.exit(),100)}

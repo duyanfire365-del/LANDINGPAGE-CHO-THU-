@@ -5,7 +5,8 @@
  document.querySelectorAll('[data-auth-tab]').forEach(button=>button.addEventListener('click',()=>{const login=button.dataset.authTab==='login';$('#member-login').hidden=!login;$('#member-register').hidden=login;document.querySelectorAll('[data-auth-tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)))}));
  async function posts(){
   const response=await fetch('/api/workspace',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);
-  $('#member-posts').innerHTML=data.posts.length?data.posts.map(post=>`<article class="portal-record"><h3>${esc(post.public_data.title)}</h3>${data.canPost?RentalInventory.controls(post.public_data.slug):RentalInventory.badge(post.public_data.slug)}<p>${esc(({pending:'Chờ duyệt',published:'Đã đăng',rejected:'Chưa được duyệt'})[post.status])}</p><p>${esc(post.public_data.description)}</p></article>`).join(''):'<p>Chưa có tin được gửi.</p>';
+  $('#member-posts').innerHTML=data.posts.length?data.posts.map(post=>`<article class="portal-record"><h3>${esc(post.public_data.title)}</h3>${data.canPost?RentalInventory.controls(post.public_data.slug):RentalInventory.badge(post.public_data.slug)}<p>${esc(({pending:'Chờ duyệt',published:'Đã đăng',rejected:'Chưa được duyệt'})[post.status])}</p><p>${esc(post.public_data.description)}</p><button type="button" class="button outline small" data-source-open="${esc(post.public_data.slug)}">Nguồn / Map của tin này</button></article>`).join(''):'<p>Chưa có tin được gửi.</p>';
+  try{const shared=await fetch('/api/workspace?view=source-shared',{cache:'no-store'}),result=await shared.json();if(shared.ok&&result.sources?.length)$('#member-posts').insertAdjacentHTML('beforeend','<h3>Nguồn được cấp quyền xem</h3>'+result.sources.map(r=>`<p>${esc(r.code)} · ${esc(r.title)} <button type="button" class="button outline small" data-source-open="${esc(r.slug)}">Xem nguồn / Map được chia sẻ</button></p>`).join(''))}catch{}
   $('#member-posts').innerHTML+='<h3>Nhu cầu đã gửi</h3>'+((data.inquiries||[]).map(r=>`<p>${({tenant:'Cần thuê',owner:'Ký gửi cho thuê',owner_sale:'Ký gửi bán',owner_transfer:'Chuyển nhượng'})[r.intent]||r.intent} · ${esc(r.area||'Chưa chọn khu vực')} · ${esc(r.type||'Chưa chọn danh mục')}</p>`).join('')||'<p>Chưa có nhu cầu được ghi nhận trong tài khoản.</p>');
  }
  async function load(){
@@ -23,7 +24,7 @@
   event.preventDefault();const button=event.submitter;button.disabled=true;
   try{const body=Object.fromEntries(new FormData(event.target));body.action=action;body.consent=event.target.elements.consent?.checked===true;const data=await request(body);event.target.reset();if(action==='login')await load();else status(data.message)}catch(error){status(error.message)}finally{button.disabled=false}
  });
- $('#member-logout').addEventListener('click',async()=>{try{await request({action:'logout'});$('#member-posting').replaceChildren();$('#member-posts').replaceChildren();await load()}catch(error){status(error.message)}});
+ $('#member-logout').addEventListener('click',async()=>{try{RentalSources.close();await request({action:'logout'});$('#member-posting').replaceChildren();$('#member-posts').replaceChildren();await load()}catch(error){status(error.message)}});
  window.addEventListener('pagehide',()=>{$('#member-posting').replaceChildren();$('#member-posts').replaceChildren();$('#member-profile').textContent=''});
  window.addEventListener('pageshow',event=>{if(event.persisted)load()});load();
 })();
