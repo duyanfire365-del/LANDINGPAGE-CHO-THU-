@@ -102,7 +102,7 @@
     if(!state.draft.type)for(const [word,value]of aliases)if(new RegExp(`\\b${word}\\b`).test(normalized)){state.draft.type=value;changed=true;break}
     const phone=text.match(/(?:\+84|0)[0-9]{9}\b/);if(phone){state.draft.phone=phone[0];changed=true}
     const budget=budgetOptions.find(o=>normalized.includes(norm(o.textContent)));if(budget){state.draft.budget=budget.value;changed=true}
-    else {const price=normalized.match(/(\d+(?:[.,]\d+)?)\s*(?:trieu|tr\b)/);if(price){const n=Number(price[1].replace(',','.'));state.draft.budget=n<5?'under-5':n<10?'under-10':n<20?'10-20':n<30?'20-30':n<=50?'30-50':'over-50';if(isOwner(state.draft.intent))state.draft.ownerRent=String(n);changed=true}}
+    else {const price=normalized.match(/(\d+(?:[.,]\d+)?)\s*(?:trieu|tr\b)/);if(price){const n=Number(price[1].replace(',','.'));const above=normalized.match(/tren\s*(50|100|200|300)\s*(?:trieu|tr\b)/);state.draft.budget=above?'over-'+above[1]:n<5?'under-5':n<10?'under-10':n<20?'10-20':n<30?'20-30':n<=50?'30-50':n>300?'over-300':n>200?'over-200':n>100?'over-100':'over-50';if(isOwner(state.draft.intent))state.draft.ownerRent=String(n);changed=true}}
     const size=text.match(/(\d+(?:[.,]\d+)?)\s*(?:m2|m²)/i);if(size&&isOwner(state.draft.intent)){state.draft.ownerSize=size[1].replace(',','.');changed=true}
     return changed;
   }

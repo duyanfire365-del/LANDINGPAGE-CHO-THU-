@@ -18,6 +18,9 @@ function matchesBudget(price, budget) {
     case '20-30': return price >= 20 && price < 30;
     case '30-50': return price >= 30 && price <= 50;
     case 'over-50': return price > 50;
+    case 'over-100': return price > 100;
+    case 'over-200': return price > 200;
+    case 'over-300': return price > 300;
     default: return false;
   }
 }
