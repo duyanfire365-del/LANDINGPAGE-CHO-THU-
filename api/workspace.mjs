@@ -10,7 +10,7 @@ import {canonicalizeSubset,persistIdentities} from '../lib/listing-catalog.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 import {actor,requireAdmin,db,clean,notify,configured,telegramConfiguration} from '../lib/platform.mjs';
 import {draft} from '../lib/posts.mjs';
-import {intentLabels} from '../lib/inquiries.mjs';
+import {intentLabels,inquiryCriteria} from '../lib/inquiries.mjs';
 export default async function handler(req,res){
  try{
   const customerParams=new URL(req.url,'http://localhost').searchParams;
@@ -37,6 +37,13 @@ export default async function handler(req,res){
     if(configured())try{await Promise.all([db('inquiries',{query:'?select=id&limit=1'}),db('profiles',{query:'?select=id&limit=1'})]);storageReady=true}catch{}
     return send(res,200,{storageConfigured:configured(),storageReady,telegramConfigured:telegramConfiguration().ready,telegramError:telegramConfiguration().error||null});
    }
+   if(params.get('view')==='inquiry-matches'){
+    requireAdmin(req);const id=params.get('id');if(!/^[a-f0-9-]{36}$/i.test(id||''))return send(res,400,{error:'Mã hồ sơ không hợp lệ.'});
+    const row=(await db('inquiries',{query:'?id=eq.'+id}))[0];if(!row)return send(res,404,{error:'Không tìm thấy hồ sơ khách.'});if(row.intent!=='tenant')return send(res,400,{error:'Gợi ý nguồn áp dụng cho khách quan tâm thuê (nhượng).'});
+    const criteria=inquiryCriteria(row),missing=[!criteria.area&&!criteria.requirements?'khu vực':'',!criteria.type?'loại BĐS':'',!criteria.maxBudget&&!criteria.budget?'ngân sách':'',!criteria.minSize?'diện tích':''].filter(Boolean),warning=missing.length?'Chưa ghi rõ '+missing.join(', ')+'. Kết quả chỉ lọc theo các tiêu chí đã có.':'';
+    if(!criteria.area&&!criteria.type&&!criteria.maxBudget&&!criteria.budget&&!criteria.minSize&&!criteria.requirements)return send(res,200,{matches:[],warning:'Hồ sơ chưa có tiêu chí tìm nguồn. Cần bổ sung nhu cầu của khách trước khi đối chiếu.'});
+    const {customerMatches,publicStock}=await import('../lib/customers.mjs');const matches=customerMatches(criteria,await publicStock()).slice(0,20);return send(res,200,{matches,warning});
+   }
    if(params.get('view')==='inquiries'){
     requireAdmin(req);
     const page=Number(params.get('page')||0),intent=params.get('intent')||'',state=params.get('status')||'';
@@ -46,7 +53,7 @@ export default async function handler(req,res){
     if(state)query+='&management_status=eq.'+state;
     const search=clean(params.get('q'),100).replace(/[^\p{L}\p{N}\s+@.-]/gu,'').trim();
     if(search)query+='&or=(name.ilike.*'+encodeURIComponent(search)+'*,phone.ilike.*'+encodeURIComponent(search)+'*,area.ilike.*'+encodeURIComponent(search)+'*)';
-    const rows=await db('inquiries',{query});return send(res,200,{inquiries:rows.slice(0,20),hasMore:rows.length>20,page});
+    const rows=await db('inquiries',{query});return send(res,200,{inquiries:rows.slice(0,20).map(row=>({...row,criteria:inquiryCriteria(row)})),hasMore:rows.length>20,page});
    }
    const who=await actor(req),query=who.admin?'?order=created_at.desc&limit=500':'?author_id=eq.'+who.id+'&order=created_at.desc&limit=100';
    if(who.admin){const [members,inquiries,posts,notifications]=await Promise.all([db('profiles',{query:'?order=created_at.desc&limit=500'}),db('inquiries',{query:'?order=created_at.desc&limit=500'}),db('posts',{query}),db('notification_log',{query:'?sent=eq.false&order=created_at.desc&limit=100'})]);const standardized=await canonicalizeSubset(posts);return send(res,200,{members,inquiries,posts:standardized,notifications,identityNeedsSync:posts.some((row,i)=>row.public_data.code!==standardized[i].public_data.code||row.public_data.title!==standardized[i].public_data.title)})}
