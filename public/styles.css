@@ -31,3 +31,5 @@ footer.site-footer{display:block;max-width:none;width:100%;margin:56px 0 0;paddi
 /* Search comes directly after the main navigation, before the introduction. */
 .search-wrap{max-width:1320px;width:94%;margin:0 auto 24px}
 @media(max-width:700px){.search-wrap{width:calc(100% - 24px);margin:0 auto 18px}}
+#tenant-criteria{border:1px solid #e5c6ad;border-radius:12px;padding:18px;margin:20px 0;background:#fffaf3;min-width:0}#tenant-criteria legend{font-weight:700;padding:0 6px}#tenant-criteria button{width:100%;white-space:normal}.need-result{padding:16px 0;border-top:1px solid #e5c6ad}.need-result p{margin:7px 0;font-size:14px}.need-result a{overflow-wrap:anywhere}[data-need-results]{margin-top:16px}
+.need-result img{width:100px;height:70px;object-fit:cover;border-radius:8px;float:left;margin:0 12px 8px 0}.need-result::after{content:'';display:block;clear:both}

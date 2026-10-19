@@ -11,6 +11,12 @@ export default async function handler(req,res){
   const name=text(body.name,100),phone=text(body.phone,20),intent=body.intent;
   if(!name||! /^(0|\+84)[0-9]{9}$/.test(phone)||!Object.hasOwn(intentLabels,intent)||body.contactConsent!==true)return send(res,400,{error:'Vui lòng kiểm tra họ tên, số điện thoại và đồng ý liên hệ.'});
   const record={intent,name,phone,area:text(body.area),type:text(body.type),budget:intent==='tenant'?text(body.budget,80):'',property:intent==='tenant'?text(body.property):'',date:intent==='tenant'?text(body.date,20):'',createdAt:new Date().toISOString()};
+  if(intent==='tenant'){
+   const maxBudget=body.maxBudget==null||body.maxBudget===''?null:Number(body.maxBudget),minSize=body.minSize==null||body.minSize===''?null:Number(body.minSize);
+   if(maxBudget!==null&&(!Number.isFinite(maxBudget)||maxBudget<=0||maxBudget>1000000)||minSize!==null&&(!Number.isFinite(minSize)||minSize<1||minSize>10000000))return send(res,400,{error:'Kiểm tra ngân sách tối đa và diện tích tối thiểu.'});
+   record.industry=text(body.industry,100);record.maxBudget=maxBudget;record.minSize=minSize;record.requirements=text(body.requirements,1000);
+   record.ownerNotes=['Ngành nghề: '+(record.industry||'Chưa chọn'),'Ngân sách tối đa: '+(maxBudget===null?'Chưa chọn':maxBudget+' triệu/tháng'),'Diện tích tối thiểu: '+(minSize===null?'Chưa chọn':minSize+' m²'),'Yêu cầu thêm: '+record.requirements].join('\n');
+  }
   if(isConsignment(intent)){
    const ownerAddress=text(body.ownerAddress),ownerSize=Number(body.ownerSize),ownerPrice=(body.ownerPrice??body.ownerRent)===''||(body.ownerPrice??body.ownerRent)==null?null:Number(body.ownerPrice??body.ownerRent),transferMonthlyRent=body.transferMonthlyRent===''||body.transferMonthlyRent==null?null:Number(body.transferMonthlyRent);
    if(!ownerAddress||!Number.isFinite(ownerSize)||ownerSize<1||ownerSize>10000000||body.ownerAuthority!==true||(ownerPrice!==null&&(!Number.isFinite(ownerPrice)||ownerPrice<0||ownerPrice>1000000))||(intent==='owner_transfer'&&transferMonthlyRent!==null&&(!Number.isFinite(transferMonthlyRent)||transferMonthlyRent<0||transferMonthlyRent>1000000)))return send(res,400,{error:'Vui lòng kiểm tra địa chỉ, diện tích, giá dự kiến và quyền ký gửi.'});

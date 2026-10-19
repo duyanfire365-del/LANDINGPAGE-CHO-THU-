@@ -57,3 +57,8 @@ Nút Facebook/Zalo mở bảng chuẩn bị bài và tối đa 12 ảnh của ti
 
 ### Kiểm soát người được chia sẻ
 Trong Nguồn BĐS và Map riêng, tìm thành viên theo họ tên, số điện thoại hoặc email đã đăng ký, bấm tên để chọn. Ghi năm sinh, địa chỉ và mục đích chia sẻ cho từng người, rồi bấm Lưu thông tin nguồn. Bỏ quyền xem rồi lưu để thu hồi. Loại Khách hàng/Sale lấy từ tài khoản; các ghi chú là thông tin người quản lý ghi nhận, chưa xác minh danh tính. Chỉ người có quyền quản lý nguồn xem danh sách và ghi chú, người được chia sẻ không xem được. Dữ liệu nằm trong bảng property_sources hiện có, không cần chạy SQL mới nếu đã chạy 006.
+
+### Form nhu cầu và gợi ý tự động
+Trang chủ → Cần thuê: chọn khu vực, loại BĐS, ngành nghề, khoảng ngân sách hoặc ngân sách tối đa, diện tích tối thiểu và yêu cầu thêm. Bấm Xem BĐS gợi ý để đối chiếu các tin công khai đang còn hàng; không cần gửi thông tin liên hệ để xem. Gợi ý nêu điểm đáp ứng và tiêu chí cần trao đổi, ngành nghề cần được xác nhận pháp lý/hiện trạng trước khi thuê. Yêu cầu thêm được chuyển cho tư vấn viên, không tự coi là tính năng đã được xác minh của BĐS.
+
+Khi khách đồng ý liên hệ và bấm Gửi nhu cầu cần thuê, hồ sơ cùng tiêu chí được lưu vào inquiries.owner_notes và xuất trong các báo cáo hiện có; Telegram nhận tóm tắt qua TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID hiện tại. Telegram lỗi thì hồ sơ vẫn lưu, notification_log ghi nhận để quản trị gửi lại. Không cần SQL mới. Đây là đối chiếu và xếp hạng tiêu chí tự động bằng dữ liệu website, không gọi AI trả phí và không hứa xác nhận ngành nghề khi tin không có thông tin.

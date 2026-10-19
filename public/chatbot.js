@@ -58,7 +58,7 @@
     extra.querySelectorAll('input, select').forEach(field=>field.disabled=owner);
     document.querySelectorAll('[data-lead-intent]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.leadIntent===intent)));
     if(changed){q('#lead-review').hidden=true;q('#form-status').textContent='';}
-    updateSubmitLabel();
+    updateSubmitLabel();form.dispatchEvent(new Event('rental-intent'));
   }
   document.querySelectorAll('[data-lead-intent]').forEach(button=>button.addEventListener('click',()=>setIntent(button.dataset.leadIntent)));
   q('#lead-intent').addEventListener('change',e=>setIntent(e.target.value));
@@ -157,12 +157,12 @@
   function leadData() {
     const fields=form.elements;
     const selected=name=>fields[name].options[fields[name].selectedIndex]?.textContent||'';
-    return {intent:fields.intent.value,name:fields.name.value.trim(),phone:fields.phone.value.trim(),area:fields.preferredArea.value,type:fields.preferredType.value,budget:fields.intent.value==='tenant'?fields.preferredBudget.value:'',budgetLabel:fields.preferredBudget.value?selected('preferredBudget'):'Chưa xác định',property:fields.intent.value==='tenant'&&fields.property.value?selected('property'):'',date:fields.intent.value==='tenant'?fields.date.value:'',ownerAddress:fields.ownerAddress.value.trim(),ownerSize:fields.ownerSize.value,ownerPrice:fields.ownerRent.value,ownerRent:fields.intent.value==='owner'?fields.ownerRent.value:'',transferMonthlyRent:fields.intent.value==='owner_transfer'?fields.transferMonthlyRent.value:'',ownerNotes:fields.ownerNotes.value.trim(),ownerAuthority:fields.ownerAuthority.checked,contactConsent:fields.contactConsent.checked};
+    return {industry:fields.industry?.value||'',maxBudget:fields.maxBudget?.value||'',minSize:fields.minSize?.value||'',requirements:fields.requirements?.value||'',intent:fields.intent.value,name:fields.name.value.trim(),phone:fields.phone.value.trim(),area:fields.preferredArea.value,type:fields.preferredType.value,budget:fields.intent.value==='tenant'?fields.preferredBudget.value:'',budgetLabel:fields.preferredBudget.value?selected('preferredBudget'):'Chưa xác định',property:fields.intent.value==='tenant'&&fields.property.value?selected('property'):'',date:fields.intent.value==='tenant'?fields.date.value:'',ownerAddress:fields.ownerAddress.value.trim(),ownerSize:fields.ownerSize.value,ownerPrice:fields.ownerRent.value,ownerRent:fields.intent.value==='owner'?fields.ownerRent.value:'',transferMonthlyRent:fields.intent.value==='owner_transfer'?fields.transferMonthlyRent.value:'',ownerNotes:fields.ownerNotes.value.trim(),ownerAuthority:fields.ownerAuthority.checked,contactConsent:fields.contactConsent.checked};
   }
   function summary(data) {
     const lines=[isOwner(data.intent)?'YÊU CẦU CHÍNH CHỦ '+consignments[data.intent].name.toLocaleUpperCase('vi'):'NHU CẦU TÌM BĐS THUÊ',`Họ và tên: ${data.name}`,`Số điện thoại: ${data.phone}`,`Khu vực: ${data.area||'Cần tư vấn'}`,`Loại BĐS: ${data.type||'Cần tư vấn'}`];
     if(isOwner(data.intent))lines.push(`Địa chỉ: ${data.ownerAddress}`,`Diện tích: ${data.ownerSize} m²`,`${data.intent==='owner'?'Giá thuê dự kiến':data.intent==='owner_sale'?'Giá bán dự kiến':'Giá chuyển nhượng dự kiến'}: ${data.ownerPrice!==''?data.ownerPrice+(data.intent==='owner'?' triệu đồng/tháng':' triệu đồng'):'Thỏa thuận'}`,`Mô tả: ${data.ownerNotes||'Trao đổi thêm'}`,'Xác nhận: Chủ sở hữu hoặc người được ủy quyền '+consignments[data.intent].verb+'.');
-    else{lines.push(`Ngân sách: ${data.budgetLabel}${data.budget ? ' đồng/tháng' : ''}`);if(data.property)lines.push(`BĐS quan tâm: ${data.property}`);if(data.date)lines.push(`Ngày muốn xem: ${data.date.split('-').reverse().join('/')}`)}
+    else{lines.push(`Ngành nghề: ${data.industry||'Trao đổi thêm'}`,`Ngân sách tối đa: ${data.maxBudget||'Chưa chọn'} triệu/tháng`,`Diện tích tối thiểu: ${data.minSize||'Chưa chọn'} m²`,`Yêu cầu thêm: ${data.requirements||'Không'}`);lines.push(`Ngân sách: ${data.budgetLabel}${data.budget ? ' đồng/tháng' : ''}`);if(data.property)lines.push(`BĐS quan tâm: ${data.property}`);if(data.date)lines.push(`Ngày muốn xem: ${data.date.split('-').reverse().join('/')}`)}
     if(data.intent==='owner_transfer'&&data.transferMonthlyRent!=='')lines.push(`Tiền thuê hiện tại: ${data.transferMonthlyRent} triệu đồng/tháng (tách riêng giá chuyển nhượng)`);
     return lines.join('\n');
   }
