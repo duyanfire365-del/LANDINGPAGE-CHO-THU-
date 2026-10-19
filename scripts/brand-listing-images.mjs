@@ -8,10 +8,10 @@ const codes=new Map(rows.flatMap(row=>[[row.image,row.code],[row.shareImage,row.
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');let count=0;
 await mkdir('/workspace/scratch/branding-originals',{recursive:true});
 for(const path of paths){
- const file=new URL('../public'+path,import.meta.url),bytes=await readFile(file),entry=manifest[path];if(entry?.version===brandingVersion&&entry.sha256===hash(bytes)&&entry.code===(codes.get(path)||''))continue;
+ const file=new URL('../public'+path,import.meta.url),bytes=await readFile(file),entry=manifest[path],version=path==='/banner.png'?brandingVersion+'-banner-v3':brandingVersion;if(entry?.version===version&&entry.sha256===hash(bytes)&&entry.code===(codes.get(path)||''))continue;
  const backup='/workspace/scratch/branding-originals/'+path.replaceAll('/','_');try{await writeFile(backup,bytes,{flag:'wx'})}catch(error){if(error.code!=='EEXIST')throw error}
  const format=path.endsWith('.webp')?'webp':path.endsWith('.png')?'png':'jpeg';
  let original=bytes;if(entry?.sha256===hash(bytes)){try{original=await readFile(backup)}catch{throw Error('Original image is required to avoid stacking watermarks: '+path)}}
- const branded=await watermarkImage(original,{format,code:codes.get(path)||''});await writeFile(file,branded);manifest[path]={version:brandingVersion,code:codes.get(path)||'',sha256:hash(branded)};count++;
+ const branded=await watermarkImage(original,{format,code:codes.get(path)||'',layout:path==='/banner.png'?'banner':'photo'});await writeFile(file,branded);manifest[path]={version,code:codes.get(path)||'',sha256:hash(branded)};count++;
 }
 await writeFile(manifestFile,JSON.stringify(manifest,null,2)+'\n');console.log('Embedded hotline watermark into '+count+' images. Unchanged branded files skipped.');

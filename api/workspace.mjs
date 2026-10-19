@@ -47,6 +47,20 @@ export default async function handler(req,res){
    const result=await notify('Thông báo thử — đã kết nối website với Telegram',{id:'kiem-tra-ket-noi'});
    return send(res,result.sent?200:502,result.sent?{sent:true}:{error:result.error});
   }
+  if(body.action==='edit-post'){
+   if(!/^[-\da-f]{36}$/i.test(body.id))return send(res,400,{error:'Mã tin không hợp lệ.'});
+   const rows=await db('posts',{query:'?id=eq.'+body.id});if(!rows[0])return send(res,404,{error:'Không tìm thấy tin.'});
+   const {safePublicText}=await import('../lib/posts.mjs');
+   const description=clean(body.description,3000),size=Number(body.size),price=Number(body.price);
+   if(!description||!safePublicText(description)||!Number.isFinite(size)||size<=0||size>10000000||!Number.isFinite(price)||price<=0||price>1000000)return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
+   const p=rows[0].public_data,public_data={...p,description,size,price,areaText:size+' m²'};
+   public_data.shareText=`${p.title}\nKhu vực: ${p.address}\nDiện tích: ${size} m²\nGiá thuê: ${price} triệu đồng/tháng\n${description}\nLiên hệ: 0906215365`;
+   const private_data={...rows[0].private_data,address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
+   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
+   const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
+   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data:canonical.public_data}});
+   return send(res,200,{saved:true});
+  }
   if(body.action==='inquiry-update'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||!['new','contacted','following','closed'].includes(body.status)||typeof body.notes!=='string'||body.notes.length>4000)return send(res,400,{error:'Thông tin cập nhật hồ sơ không hợp lệ.'});
    const rows=await db('inquiries',{method:'PATCH',query:'?id=eq.'+body.id,body:{management_status:body.status,admin_notes:body.notes.trim(),updated_at:new Date().toISOString()}});

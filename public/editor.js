@@ -13,7 +13,7 @@
   async function uploadFiles(files){for(const file of files){
     if(assets.length>=12)throw Error('Mỗi tin tối đa 12 ảnh/video/tài liệu.');
     status('Đang tải '+file.name+'…');const mime=file.type||fileMimes[file.name.split('.').pop().toLowerCase()];
-    const signed=await request('/api/files',{action:'upload',name:file.name,mime,size:file.size,brandingApplied:file.brandingApplied===true||file.name.startsWith('nguonchothue-branded-')});
+    const signed=await request('/api/files',{action:'upload',name:file.name,mime,size:file.size,brandingApplied:file.brandingApplied===true||file.name.startsWith('nguonchothue-branded-'),brandingVersion:file.brandingVersion||(file.name.startsWith('nguonchothue-branded-v3-')?'center-v3':'')});
     const response=await fetch(signed.url,{method:'PUT',headers:{'Content-Type':mime},body:file});if(!response.ok)throw Error('Tệp chưa tải lên thành công. Vui lòng thử lại.');
     assets.push({id:signed.id,name:file.name,kind:signed.kind});
     q('.editor-assets').innerHTML=assets.map(a=>`<span>${esc(a.name)}</span>`).join('');

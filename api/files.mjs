@@ -18,7 +18,7 @@ async function asset(req,id,{publicRead=false}={}){
 }
 async function signed(item){const result=await supa('/storage/v1/object/sign/rental-private/'+item.path,{method:'POST',body:{expiresIn:120}});const path=result.signedURL||result.signedUrl;return new URL(path.startsWith('/storage/')?path:'/storage/v1'+path,process.env.SUPABASE_URL).href}
 async function branded(item,slug=''){
- if(item.path.startsWith('manual-branded/'))return signed(item);
+ const manual=item.path.startsWith('manual-branded/');if(item.path.startsWith('manual-branded/v3/'))return signed(item);
  const posts=await canonicalRows(),post=posts.find(row=>(!slug||row.public_data.slug===slug)&&(row.public_data.media||[]).some(m=>m.id===item.id));const code=post?.public_data.code||'';const qr=await brandingQR();
  const variant={...item,path:'branding/'+brandingVersion+'/'+item.id+'-'+(code.replace(/[^A-Z0-9]/g,'')||'generic')+'-'+qr.revision+'.jpg'};
  try{return await signed(variant)}catch{}
@@ -26,7 +26,7 @@ async function branded(item,slug=''){
  if(!response.ok||Number(response.headers.get('content-length'))>10*1024*1024)throw problem(502,'Chưa tải được ảnh nguồn.');
  const reader=response.body.getReader(),chunks=[];let size=0;
  while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>10*1024*1024){await reader.cancel();throw problem(413,'Ảnh nguồn vượt quá 10 MB.')}chunks.push(Buffer.from(value))}
- const bytes=await watermarkImage(Buffer.concat(chunks),{code,qrImage:qr.bytes}),key=process.env.SUPABASE_SERVICE_ROLE_KEY;
+ const bytes=await watermarkImage(Buffer.concat(chunks),manual?{qr:false,phone:false,website:false,center:true}:{code,qrImage:qr.bytes}),key=process.env.SUPABASE_SERVICE_ROLE_KEY;
  const upload=await fetch(process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1/object/rental-private/'+variant.path,{method:'POST',headers:{apikey:key,...(key.startsWith('sb_')?{}:{Authorization:'Bearer '+key}),'Content-Type':'image/jpeg','x-upsert':'true'},body:bytes,signal:AbortSignal.timeout(20000)});
  if(!upload.ok)throw problem(502,'Chưa lưu được ảnh có dấu số điện thoại.');return signed(variant);
 }
@@ -38,7 +38,7 @@ export default async function handler(req,res){
    if(['static-view','banner-view'].includes(query.get('action'))){
     const banner=query.get('action')==='banner-view',slug=query.get('slug');let record;
     if(!banner){if(!/^hn-\d{3}$/.test(slug||''))throw problem(400,'Mã tin không hợp lệ.');record=JSON.parse(await readFile(new URL('../public/listings.json',import.meta.url),'utf8')).find(r=>r.slug===slug);if(!record)throw problem(404,'Không tìm thấy ảnh.');}
-    const bytes=await readFile(new URL(banner?'../public/banner.png':'../public/images/'+slug+'.jpg',import.meta.url)),qr=await brandingQR(),out=qr.custom?await replaceQR(bytes,qr.bytes,{code:record?.code||''}):banner?await (await import('sharp')).default(bytes).jpeg({quality:90}).toBuffer():bytes;
+    const bytes=await readFile(new URL(banner?'../public/banner.png':'../public/images/'+slug+'.jpg',import.meta.url)),qr=await brandingQR(),out=qr.custom?await replaceQR(bytes,qr.bytes,{code:record?.code||'',layout:banner?'banner':'photo'}):banner?await (await import('sharp')).default(bytes).jpeg({quality:90}).toBuffer():bytes;
     res.writeHead(200,{'Content-Type':'image/jpeg','Cache-Control':'public, max-age=60','X-Content-Type-Options':'nosniff'});return res.end(out);
    }
 
@@ -57,7 +57,7 @@ export default async function handler(req,res){
   if(body.action==='set-default-qr'){requireAdmin(req);return send(res,200,await setBrandingQR(body.id));}
   if(body.action==='upload'){
    const pair=types[body.mime],size=Number(body.size);if(!pair||!Number.isInteger(size)||size<=0||size>(pair[0]==='video'?50:10)*1024*1024)throw problem(400,'Ảnh/tài liệu tối đa 10 MB; video MP4/WebM tối đa 50 MB.');
-   const path=(body.brandingApplied===true&&pair[0]==='image'?'manual-branded/':'')+(who.id||'admin')+'/'+randomUUID()+'.'+pair[1],name=clean(body.name,150).replace(/[\r\n/\\]/g,'_');
+   const path=(body.brandingApplied===true&&pair[0]==='image'?(body.brandingVersion==='center-v3'?'manual-branded/v3/':'manual-branded/'):'')+(who.id||'admin')+'/'+randomUUID()+'.'+pair[1],name=clean(body.name,150).replace(/[\r\n/\\]/g,'_');
    const rows=await db('assets',{method:'POST',body:{owner_id:who.id,path,name,mime:body.mime,size,kind:pair[0]}});
    const result=await supa('/storage/v1/object/upload/sign/rental-private/'+path,{method:'POST',body:{}});
    const raw=result.url||result.signedURL||result.signedUrl;

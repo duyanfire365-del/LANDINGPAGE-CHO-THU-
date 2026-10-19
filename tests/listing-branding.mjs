@@ -18,6 +18,7 @@ const input=await sharp({create:{width:800,height:600,channels:3,background:'#68
 await assert.rejects(()=>watermarkImage(Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"></svg>')),/Unsupported listing image format/);
 const branded=await watermarkImage(input,{format:'png'}),a=await sharp(input).raw().toBuffer(),b=await sharp(branded).removeAlpha().raw().toBuffer();
 assert.equal(a.length,b.length);let top=0,bottom=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i]){if(i<800*400*3)top++;else bottom++}assert.ok(top>200,'QR must be baked into the upper corner');assert.ok(bottom>200,'the phone must be baked into output pixels');
+const centerPixels=await sharp(branded).extract({left:200,top:230,width:400,height:150}).removeAlpha().raw().toBuffer(),centerOriginal=await sharp(input).extract({left:200,top:230,width:400,height:150}).raw().toBuffer();assert.notDeepEqual(centerPixels,centerOriginal,'phone and domain must also be embedded at image center');
 const decodedPixels=await sharp(branded).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(decodedPixels),800,600)?.data,'https://zalo.me/0906215365');
 const jpeg=await watermarkImage(input,{code:'KX - 0002'}),jpegPixels=await sharp(jpeg).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(jpegPixels),800,600)?.data,'https://zalo.me/0906215365');
 process.env.SUPABASE_URL='https://storage.test';process.env.SUPABASE_ANON_KEY='sb_publishable_test';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_test';
