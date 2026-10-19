@@ -145,7 +145,7 @@
   q('#chat-form').addEventListener('submit',e=>{e.preventDefault();const input=q('#chat-input');const text=input.value.trim();if(!text||state.busy)return;input.value='';respond(text)});
   function open() {
     if(dialog.open)return;dialog.showModal();document.body.classList.add('chat-is-open');q('#chat-launcher').setAttribute('aria-expanded','true');
-    if(!state.opened){state.opened=true;append('assistant','Chào anh/chị! Em là trợ lý tư vấn của Nguồn cho thuê Hà Nội. Anh/chị đang tìm BĐS thuê hay là chính chủ muốn ký gửi cho thuê?');buttons([['Tôi đang tìm thuê',()=>start('tenant')],['Tôi là chính chủ ký gửi',()=>start('owner')],['Tôi cần hỗ trợ gấp',urgent]])}
+    if(!state.opened){state.opened=true;append('assistant','Chào anh/chị! Em là trợ lý tư vấn của Nguồn cho thuê BĐS Hà Nội. Anh/chị đang tìm BĐS thuê hay là chính chủ muốn ký gửi cho thuê?');buttons([['Tôi đang tìm thuê',()=>start('tenant')],['Tôi là chính chủ ký gửi',()=>start('owner')],['Tôi cần hỗ trợ gấp',urgent]])}
     q('#chat-input').focus({preventScroll:true});scrollLatest();
   }
   window.addEventListener('resize',()=>{if(dialog.open)scrollLatest()});

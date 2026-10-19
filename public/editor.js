@@ -10,18 +10,17 @@
   const status=text=>q('.editor-status').textContent=text;
   function fill(item){for(const key of ['title','area','type','location','price','size','description','privateAddress','hashtags'])q('.editor-form').elements[key].value=Array.isArray(item[key])?item[key].join(' '):item[key]??''}
   q('.editor-candidates').addEventListener('change',event=>fill(candidates[Number(event.target.value)]));
-  q('.editor-upload').addEventListener('change',async event=>{
-   const input=event.target;input.disabled=true;
-   try{for(const file of input.files){
+  async function uploadFiles(files){for(const file of files){
     if(assets.length>=12)throw Error('Mỗi tin tối đa 12 ảnh/video/tài liệu.');
     status('Đang tải '+file.name+'…');const mime=file.type||fileMimes[file.name.split('.').pop().toLowerCase()];
-    const signed=await request('/api/files',{action:'upload',name:file.name,mime,size:file.size});
+    const signed=await request('/api/files',{action:'upload',name:file.name,mime,size:file.size,brandingApplied:file.brandingApplied===true||file.name.startsWith('nguonchothue-branded-')});
     const response=await fetch(signed.url,{method:'PUT',headers:{'Content-Type':mime},body:file});if(!response.ok)throw Error('Tệp chưa tải lên thành công. Vui lòng thử lại.');
     assets.push({id:signed.id,name:file.name,kind:signed.kind});
     q('.editor-assets').innerHTML=assets.map(a=>`<span>${esc(a.name)}</span>`).join('');
     q('.editor-imports').innerHTML=assets.filter(a=>a.kind!=='video').map(a=>`<button class="button outline small" type="button" data-import="${a.id}">Đọc ${esc(a.name)}</button>`).join(' ');
-   }status('Đã tải tệp lên. Ảnh/video sẽ gắn vào tin; tài liệu chỉ dùng làm nguồn riêng tư.')}catch(error){status(error.message)}finally{input.disabled=false;input.value=''}
-  });
+   }status('Đã tải tệp lên. Ảnh/video sẽ gắn vào tin; tài liệu chỉ dùng làm nguồn riêng tư.')}
+  q('.editor-upload').addEventListener('change',async event=>{const input=event.target;input.disabled=true;try{await uploadFiles(input.files)}catch(error){status(error.message)}finally{input.disabled=false;input.value=''}});
+  const branding=document.createElement('div');q('.editor-upload').closest('label').before(branding);RentalBranding.mount(branding,{onUse:file=>uploadFiles([file])});
   q('.editor-imports').addEventListener('click',async event=>{
    const button=event.target.closest('[data-import]');if(!button)return;button.disabled=true;status('Đang đọc nội dung…');
    try{const data=await request('/api/files',{action:'parse',id:button.dataset.import,useAI:q('.editor-ai').checked});candidates.splice(0,candidates.length,...data.items);q('.editor-source').textContent=data.text||'';q('.editor-source').hidden=!data.text;q('.editor-candidates-label').hidden=!candidates.length;q('.editor-candidates').innerHTML=candidates.map((item,i)=>`<option value="${i}">${i+1}. ${esc(item.title||'Tin cần bổ sung thông tin')}</option>`).join('');if(candidates[0])fill(candidates[0]);status(data.source==='ai'?'AI đã gợi ý bản nháp. Anh/chị kiểm tra từng trường trước khi gửi duyệt.':'Đã đọc văn bản và gợi ý danh mục/khu vực nếu nhận diện được (tối đa 30 bản nháp mỗi lần). Anh/chị hoàn thiện bản nháp; chưa có tin nào được đăng.')}catch(error){status(error.message)}finally{button.disabled=false}

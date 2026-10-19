@@ -21,7 +21,7 @@ export default async function handler(req,res){
    rows=(await db('profiles',{query:'?order=created_at.desc&limit=1000'})).map(r=>({'Mã':r.id,'Họ và tên':r.full_name,'Email':r.email,'Điện thoại':r.phone,'Nhóm':r.kind==='sales'?'Sale / CTV':'Khách hàng','Quyền gửi tin':r.can_post?'Được cấp':'Chưa cấp','Ngày đăng ký':r.created_at}));
   }else return send(res,400,{error:'Loại dữ liệu không hợp lệ.'});
   if(!rows.length)return send(res,404,{error:'Chưa có dữ liệu để xuất.'});
-  const output=await exportDocument(rows,format,'Nguồn cho thuê Hà Nội — '+({template:'Mẫu nhập tin',posts:'Tin BĐS',members:'Thành viên',inquiries:'Nhu cầu và ký gửi'})[kind]);
+  const output=await exportDocument(rows,format,'Nguồn cho thuê BĐS Hà Nội — '+({template:'Mẫu nhập tin',posts:'Tin BĐS',members:'Thành viên',inquiries:'Nhu cầu và ký gửi'})[kind]);
   res.writeHead(200,{'Content-Type':output.mime,'Content-Disposition':`attachment; filename="${kind}.${format}"`,'Cache-Control':'no-store, private','X-Content-Type-Options':'nosniff'});res.end(output.buffer);
  }catch(error){return send(res,error.status||502,{error:error.status?error.message:'Chưa xuất được dữ liệu. Vui lòng kiểm tra kết nối.'})}
 }

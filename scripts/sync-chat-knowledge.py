@@ -25,6 +25,6 @@ class FAQ(HTMLParser):
             if self.section=='a':self.a.append(text.strip())
 parser=FAQ();parser.feed((root/'public/index.html').read_text())
 assert len(parser.items)==10, 'Expected the 10 visible FAQs'
-knowledge={'brand':'Nguồn cho thuê Hà Nội','phone':'0906215365','faq':parser.items,'status':'Tin đăng theo tài liệu nguồn cung cấp; hình ảnh là minh họa bằng AI, không phải ảnh hiện trạng. Không xác nhận nhà còn trống, phí môi giới, lịch hẹn hoặc giá cuối cùng khi chưa trao đổi trực tiếp.'}
+knowledge={'brand':'Nguồn cho thuê BĐS Hà Nội','phone':'0906215365','faq':parser.items,'status':'Tin đăng theo tài liệu nguồn cung cấp; hình ảnh là minh họa bằng AI, không phải ảnh hiện trạng. Không xác nhận nhà còn trống, phí môi giới, lịch hẹn hoặc giá cuối cùng khi chưa trao đổi trực tiếp.'}
 (root/'lib/chat-knowledge.json').write_text(json.dumps(knowledge,ensure_ascii=False,indent=2))
 print('Synced 10 FAQ answers for the AI endpoint.')
