@@ -83,3 +83,11 @@ Khi thêm/sửa khách hoặc một tin được duyệt/tự đăng, website đ
 11. Không ghi dữ liệu thủ công vào 3 tab này: nội dung của chúng được làm mới mỗi lần đồng bộ. Anh có thể tạo tab ghi chú khác, hệ thống không sửa tab đó. Số điện thoại ghi bằng RAW, giữ dạng chuỗi và không chạy công thức từ nội dung nhập.
 
 Nếu chưa cấu hình hoặc Google từ chối quyền, website vẫn lưu khách bình thường; bấm Đồng bộ để xem lỗi và thử lại sau khi sửa. Không đánh dấu kết nối hoàn tất chỉ vì đã nhập khóa: cần nhận tin thử và thấy dữ liệu thật trong Sheet.
+
+## Danh sách gọn và so sánh tiêu chí
+- Máy tính hiển thị các cột Khách hàng, Khu vực, Loại/Ngành nghề, Ngân sách, Diện tích, Quản lý. Điện thoại chuyển thành thẻ có nhãn từng tiêu chí.
+- Lọc theo tên/SĐT, khu vực, loại BĐS, trạng thái, ngân sách; sắp xếp theo ngân sách, diện tích hoặc ngày hẹn chăm sóc. Bấm Áp dụng bộ lọc; Xóa bộ lọc để xem lại danh sách. Lọc/sắp xếp áp dụng ở máy chủ, vẫn giữ giới hạn dữ liệu của thành viên.
+- Tích chọn 2–4 khách, có thể chọn ở các trang khác nhau trong cùng phiên. Bấm So sánh tiêu chí để xem cạnh nhau. Bỏ chọn sẽ xóa bảng; đăng xuất cũng xóa dữ liệu so sánh trên trình duyệt.
+- Đối chiếu ghi rõ Giống nhau, Khác nhau, Có phần chung hoặc Chưa đủ thông tin. Không xem ô trống là tiêu chí giống nhau. Ví dụ cùng ngân sách 30 triệu, diện tích từ 40 và 80m²: xét riêng hai tiêu chí này thì nguồn từ 80m² không quá 30 triệu đáp ứng cả hai khách; khu vực, loại BĐS và các điều kiện còn lại có thể khác nên vẫn phải kiểm tra.
+- Ngành nghề chưa nêu trong tin không làm mất gợi ý nếu khu vực/loại/giá/diện tích đáp ứng. Kết quả ghi Cần xác nhận phù hợp ngành nghề. Nếu tin ghi rõ không cho phép ngành đó thì loại; nguồn đã cho thuê/tạm dừng, vượt ngân sách hoặc thiếu diện tích cũng loại.
+- Mỗi hồ sơ hiện số nguồn đã đối chiếu. Khi đang xem danh sách và không nhập/sửa hồ sơ, so sánh hay xem kết quả chi tiết, số liệu tự tải lại mỗi 60 giây. Bấm Gợi ý nguồn để đối chiếu ngay. Lỗi gửi/lưu thông báo Telegram không ngăn kết quả xuất hiện; cảnh báo hiển thị riêng trong hồ sơ.

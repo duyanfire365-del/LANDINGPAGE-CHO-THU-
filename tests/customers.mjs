@@ -10,3 +10,11 @@ assert.equal(customerData({name:'Anh Nam',type:'VP',industry:'văn phòng'}).typ
 console.log('PASS: private owner scopes, customer parsing, multi-customer boundaries, ambiguous phones retained, budget/size validation, matching expanded locations, exclusion of over-budget and unavailable stock');
 
 const many=Array.from({length:12},(_,i)=>({...stock[0],slug:'live-'+(1791999999999000+i)}));assert.equal(customerMatches(parsed.items[0],many).length,12,'new matching sources beyond the first six remain eligible for alerts');
+
+const local=JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../public/listings.json',import.meta.url),'utf8'));
+const screenshot={area:'Hà Đông',type:'Mặt bằng kinh doanh',maxBudget:30,minSize:40,industry:'Nhà hàng / Quán ăn',requirements:'Cần mở quán ăn'};
+const suggested=customerMatches(screenshot,local);for(const code of ['MB - 0002','MB - 0006','MB - 0012'])assert(suggested.some(p=>p.code===code),code+' must not be hidden because industry is unconfirmed');assert(suggested.some(p=>p.checks.length));assert(!suggested.some(p=>p.code==='NC - 0004'));
+assert.equal(customerMatches({...screenshot,type:'  mbkd  '},[{slug:'hn-010',area:'hà đông',type:'MẶT BẰNG KINH DOANH',categories:[],size:40,price:30}]).length,1);
+assert.equal(customerMatches(screenshot,[{slug:'hn-010',area:'Hà Đông',type:'Mặt bằng kinh doanh',size:39,price:30},{slug:'hn-011',area:'Hà Đông',type:'Mặt bằng kinh doanh',size:40,price:31}]).length,0,'budget/area/type/size remain required');
+
+assert.equal(customerMatches(screenshot,[{slug:'hn-012',area:'Hà Đông',type:'Mặt bằng kinh doanh',size:50,price:20,description:'Không kinh doanh ăn uống'}]).length,0,'explicit business prohibitions remain excluded');
