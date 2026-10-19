@@ -1,6 +1,6 @@
 (() => {
  const esc=RentalSharing.escape;
- const intents={tenant:'Cần thuê',owner:'Ký gửi cho thuê',owner_sale:'Ký gửi bán',owner_transfer:'Chuyển nhượng'};
+ const intents={tenant:'KH quan tâm thuê (nhượng)',owner:'Ký gửi cho thuê',owner_sale:'Ký gửi bán',owner_transfer:'Ký gửi chuyển nhượng'};
  const states={new:'Mới',contacted:'Đã liên hệ',following:'Đang chăm sóc',closed:'Đã hoàn tất'};
  const budgets={'under-5':'Dưới 5 triệu/tháng','under-10':'Dưới 10 triệu/tháng','10-20':'10–20 triệu/tháng','20-30':'20–30 triệu/tháng','30-50':'30–50 triệu/tháng','over-50':'Trên 50 triệu/tháng','over-100':'Trên 100 triệu/tháng','over-200':'Trên 200 triệu/tháng','over-300':'Trên 300 triệu/tháng'};
  const date=value=>{const parsed=new Date(value);return Number.isFinite(parsed.getTime())?parsed.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'Chưa cập nhật'};

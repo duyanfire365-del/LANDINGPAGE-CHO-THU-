@@ -26,7 +26,7 @@
     buttons([['Điền thông tin quan tâm',()=>goToForm(state.draft.intent||'tenant')],['Chính chủ ký gửi',()=>start('owner')]]);
     const call=document.createElement('a');call.href='tel:0906215365';call.textContent='Gọi ngay 0906 215 365';options.append(call);
   }
-  const consignments={owner:{name:'Ký gửi cho thuê',heading:'Thông tin ký gửi cho thuê',price:'Giá cho thuê (triệu đồng/tháng)',verb:'cho thuê',description:'Dành cho chính chủ hoặc người được ủy quyền: cung cấp vị trí, diện tích và giá cho thuê dự kiến.'},owner_sale:{name:'Ký gửi bán',heading:'Thông tin ký gửi bán BĐS',price:'Giá bán (triệu đồng)',verb:'bán',description:'Dành cho chính chủ hoặc người được ủy quyền bán: cung cấp vị trí, diện tích, giá bán dự kiến và tình trạng pháp lý.'},owner_transfer:{name:'Chuyển nhượng',heading:'Thông tin ký gửi chuyển nhượng',price:'Giá chuyển nhượng (triệu đồng)',verb:'chuyển nhượng',description:'Cung cấp thông tin BĐS/mặt bằng, giá chuyển nhượng, tài sản đi kèm và điều kiện hợp đồng hiện tại (nếu có).'}};
+  const consignments={owner:{name:'Ký gửi cho thuê',heading:'Thông tin ký gửi cho thuê',price:'Giá cho thuê (triệu đồng/tháng)',verb:'cho thuê',description:'Dành cho chính chủ hoặc người được ủy quyền: cung cấp vị trí, diện tích và giá cho thuê dự kiến.'},owner_sale:{name:'Ký gửi bán',heading:'Thông tin ký gửi bán BĐS',price:'Giá bán (triệu đồng)',verb:'bán',description:'Dành cho chính chủ hoặc người được ủy quyền bán: cung cấp vị trí, diện tích, giá bán dự kiến và tình trạng pháp lý.'},owner_transfer:{name:'Ký gửi chuyển nhượng',heading:'Thông tin ký gửi chuyển nhượng',price:'Giá chuyển nhượng (triệu đồng)',verb:'chuyển nhượng',description:'Cung cấp thông tin BĐS/mặt bằng, giá chuyển nhượng, tài sản đi kèm và điều kiện hợp đồng hiện tại (nếu có).'}};
   const isOwner=intent=>Object.hasOwn(consignments,intent);
   function updateSubmitLabel() {
     const owner=isOwner(q('#lead-intent').value);
@@ -39,7 +39,7 @@
     if(changed){pricesByIntent[previous]=form.elements.ownerRent.value;form.elements.ownerRent.value=pricesByIntent[intent]??'';form.elements.ownerAuthority.checked=false;}
     q('#lead-intent').value=intent;const owner=isOwner(intent),config=consignments[intent];
     q('#owner-fields').hidden=!owner;q('#owner-fields').disabled=!owner;
-    q('#lead-heading').textContent=owner?config.heading:'Thông tin cần thuê';
+    q('#lead-heading').textContent=owner?config.heading:'Thông tin KH quan tâm thuê (nhượng)';
     q('#lead-mode-description').textContent=owner?config.description:'Chọn khu vực, loại BĐS và ngân sách để chuẩn bị nhu cầu tìm thuê.';
     q('#lead-area-label').textContent=owner?'Khu vực có BĐS':'Khu vực muốn thuê';
     q('#lead-type-label').textContent=owner?'Loại BĐS ký gửi':'BĐS muốn thuê';
