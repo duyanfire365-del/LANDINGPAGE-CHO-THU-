@@ -79,3 +79,8 @@ source={...fixture(),id:'66666666-6666-4666-8666-666666666666',content:warehouse
 console.log('Warehouse regression passed: no address/photo/API required, facts retained, honest location, content dedup and distinct unknown-address properties kept.');
 
 await assert.rejects(()=>draft({...item,area:'Hà Nội',title:'Kho cho thuê',location:'Liên hệ để biết vị trí',description:'Cho thuê kho.'},{admin:false,id:null},{allowGeneralLocation:true}),{status:400});
+
+albumRows=[];posts=[];assets=[];fingerprints=[];
+const unitSource='🏭 CHO THUÊ KHO XƯỞNG TRỤC CẦU BƯỚU – BỆNH VIỆN K\n📍 Vị trí: Trục Cầu Bướu, khu vực gần Bệnh viện K\n📐 Diện tích: 1.600m²\nKho đã có mái che, nhà xưởng đầy đủ, có thể vào sử dụng ngay.\n💰 Giá thuê: 110.000đ/m²/tháng (GIÁ CHỐT)\n#khoxuong #thanhtri #hadong\nH50%';
+source={...fixture(),id:'77777777-7777-4777-8777-777777777777',content:unitSource,media:[{kind:'image',file_id:'unitphoto',unique_id:'unitphoto'}]};await runSource(source.id);assert.equal(source.processing_status,'published',source.processing_error);assert.equal(posts.length,1);assert.equal(posts[0].public_data.price,176);assert.equal(posts[0].public_data.pricePerM2,110000);assert.equal(posts[0].public_data.size,1600);assert.equal(posts[0].public_data.priceBasis,'per_m2');assert(posts[0].public_data.description.includes('110.000 đồng/m²/tháng'));assert(posts[0].public_data.description.includes('176 triệu'));assert(posts[0].public_data.title.includes('Cầu Bươu'));assert.equal(posts[0].public_data.media.length,1);assert.equal(chatCalls+imageCalls,beforeAI);
+console.log('Per-m² Telegram regression passed: original screenshot post auto-publishes with supplied photo, 110000 VND/m², 1600 m² and 176 million/month, no paid API.');

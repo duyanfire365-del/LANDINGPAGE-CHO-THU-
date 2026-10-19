@@ -59,6 +59,8 @@ Các phép thử dùng Supabase/Telegram giả lập, không dùng thông tin k�
 - Nguồn riêng và tin trên website được gom theo danh mục, tìm kiếm, lọc khu vực/trạng thái, tối đa 10 tin/trang. Bấm dòng tin để mở địa chỉ riêng, hashtag và các thao tác.
 - Tin trên website có nút Sửa nội dung tin: admin sửa diện tích, giá, mô tả, địa chỉ riêng và hashtag. Giữ nguyên mã, đường dẫn, ảnh và trạng thái duyệt. Nguồn tĩnh ban đầu vẫn có điều khiển trạng thái và chia sẻ.
 - Nguồn Telegram thu gọn từng tin và chia 10 nguồn/trang.
-- Banner đặt QR nhỏ ở góc trên phải; chữ mờ thu nhỏ xuống dải trống dưới cùng. Không dùng bố cục góc trên trái của ảnh bài đăng cho banner.
+- Banner chỉ đặt QR nhỏ ở góc trên phải; không chèn SĐT hoặc website mờ lên banner. Không dùng bố cục góc trên trái của ảnh bài đăng cho banner.
 - Ảnh bài đăng thêm SĐT và website mờ ở giữa; ảnh cũ được tạo lại từ bản gốc. Công cụ thủ công có tùy chọn riêng cho dấu giữa ảnh. Dấu không ngăn tuyệt đối việc sao chép hoặc xóa ảnh.
 - Mục Kết nối lưu hồ sơ và Telegram có hướng dẫn tạo bot báo khách mới từ đầu. Chỉ thay TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID; giữ nguyên cấu hình bot nhận nguồn.
+
+- Công cụ thủ công có ô Số điện thoại riêng / bổ sung. Giữ chọn số mặc định để vẽ cả hai số; bỏ chọn để chỉ vẽ số riêng. Áp dụng cả góc và giữa ảnh, không tự đổi QR mặc định.

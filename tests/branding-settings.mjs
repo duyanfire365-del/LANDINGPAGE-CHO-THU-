@@ -15,5 +15,6 @@ console.log('Custom default QR passed: validated upload, persistence, cached rev
 const bannerSource=await sharp({create:{width:1536,height:1024,channels:3,background:'#ded2bf'}}).png().toBuffer(),banner=await watermarkImage(bannerSource,{format:'png',layout:'banner'}),placement=qrPlacement(1536,1024,{layout:'banner'});
 assert(placement.left>1300&&placement.top<30&&placement.size<=160,'banner QR belongs in the upper-right art corner');
 assert.deepEqual(await sharp(banner).extract({left:0,top:0,width:1000,height:900}).removeAlpha().raw().toBuffer(),await sharp(bannerSource).extract({left:0,top:0,width:1000,height:900}).raw().toBuffer(),'banner title and service labels stay untouched');
+assert.deepEqual(await sharp(banner).extract({left:0,top:900,width:1536,height:124}).removeAlpha().raw().toBuffer(),await sharp(bannerSource).extract({left:0,top:900,width:1536,height:124}).raw().toBuffer(),'banner footer must never receive phone/domain watermarks');
 const customBanner=await replaceQR(banner,qr.bytes,{layout:'banner'}),bannerPixels=await sharp(customBanner).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(bannerPixels),1536,1024)?.data,target);
 console.log('Banner composition passed: QR stays top-right, editorial text remains untouched, replacement QR remains readable.');

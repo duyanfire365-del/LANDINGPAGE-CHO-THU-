@@ -1,3 +1,4 @@
+import {extractRentPricing} from '../lib/source-pricing.mjs';
 import {brandingQR,setBrandingQR,replaceQR} from '../lib/branding-settings.mjs';
 import {requireAdmin} from '../lib/platform.mjs';
 import {canonicalRows} from '../lib/listing-catalog.mjs';
@@ -87,9 +88,8 @@ export default async function handler(req,res){
    // Extract suggestions only; never publish a source document automatically.
    const type=categories.find(c=>text.toLocaleLowerCase('vi').includes(c.toLocaleLowerCase('vi')))||'';
    const area=areas.find(a=>text.toLocaleLowerCase('vi').includes(a.toLocaleLowerCase('vi')))||'';
-   const price=text.match(/(?:giá thuê|thuê)\s*[:：]?\s*(\d+(?:[.,]\d+)?)\s*triệu/iu)?.[1];
-   const size=text.match(/(?:diện tích)\s*[:：]?\s*(\d+(?:[.,]\d+)?)\s*m/iu)?.[1];
-   return send(res,200,{text,items:[{title:'',location:'',description:'',area,type,price:price?Number(price.replace(',','.')):null,size:size?Number(size.replace(',','.')):null,privateAddress:'',hashtags:(text.match(/#[\p{L}\p{N}_]+/gu)||[]).join(' ')}],source:'text',reviewRequired:true});
+   let pricing={price:null,size:null,pricePerM2:null,priceBasis:'monthly'};try{pricing=extractRentPricing(text)}catch{}
+   return send(res,200,{text,items:[{title:'',location:'',description:'',area,type,...pricing,privateAddress:'',hashtags:(text.match(/#[\p{L}\p{N}_]+/gu)||[]).join(' ')}],source:'text',reviewRequired:true});
   }
   return send(res,400,{error:'Yêu cầu không hợp lệ.'});
  }catch(error){return send(res,error.status||502,{error:error.status?error.message:'Chưa xử lý được tệp. Vui lòng kiểm tra định dạng và thử lại.'})}

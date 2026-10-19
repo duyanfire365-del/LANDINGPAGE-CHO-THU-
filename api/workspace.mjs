@@ -1,3 +1,4 @@
+import {formPricing} from '../lib/source-pricing.mjs';
 import {updateInventory} from '../lib/inventory.mjs';
 import {waitUntil} from '@vercel/functions';
 import {canonicalizeSubset,persistIdentities} from '../lib/listing-catalog.mjs';
@@ -51,10 +52,13 @@ export default async function handler(req,res){
    if(!/^[-\da-f]{36}$/i.test(body.id))return send(res,400,{error:'Mã tin không hợp lệ.'});
    const rows=await db('posts',{query:'?id=eq.'+body.id});if(!rows[0])return send(res,404,{error:'Không tìm thấy tin.'});
    const {safePublicText}=await import('../lib/posts.mjs');
-   const description=clean(body.description,3000),size=Number(body.size),price=Number(body.price);
+   let description=clean(body.description,3000);const {size,price,priceBasis,pricePerM2}=formPricing(body);
    if(!description||!safePublicText(description)||!Number.isFinite(size)||size<=0||size>10000000||!Number.isFinite(price)||price<=0||price>1000000)return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
-   const p=rows[0].public_data,public_data={...p,description,size,price,areaText:size+' m²'};
+   const p=rows[0].public_data;
+   if(rows[0].private_data?.automation){description=description.replace(`Diện tích ${p.size} m², giá thuê tham khảo ${p.price} triệu đồng/tháng.`,`Diện tích ${size} m², giá thuê tham khảo ${price} triệu đồng/tháng.`);if(p.pricePerM2){const format=n=>new Intl.NumberFormat('vi-VN').format(n),old=`Đơn giá: ${format(p.pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(p.size)} m² là ${format(p.price)} triệu đồng/tháng.`;description=description.replace(old,pricePerM2?`Đơn giá: ${format(pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(size)} m² là ${format(price)} triệu đồng/tháng.`:'')}}
+   const public_data={...p,description,size,price,priceBasis,pricePerM2,areaText:size+' m²',facts:[...(p.facts||[]).filter(f=>!/^Đơn giá:/.test(f)),...(pricePerM2?['Đơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.']:[])]};
    public_data.shareText=`${p.title}\nKhu vực: ${p.address}\nDiện tích: ${size} m²\nGiá thuê: ${price} triệu đồng/tháng\n${description}\nLiên hệ: 0906215365`;
+   if(pricePerM2)public_data.shareText+='\nĐơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.';
    const private_data={...rows[0].private_data,address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];

@@ -300,8 +300,8 @@
     "sha256": "26f127229c2e04d65b708acd6eff1fd74a343571d3946ba0738a6b1b755d8ddd"
   },
   "/banner.png": {
-    "version": "qr-web-v3-center-banner-v3",
+    "version": "qr-web-v3-center-banner-v4",
     "code": "",
-    "sha256": "c47f9c09aa6d104efec8904c812f19e47e9fe3c10b515e8545e1932fe84af36a"
+    "sha256": "7ac7cd037498fc580b25f81b9babd356f0318ed1b8aa57e740e22906da06be8f"
   }
 }
