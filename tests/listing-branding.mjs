@@ -1,3 +1,4 @@
+import jsQR from 'jsqr';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import {readFile} from 'node:fs/promises';
@@ -16,12 +17,15 @@ assert.deepEqual(standardizeRows(canonical,all),canonical,'normalization must no
 const input=await sharp({create:{width:800,height:600,channels:3,background:'#686868'}}).png().toBuffer();
 await assert.rejects(()=>watermarkImage(Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"></svg>')),/Unsupported listing image format/);
 const branded=await watermarkImage(input,{format:'png'}),a=await sharp(input).raw().toBuffer(),b=await sharp(branded).removeAlpha().raw().toBuffer();
-assert.equal(a.length,b.length);let top=0,bottom=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i]){if(i<800*400*3)top++;else bottom++}assert.equal(top,0);assert.ok(bottom>200,'the phone must be baked into output pixels');
+assert.equal(a.length,b.length);let top=0,bottom=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i]){if(i<800*400*3)top++;else bottom++}assert.ok(top>200,'QR must be baked into the upper corner');assert.ok(bottom>200,'the phone must be baked into output pixels');
+const decodedPixels=await sharp(branded).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(decodedPixels),800,600)?.data,'https://zalo.me/0906215365');
+const jpeg=await watermarkImage(input,{code:'KX - 0002'}),jpegPixels=await sharp(jpeg).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(jpegPixels),800,600)?.data,'https://zalo.me/0906215365');
 process.env.SUPABASE_URL='https://storage.test';process.env.SUPABASE_ANON_KEY='sb_publishable_test';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_test';
 let cache=false,uploads=0,originalReads=0;const id='11111111-1111-4111-8111-111111111111';
 global.fetch=async(raw,options={})=>{const url=new URL(raw),path=url.pathname;
+ if(path.endsWith('/notification_log'))return Response.json([]);
  if(path.endsWith('/assets'))return Response.json([{id,kind:'image',path:'admin/raw.png',mime:'image/png',name:'raw.png'}]);
- if(path.endsWith('/posts'))return Response.json([{id:'post'}]);
+ if(path.endsWith('/posts'))return Response.json([{id:'post',status:'published',created_at:'2026-10-19',public_data:{type:'Kho xưởng',size:280,areaText:'280 m²',address:'Xóm Trại, Chương Mỹ, Hà Nội',media:[{id}]}}]);
  if(path.includes('/object/sign/')){const variant=path.includes('/branding/');if(variant&&!cache)return Response.json({error:'missing'},{status:404});return Response.json({signedURL:'/signed/'+(variant?'branded.jpg':'original.png')+'?token=unit'})}
  if(path.endsWith('/original.png')){originalReads++;return new Response(input)}
  if(path.includes('/object/rental-private/branding/')){uploads++;cache=true;const m=await sharp(options.body).metadata();assert.equal(m.format,'jpeg');return Response.json({})}

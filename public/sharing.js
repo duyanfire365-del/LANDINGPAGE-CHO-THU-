@@ -57,5 +57,5 @@
     const element = event.target.closest('[data-share-id]');
     if (element) { const listing = window.RENTAL_LISTINGS?.find(h => h.id === Number(element.dataset.shareId)); if (listing) prepare(listing); }
   });
-  window.RentalSharing = {url, text, copy, share, prepare, markup, escape};
+  window.RentalSharing = {url, text, copy, share, prepare, markup, escape, invalidate:listing=>files.delete(listing.id)};
 })();

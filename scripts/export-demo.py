@@ -14,8 +14,9 @@ page = page.replace('/logo.png', logo)
 banner = 'data:image/png;base64,' + base64.b64encode((p / 'banner.png').read_bytes()).decode()
 page = page.replace('/banner.png', banner)
 script = 'window.RENTAL_LISTINGS=' + json.dumps(records, ensure_ascii=False).replace('<', '\\u003c') + ';\n'
-script += (p / 'sharing.js').read_text() + '\n;' + (p / 'app.js').read_text()
-for name in ['listings-data.js', 'sharing.js', 'catalog.js', 'navigation.js']:
+script += 'window.RENTAL_CATALOG_PROMISE=Promise.resolve({posts:[],inventory:{}});\n'
+script += (p / 'sharing.js').read_text() + '\n;' + (p / 'inventory.js').read_text() + '\n;' + (p / 'app.js').read_text()
+for name in ['listings-data.js', 'sharing.js', 'inventory.js', 'catalog.js', 'navigation.js']:
     page = page.replace(f'<script src="/{name}" defer></script>', '')
 page = page.replace('<link rel="stylesheet" href="/listings.css">', '<style>' + (p / 'listings.css').read_text() + '</style>')
 page = page.replace('<link rel="stylesheet" href="/styles.css">', '<style>' + (p / 'styles.css').read_text() + '</style>')

@@ -1,3 +1,4 @@
+import {updateInventory} from '../lib/inventory.mjs';
 import {waitUntil} from '@vercel/functions';
 import {canonicalizeSubset,persistIdentities} from '../lib/listing-catalog.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
@@ -32,6 +33,7 @@ export default async function handler(req,res){
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
   const body=await readJson(req,20000);
+  if(body.action==='inventory')return send(res,200,await updateInventory(req,body));
   if(body.action==='submit'){
    const who=await actor(req,{posting:true}),record=await draft(body,who),rows=await db('posts',{method:'POST',body:record});
    const canonical=(await canonicalizeSubset(rows))[0];await db('posts',{method:'PATCH',query:'?id=eq.'+rows[0].id,body:{public_data:canonical.public_data}});

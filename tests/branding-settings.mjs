@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import QRCode from 'qrcode';
+import sharp from 'sharp';
+import jsQR from 'jsqr';
+import {brandingQR,setBrandingQR,replaceQR} from '../lib/branding-settings.mjs';
+import {watermarkImage} from '../lib/image-branding.mjs';
+process.env.SUPABASE_URL='https://qr.test';process.env.SUPABASE_ANON_KEY='sb_publishable_test';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_test';
+const id='33333333-3333-4333-8333-333333333333',target='https://example.test/my-zalo',png=await QRCode.toBuffer(target,{width:500,margin:4});let rows=[];
+global.fetch=async(raw,options={})=>{const url=new URL(raw);if(url.pathname.endsWith('/notification_log')){if(options.method==='POST')rows=[{...JSON.parse(options.body)}];return Response.json(rows)}if(url.pathname.endsWith('/assets'))return Response.json([{id,kind:'image',path:'admin/custom.png'}]);if(url.pathname.includes('/object/sign/'))return Response.json({signedURL:'/signed/qr.png?token=test'});if(url.pathname.endsWith('/qr.png'))return new Response(png);throw Error('Unexpected QR request')};
+assert.equal((await brandingQR()).custom,false);await setBrandingQR(id);const qr=await brandingQR();assert.equal(qr.custom,true);assert.equal(qr.revision,id);
+const source=await sharp({create:{width:1200,height:800,channels:3,background:'#777'}}).png().toBuffer(),out=await watermarkImage(source,{code:'KX - 0002',qrImage:qr.bytes}),pixels=await sharp(out).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(pixels),1200,800)?.data,target);
+const old=await watermarkImage(source,{code:'KX - 0002'}),updated=await replaceQR(old,qr.bytes,{code:'KX - 0002'}),replacement=await sharp(updated).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(replacement),1200,800)?.data,target);
+console.log('Custom default QR passed: validated upload, persistence, cached revision, new image rendering and replacement of an older image QR without stacking phone/domain.');

@@ -1,3 +1,6 @@
+import QRCode from 'qrcode';
+import sharp from 'sharp';
+import jsQR from 'jsqr';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import {randomUUID,createHmac} from 'node:crypto';
@@ -7,7 +10,7 @@ import {exportDocument,extractDocument,spreadsheetDrafts} from '../lib/documents
 // Local Supabase/Telegram doubles exercise the real handlers, not production services.
 const tables={profiles:[],posts:[],inquiries:[],assets:[],notification_log:[]},users=[],files=new Map();
 const fake=http.createServer(async(req,res)=>{
- const url=new URL(req.url,'http://localhost');let raw='';for await(const chunk of req)raw+=chunk;
+ const url=new URL(req.url,'http://localhost');const chunks=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));const rawBuffer=Buffer.concat(chunks),raw=rawBuffer.toString('utf8');
  let body;try{body=JSON.parse(raw)}catch{body=null}
  const reply=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'GET,POST,PUT,OPTIONS'});res.end(JSON.stringify(data))};
  if(req.method==='OPTIONS')return reply(200,{});
@@ -29,20 +32,22 @@ const fake=http.createServer(async(req,res)=>{
    if(key==='or')return value.slice(1,-1).split(',').some(part=>{const [field,pattern]=part.split('.ilike.');return String(row[field]||'').toLowerCase().includes(pattern.slice(1,-1).toLowerCase())});
    if(key==='public_data->>slug')return row.public_data.slug===value.slice(3);
    if(key==='public_data->media')return (row.public_data.media||[]).some(a=>JSON.parse(value.slice(3)).some(b=>a.id===b.id));
+   if(value.startsWith('like.'))return String(row[key]||'').startsWith(value.slice(5).replace('*',''));
    if(value.startsWith('eq.'))return String(row[key])===value.slice(3);
    if(value.startsWith('in.('))return value.slice(4,-1).split(',').includes(row[key]);return true;
   });
   if(req.method==='POST'){const row={id:randomUUID(),created_at:new Date().toISOString(),...(name==='inquiries'?{management_status:'new',admin_notes:''}:{}),...body};table.push(row);return reply(201,[row])}
-  let rows=table.filter(matches);
+  let rows=table.filter(matches);if((url.searchParams.get('order')||'').startsWith('created_at.desc'))rows=[...rows].reverse();
   if(req.method==='PATCH')rows.forEach(row=>Object.assign(row,body));
   if(url.searchParams.get('select')&&url.searchParams.get('select')!=='*'){const keys=url.searchParams.get('select').split(',');rows=rows.map(row=>Object.fromEntries(keys.map(key=>[key,row[key]])))}
   if(req.method==='GET')rows=rows.slice(Number(url.searchParams.get('offset')||0),Number(url.searchParams.get('offset')||0)+Number(url.searchParams.get('limit')||1000));
   return reply(200,rows);
  }
  if(url.pathname.startsWith('/storage/v1/object/upload/sign/'))return reply(200,{url:'/upload/'+url.pathname.split('/').pop()});
- if(url.pathname.startsWith('/storage/v1/upload/')){files.set(url.pathname.split('/').pop(),Buffer.from(raw));return reply(200,{ok:true})}
- if(url.pathname.startsWith('/storage/v1/object/sign/'))return reply(200,{signedURL:'/download/'+url.pathname.split('/').pop()+'?token=test'});
- if(url.pathname.startsWith('/storage/v1/download/')){const bytes=files.get(url.pathname.split('/').pop());if(!bytes)return reply(404,{});res.writeHead(200,{'Content-Type':'text/plain','Content-Length':bytes.length});return res.end(bytes)}
+ if(url.pathname.startsWith('/storage/v1/upload/')){files.set(url.pathname.split('/').pop(),rawBuffer);return reply(200,{ok:true})}
+ if(url.pathname.startsWith('/storage/v1/object/rental-private/')&&req.method==='POST'){files.set(url.pathname.split('/').pop(),rawBuffer);return reply(200,{})}
+ if(url.pathname.startsWith('/storage/v1/object/sign/')){const name=url.pathname.split('/').pop();return files.has(name)?reply(200,{signedURL:'/download/'+name+'?token=test'}):reply(404,{})}
+ if(url.pathname.startsWith('/storage/v1/download/')){const bytes=files.get(url.pathname.split('/').pop());if(!bytes)return reply(404,{});res.writeHead(200,{'Content-Type':url.pathname.endsWith('.jpg')?'image/jpeg':url.pathname.endsWith('.png')?'image/png':'text/plain','Content-Length':bytes.length});return res.end(bytes)}
  reply(404,{});
 });
 await new Promise(resolve=>fake.listen(0,'127.0.0.1',resolve));
@@ -81,6 +86,17 @@ try{
  assert.equal((await fetch(base+'/api/files?action=media&id='+mediaUpload.data.id,{redirect:'manual'})).status,401,'pending video not public');
  await post('/api/workspace',{action:'review',id:mediaPost.data.id,status:'published'},adminCookie);
  const mediaResponse=await fetch(base+'/api/files?action=media&id='+mediaUpload.data.id+'&download=1',{redirect:'manual'});assert.equal(mediaResponse.status,302);assert(mediaResponse.headers.get('location').includes('download=video.mp4'));
+ const ownSlug=tables.posts[0].public_data.slug;
+ assert.equal((await post('/api/workspace',{action:'inventory',slug:ownSlug,availability:'rented'})).response.status,401);
+ assert.equal((await post('/api/workspace',{action:'inventory',slug:'hn-019',availability:'rented'},salesCookie)).response.status,403);
+ assert.equal((await post('/api/workspace',{action:'inventory',slug:ownSlug,availability:'rented'},salesCookie)).response.status,200);
+ let publicInventory=await (await fetch(base+'/api/catalog')).json();assert.equal(publicInventory.inventory[ownSlug],'rented');assert.equal(publicInventory.posts.find(p=>p.slug===ownSlug).availability,'rented');
+ assert.equal((await post('/api/workspace',{action:'inventory',slug:ownSlug,availability:'paused'},adminCookie)).response.status,200);
+ assert.equal((await (await fetch(base+'/api/catalog')).json()).inventory[ownSlug],'paused');
+ assert.equal((await post('/api/workspace',{action:'inventory',slug:'hn-019',availability:'rented'},adminCookie)).response.status,200);
+ const other={id:randomUUID(),author_id:randomUUID(),status:'pending',public_data:{...tables.posts[0].public_data,id:1790000000000123,slug:'live-1790000000000123'},private_data:{}};tables.posts.push(other);
+ assert.equal((await post('/api/workspace',{action:'inventory',slug:other.public_data.slug,availability:'available'},salesCookie)).response.status,403);
+ tables.posts.pop();
  const template=await fetch(base+'/api/exports?kind=template&format=xlsx',{headers:{cookie:adminCookie}});assert.equal(template.status,200);const templateRows=await spreadsheetDrafts(Buffer.from(await template.arrayBuffer()));assert.equal(templateRows[0].price,20);assert.equal(templateRows[0].privateAddress,'Điền số nhà và ngõ/ngách tại đây');
  const connections=await (await fetch(base+'/api/workspace?view=connections',{headers:{cookie:adminCookie}})).json();assert(connections.storageReady);assert.equal(connections.telegramConfigured,false);assert.equal((await fetch(base+'/api/workspace?view=connections',{headers:{cookie:salesCookie}})).status,401);
  process.env.TELEGRAM_BOT_TOKEN='123456789:test_fixture_token_for_mock_only_12345';process.env.TELEGRAM_CHAT_ID='123456789';
@@ -103,9 +119,22 @@ try{
  assert.equal((await fetch(base+'/api/exports?kind=members&format=xlsx',{headers:{cookie:salesCookie}})).status,401);
  const context=await browser.newContext(),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await context.addCookies([{name:'rental_member',value:salesCookie.split('=')[1],url:base}]);await page.goto(base+'/thanh-vien');await page.locator('#member-posting').waitFor();assert(await page.locator('.editor-form').isVisible());
+ const sourcePhoto=await sharp({create:{width:1000,height:700,channels:3,background:'#707070'}}).png().toBuffer();
+ await page.locator('#member-posting .branding-tool summary').click();await page.locator('#member-posting .branding-input').setInputFiles({name:'original.png',mimeType:'image/png',buffer:sourcePhoto});await page.locator('#member-posting .branding-code').fill('VP - 0001');await page.locator('#member-posting .branding-apply').click();await page.locator('#member-posting .branding-preview img').waitFor();
+ const rendered=Buffer.from(await page.locator('#member-posting .branding-preview img').evaluate(async img=>[...new Uint8Array(await (await fetch(img.src)).arrayBuffer())]));const renderedPixels=await sharp(rendered).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(renderedPixels),1000,700)?.data,'https://zalo.me/0906215365');
+ await page.getByRole('button',{name:'Dùng ảnh này cho bài đăng'}).click();await page.waitForFunction(()=>document.querySelector('.editor-assets').textContent.includes('nguonchothue-branded-'));assert(tables.assets.at(-1).path.startsWith('manual-branded/'));
+ await page.locator('[data-inventory-controls="'+ownSlug+'"] [data-set-inventory="available"]').click();await page.waitForFunction(slug=>document.querySelector('[data-inventory-controls="'+slug+'"] .inventory-message')?.textContent.includes('Đã lưu'),ownSlug);assert.equal((await (await fetch(base+'/api/catalog')).json()).inventory[ownSlug],'available');
  for(const width of [375,768,1440]){await page.setViewportSize({width,height:950});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'member overflow '+width)}
+ await page.goto(base+'/bds/hn-019');await page.locator('.property-availability').waitFor();assert((await page.locator('.property-availability').innerText()).includes('Đã cho thuê'));
  await page.goto(base+'/tin?slug='+catalog.posts[0].slug);await page.locator('.property-title').waitFor();assert(!(await page.locator('body').innerText()).includes('123 ngõ'));
  await page.goto(base+'/admin');await page.locator('#admin-password').fill(process.env.ADMIN_LOGIN_PASSWORD);await page.locator('#admin-login button').click();await page.locator('[data-manage=members]').click();await page.locator('#management-members table').waitFor();
+ await page.locator('[data-manage=branding]').click();const customURL='https://example.test/qr-admin',customQRCode=await QRCode.toBuffer(customURL,{width:500,margin:4});await page.locator('.branding-global-qr').setInputFiles({name:'custom-qr.png',mimeType:'image/png',buffer:customQRCode});await page.locator('.branding-save-qr').click();await page.waitForFunction(()=>document.querySelector('.branding-global-status').textContent.includes('Đã đặt QR mặc định'));
+ const qrPublic=Buffer.from(await (await fetch(base+'/api/files?action=zalo-qr')).arrayBuffer()),qrMeta=await sharp(qrPublic).metadata(),qrRaw=await sharp(qrPublic).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(qrRaw),qrMeta.width,qrMeta.height)?.data,customURL);
+ assert.equal((await post('/api/files',{action:'set-default-qr',id:tables.assets.at(-1).id},salesCookie)).response.status,401);
+ assert.equal((await (await fetch(base+'/api/catalog')).json()).customQR,true);
+ for(const action of ['static-view','static']){const stamped=Buffer.from(await (await fetch(base+'/api/files?action='+action+'&slug=hn-019')).arrayBuffer()),meta=await sharp(stamped).metadata(),raw=await sharp(stamped).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(raw),meta.width,meta.height)?.data,customURL);}
+ const photoUpload=await post('/api/files',{action:'upload',name:'raw.png',mime:'image/png',size:sourcePhoto.length},salesCookie);assert.equal(photoUpload.response.status,200);await fetch(photoUpload.data.url,{method:'PUT',headers:{'Content-Type':'image/png'},body:sourcePhoto});tables.posts[0].public_data.media=[{id:photoUpload.data.id,kind:'image'}];
+ const stampedPhoto=await fetch(base+'/api/files?action=media&id='+photoUpload.data.id);assert.equal(stampedPhoto.status,200);const photoBytes=Buffer.from(await stampedPhoto.arrayBuffer()),photoMeta=await sharp(photoBytes).metadata(),photoRaw=await sharp(photoBytes).ensureAlpha().raw().toBuffer();assert.equal(jsQR(new Uint8ClampedArray(photoRaw),photoMeta.width,photoMeta.height)?.data,customURL);
  await page.locator('[data-manage=inquiries]').click();await page.locator('.crm-card').first().waitFor();await page.locator('.crm-filters [name=intent]').selectOption('owner_sale');await page.locator('.crm-filters button').click();await page.waitForFunction(()=>document.querySelectorAll('.crm-card').length===1);assert((await page.locator('.crm-card').innerText()).includes('Ký gửi bán'));await page.locator('.crm-edit [name=notes]').fill('Ghi chú quản trị từ giao diện');await page.locator('.crm-edit [name=status]').selectOption('following');await page.locator('.crm-edit button').click();await page.locator('.crm-save-status').filter({hasText:'Đã lưu'}).waitFor();await page.locator('[data-crm-refresh]').click();await page.waitForFunction(()=>document.querySelector('.crm-edit textarea')?.value==='Ghi chú quản trị từ giao diện');assert((await page.locator('#management-inquiries').innerText()).includes(name));
  await page.locator('[data-manage=exports]').click();const download=page.waitForEvent('download');await page.locator('[data-panel=exports] [data-export=posts][data-format=xlsx]').click();assert.equal((await download).suggestedFilename(),'posts.xlsx');
  for(const width of [375,768,1440]){await page.setViewportSize({width,height:950});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'admin overflow '+width)}

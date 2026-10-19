@@ -1,3 +1,5 @@
+> Cập nhật QR, tên miền mờ và trạng thái nguồn: xem QR_AND_INVENTORY.md. Phiên bản dấu ảnh hiện tại là qr-web-v2.
+
 # Tiêu đề, mã tin và dấu mờ ảnh
 
 ## Quy tắc hiển thị
@@ -40,7 +42,7 @@ Số `0906215365` được ghép thành nét ảnh thật ở góc dưới bên 
 
 Đã xử lý 60 ảnh JPEG/WebP của 30 bài tĩnh và banner dùng khi bài chưa có ảnh. Bản gốc giữ ngoài repository trong scratch. Manifest kiểm tra hash để không đóng dấu chồng khi chạy lại.
 
-Ảnh đã có/mới trong Supabase: endpoint /api/files kiểm tra quyền như trước, tạo bản JPEG có dấu vào bucket riêng `branding/phone-v1/<asset-id>.jpg`, rồi dùng bản này cho hiển thị, chia sẻ và tải ảnh. Bản gốc không bị ghi đè, video/tài liệu không bị biến đổi. Chỉ các ảnh gắn vào bài được công khai mới được cấp URL tải công khai; ảnh chờ duyệt giữ quyền riêng tư. Bản có dấu được dùng lại từ kho lưu trữ, không gọi OpenAI. Ảnh tối đa 10 MB, 40 triệu pixel đầu vào, xuất cạnh dài tối đa 2000 px và bỏ metadata nguồn.
+Ảnh đã có/mới trong Supabase: endpoint /api/files kiểm tra quyền như trước, tạo bản JPEG có dấu vào bucket riêng `branding/qr-web-v2/<asset-id>-<code>-<qr-revision>.jpg`, rồi dùng bản này cho hiển thị, chia sẻ và tải ảnh. Bản gốc không bị ghi đè, video/tài liệu không bị biến đổi. Chỉ các ảnh gắn vào bài được công khai mới được cấp URL tải công khai; ảnh chờ duyệt giữ quyền riêng tư. Bản có dấu được dùng lại từ kho lưu trữ, không gọi OpenAI. Ảnh tối đa 10 MB, 40 triệu pixel đầu vào, xuất cạnh dài tối đa 2000 px và bỏ metadata nguồn.
 
 ## Duy trì bộ tin tĩnh
 
