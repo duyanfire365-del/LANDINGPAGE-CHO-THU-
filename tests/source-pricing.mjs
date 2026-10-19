@@ -27,3 +27,11 @@ console.log('Rent pricing passed: exact Telegram regression, thousands/decimal s
 assert(safePublicText('Đơn giá: 110.000 đồng/m²/tháng.'));assert(!safePublicText('Địa chỉ 110 Đồng Xuân'));
 
 assert.throws(()=>extractByRules('Ban nha 100m2 gia 5 ty'),{status:422});assert.throws(()=>extractByRules('Can ban kho 1600m2 gia 20ty'),{status:422});
+for(const [text,size,price] of [
+ ['Tầng 1: 60m2; Tầng 2: 90m2; Tầng 3: 80m2\nGiá thuê 25tr/th',60,25],
+ ['T1: 60m²\nT2: 90m²\nGiá thuê 30tr/tháng',60,30],
+ ['Tầng 2: 90m2\nTầng 3: 80m2\nGiá thuê 20tr/th',90,20],
+ ['DT 100m2\nGiá thuê 58K/m2',100,5.8],
+ ['DT 100m2\nGiá thuê 58.000đ/m2/th',100,5.8]
+]){const p=extractRentPricing(text);assert.equal(p.size,size,text);assert.equal(p.price,price,text);if(text.includes('Tầng')||text.includes('T1'))assert(p.floorDescription.includes('tầng 2'));}
+assert.throws(()=>extractRentPricing('Diện tích 60m2 hoặc 90m2 giá 20tr/th'),{status:422});
