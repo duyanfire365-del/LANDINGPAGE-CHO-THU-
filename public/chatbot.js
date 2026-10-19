@@ -57,7 +57,7 @@
     const extra=form.querySelector('.extra-fields');extra.hidden=owner;
     extra.querySelectorAll('input, select').forEach(field=>field.disabled=owner);
     document.querySelectorAll('[data-lead-intent]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.leadIntent===intent)));
-    if(changed){q('#lead-review').hidden=true;q('#form-status').textContent='';}
+    if(changed){if(q('#lead-success-contact'))q('#lead-success-contact').hidden=true;q('#lead-review').hidden=true;q('#form-status').textContent='';}
     updateSubmitLabel();form.dispatchEvent(new Event('rental-intent'));
   }
   document.querySelectorAll('[data-lead-intent]').forEach(button=>button.addEventListener('click',()=>setIntent(button.dataset.leadIntent)));
@@ -175,7 +175,7 @@
     const data=leadData();q('#lead-summary').textContent=summary(data);q('#lead-review').hidden=false;
     if(!state.lead){q('#form-status').textContent='Thông tin đã sẵn sàng. Chưa gửi dữ liệu. Anh/chị sao chép nội dung bên dưới, mở Zalo và gửi cho tư vấn viên.';return}
     sending=true;const button=form.querySelector('button[type=submit]');button.disabled=true;button.textContent='Đang gửi…';
-    try{const response=await fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),signal:AbortSignal.timeout(14000)});const result=await response.json();if(!response.ok||result.received!==true)throw Error('Not received');q('#form-status').textContent='Đã gửi yêu cầu thành công. Lịch xem hoặc thông tin ký gửi sẽ được xác nhận khi trao đổi trực tiếp.'}
+    try{const response=await fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),signal:AbortSignal.timeout(14000)});const result=await response.json();if(!response.ok||result.received!==true)throw Error('Not received');q('#form-status').textContent=data.intent==='tenant'?'Cảm ơn Anh/chị đã để lại thông tin nhu cầu. Hệ thống đang tự động lọc nguồn theo nhu cầu của Anh/chị, thời gian dự kiến 1–3 phút. Kết quả có sớm sẽ hiển thị ngay bên trên. Nếu muốn đi xem trực tiếp, vui lòng gọi hoặc nhắn Zalo 0906215365 để được tư vấn và hỗ trợ tốt nhất.':'Đã gửi yêu cầu thành công. Thông tin ký gửi sẽ được xác nhận khi trao đổi trực tiếp.';if(data.intent==='tenant'){form.querySelector('[data-find-matches]')?.click();let contacts=q('#lead-success-contact');if(!contacts){contacts=document.createElement('div');contacts.id='lead-success-contact';contacts.className='phone-actions';contacts.innerHTML='<a href="tel:0906215365">Gọi 0906 215 365</a><a href="https://zalo.me/0906215365" target="_blank" rel="noopener noreferrer">Chat Zalo</a>';q('#form-status').after(contacts)}contacts.hidden=false}}
     catch{q('#form-status').textContent='Chưa xác nhận gửi thành công. Anh/chị có thể sao chép thông tin và gửi qua Zalo hoặc gọi hotline.'}
     finally{sending=false;button.disabled=false;updateSubmitLabel()}
   });

@@ -6,3 +6,9 @@ let matches=match(rows,{area:'Cầu Giấy',type:'Văn phòng',maxBudget:30,minS
 matches=match(rows,{budget:'over-100'});assert.equal(matches[0].post.slug,'b');assert.equal(matches[0].gaps.length,0);
 matches=match(rows,{industry:'Phòng khám / Nha khoa'});assert.equal(matches.length,0);
 console.log('PASS: criteria ranking, budget ranges, rented exclusion, no unsupported industry suitability claims');
+const {locations}=globalThis.RentalNeedMatching;
+assert.deepEqual(locations({area:'Cầu Giấy',requirements:'quanh khu vực Hà Đông cũng được'}).areas,['Cầu Giấy','Hà Đông']);
+assert.deepEqual(locations({area:'Cầu Giấy',requirements:'quanh Mỹ Đình, nam từ liêm'}).areas,['Cầu Giấy','Nam Từ Liêm']);
+assert.deepEqual(locations({area:'Cầu Giấy',requirements:'chỉ tìm Hà Đông'}).areas,['Hà Đông']);
+assert(!locations({area:'Cầu Giấy',requirements:'không ở Hà Đông'}).areas.includes('Hà Đông'));
+const expanded=match([{slug:'hd',area:'Hà Đông',type:'Văn phòng',price:20,size:100},{slug:'cg',area:'Cầu Giấy',type:'Văn phòng',price:20,size:100}],{area:'Cầu Giấy',requirements:'Hà Đông cũng được'});assert.equal(expanded.length,2);assert(expanded.find(r=>r.post.slug==='hd').reasons.some(r=>r.includes('bổ sung')));
