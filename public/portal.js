@@ -10,11 +10,12 @@
   try{const shared=await fetch('/api/workspace?view=source-shared',{cache:'no-store'}),result=await shared.json();if(shared.ok&&result.sources?.length)$('#member-posts').insertAdjacentHTML('beforeend','<h3>Nguồn được cấp quyền xem</h3>'+result.sources.map(r=>`<p>${esc(r.code)} · ${esc(r.title)} <button type="button" class="button outline small" data-source-open="${esc(r.slug)}">Xem nguồn / Map được chia sẻ</button></p>`).join(''))}catch{}
   $('#member-posts').innerHTML+='<h3>Nhu cầu đã gửi</h3>'+((data.inquiries||[]).map(r=>`<p>${({tenant:'Cần thuê',owner:'Ký gửi cho thuê',owner_sale:'Ký gửi bán',owner_transfer:'Chuyển nhượng'})[r.intent]||r.intent} · ${esc(r.area||'Chưa chọn khu vực')} · ${esc(r.type||'Chưa chọn danh mục')}</p>`).join('')||'<p>Chưa có nhu cầu được ghi nhận trong tài khoản.</p>');
  }
+ let customerMount;
  async function load(){
   try{const response=await fetch('/api/members',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);profile=data.profile;
    $('#member-auth').hidden=!!profile;$('#member-workspace').hidden=!profile;
    if(!data.enabled){status('Hệ thống thành viên đang được kết nối. Anh/chị có thể gọi hotline hoặc gửi nhu cầu qua Zalo trong thời gian này.');return}
-   status('');if(!profile)return;
+   status('');if(!profile){customerMount?.clear();customerMount=null;document.querySelector('#customer-member-root')?.remove();return;}if(!customerMount){const root=document.createElement('section');root.id='customer-member-root';root.className='portal-card';$('#member-workspace').append(root);customerMount=RentalCustomers.mount(root)}
    $('#member-profile').textContent=`${profile.full_name} · ${profile.kind==='sales'?'Sale / Cộng tác viên':'Khách hàng'}`;
    const canPost=profile.kind==='sales'&&profile.can_post;$('#member-posting').hidden=!canPost;
    $('#posting-permission').textContent=canPost?'Anh/chị đã được cấp quyền gửi tin. Mọi tin đều cần quản trị viên duyệt.':profile.kind==='sales'?'Tài khoản đang chờ quản trị viên cấp quyền gửi tin.':'Anh/chị có thể gửi nhu cầu cần thuê hoặc ký gửi qua biểu mẫu.';
@@ -25,7 +26,7 @@
   event.preventDefault();const button=event.submitter;button.disabled=true;
   try{const body=Object.fromEntries(new FormData(event.target));body.action=action;body.consent=event.target.elements.consent?.checked===true;const data=await request(body);event.target.reset();if(action==='login')await load();else status(data.message)}catch(error){status(error.message)}finally{button.disabled=false}
  });
- $('#member-logout').addEventListener('click',async()=>{try{RentalSources.close();await request({action:'logout'});$('#member-posting').replaceChildren();$('#member-posts').replaceChildren();await load()}catch(error){status(error.message)}});
- window.addEventListener('pagehide',()=>{$('#member-posting').replaceChildren();$('#member-posts').replaceChildren();$('#member-profile').textContent=''});
+ $('#member-logout').addEventListener('click',async()=>{try{customerMount?.clear();customerMount=null;document.querySelector('#customer-member-root')?.remove();RentalSources.close();await request({action:'logout'});$('#member-posting').replaceChildren();$('#member-posts').replaceChildren();await load()}catch(error){status(error.message)}});
+ window.addEventListener('pagehide',()=>{customerMount?.clear();customerMount=null;document.querySelector('#customer-member-root')?.remove();$('#member-posting').replaceChildren();$('#member-posts').replaceChildren();$('#member-profile').textContent=''});
  window.addEventListener('pageshow',event=>{if(event.persisted)load()});load();
 })();

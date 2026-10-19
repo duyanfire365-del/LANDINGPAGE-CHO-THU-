@@ -53,7 +53,7 @@
   "functions": {
     "api/*.mjs": {
       "maxDuration": 300,
-      "includeFiles": "{lib/**,public/listings.json,public/banner.png,public/tin.html,public/images/*.jpg,node_modules/pdf-parse/dist/worker/**,node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs}"
+      "includeFiles": "{lib/**,public/need-matching.js,public/listings.json,public/banner.png,public/tin.html,public/images/*.jpg,node_modules/pdf-parse/dist/worker/**,node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs}"
     }
   },
   "rewrites": [

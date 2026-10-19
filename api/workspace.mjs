@@ -1,3 +1,6 @@
+import {customerRows,getCustomer,saveCustomer,refreshCustomer,customerScope,matchNewStock} from '../lib/customers.mjs';
+import {customerHook,connectCustomerBot,createCustomerImport,processCustomerImport,retryCustomerImport} from '../lib/customer-imports.mjs';
+import {syncCustomerSheet,sheetReady,autoCustomerSheet} from '../lib/customer-sheets.mjs';
 import {findSourceMembers,getSource,publicSource,saveSource,createMapShare,revokeMapShares,mapShare,sharedSources,sourceAccess} from '../lib/property-source.mjs';
 import {formPricing} from '../lib/source-pricing.mjs';
 import {updateInventory} from '../lib/inventory.mjs';
@@ -9,8 +12,13 @@ import {draft} from '../lib/posts.mjs';
 import {intentLabels} from '../lib/inquiries.mjs';
 export default async function handler(req,res){
  try{
+  const customerParams=new URL(req.url,'http://localhost').searchParams;
+  if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='customers'){const who=await actor(req),offset=Math.max(0,Math.min(100000,Number(params.get('offset'))||0));const rows=await customerRows(who,{offset,limit:21,q:params.get('q')});const imports=await db('customer_imports',{query:'?order=created_at.desc&limit=10'+customerScope(who)});return send(res,200,{items:rows.slice(0,20),hasMore:rows.length>20,imports:imports.map(({payload,...r})=>({...r,text:payload.text||payload.extractedText||'',name:payload.name||payload.media?.name||'',hasFile:!!payload.rawPath})),admin:who.admin,sheets:who.admin&&sheetReady(),bot:who.admin&&!!process.env.TELEGRAM_CUSTOMER_BOT_TOKEN});}
+   if(params.get('view')==='customer-matches'){const who=await actor(req);const {customerMatches,publicStock}=await import('../lib/customers.mjs');const row=await getCustomer(who,params.get('id'));return send(res,200,{matches:row.status==='closed'?[]:customerMatches(row.data,await publicStock()).slice(0,20)});}
+   if(params.get('view')==='customer-original'){const who=await actor(req),id=params.get('id');if(!/^[a-f0-9-]{36}$/i.test(id||''))throw Object.assign(Error('Mã tệp không hợp lệ.'),{status:400});const row=(await db('customer_imports',{query:'?id=eq.'+id+customerScope(who)}))[0];if(!row?.payload?.rawPath)throw Object.assign(Error('Không tìm thấy tệp.'),{status:404});const {supa}=await import('../lib/platform.mjs');const signed=await supa('/storage/v1/object/sign/rental-private/'+row.payload.rawPath,{method:'POST',body:{expiresIn:60}});return send(res,200,{url:process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1'+signed.signedURL});}
    if(params.get('view')==='source-public')return send(res,200,await publicSource(params.get('slug')));
    if(params.get('view')==='source-access')return send(res,200,await sourceAccess(req,params.get('slug')));
    if(params.get('view')==='source-members')return send(res,200,{members:await findSourceMembers(req,params.get('slug'),params.get('q'))});
@@ -43,11 +51,17 @@ export default async function handler(req,res){
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
-  const body=await readJson(req,20000);
+  const body=await readJson(req,customerParams.has('customers')?4500000:20000);
+  if(body.action==='customer-save'){const result=await saveCustomer(req,body),who=await actor(req);waitUntil(refreshCustomer(who,result.id).then(()=>autoCustomerSheet()).catch(()=>{}));return send(res,200,result);}
+  if(body.action==='customer-refresh'){const who=await actor(req);const matches=await refreshCustomer(who,body.id);waitUntil(autoCustomerSheet());return send(res,200,{matches});}
+  if(body.action==='customer-import'){const id=await createCustomerImport(req,body);waitUntil(processCustomerImport(id));return send(res,202,{queued:true,id});}
+  if(body.action==='customer-import-retry'){const id=await retryCustomerImport(req,body);waitUntil(processCustomerImport(id));return send(res,202,{queued:true,id});}
+  if(body.action==='customer-bot-connect')return send(res,200,await connectCustomerBot(req));
+  if(body.action==='customer-sheets'){requireAdmin(req);return send(res,200,await syncCustomerSheet());}
   if(body.action==='source-save')return send(res,200,await saveSource(req,body));
   if(body.action==='source-link')return send(res,200,await createMapShare(req,body));
   if(body.action==='source-revoke')return send(res,200,await revokeMapShares(req,body));
-  if(body.action==='inventory')return send(res,200,await updateInventory(req,body));
+  if(body.action==='inventory'){const result=await updateInventory(req,body);waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,result);}
   if(body.action==='submit'){
    const who=await actor(req,{posting:true}),record=await draft(body,who),rows=await db('posts',{method:'POST',body:record});
    const canonical=(await canonicalizeSubset(rows))[0];await db('posts',{method:'PATCH',query:'?id=eq.'+rows[0].id,body:{public_data:canonical.public_data}});
@@ -76,7 +90,7 @@ export default async function handler(req,res){
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data:canonical.public_data}});
-   return send(res,200,{saved:true});
+   if(rows[0].status==='published')waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{saved:true});
   }
   if(body.action==='inquiry-update'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||!['new','contacted','following','closed'].includes(body.status)||typeof body.notes!=='string'||body.notes.length>4000)return send(res,400,{error:'Thông tin cập nhật hồ sơ không hợp lệ.'});
@@ -103,7 +117,7 @@ export default async function handler(req,res){
    // Revalidate public fields, including data imported/edited outside this interface.
    const {safePublicText}=await import('../lib/posts.mjs');const p=posts[0].public_data;
    if(body.status==='published'&&(!safePublicText([p.title,p.address,p.description].join(' '))||p.hashtags||!p.title))return send(res,400,{error:'Tin có thông tin riêng tư trong phần công khai. Cần sửa bản nháp trước khi duyệt.'});
-   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{status:body.status,reviewed_at:new Date().toISOString()}});return send(res,200,{ok:true});
+   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{status:body.status,reviewed_at:new Date().toISOString()}});waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{ok:true});
   }
   return send(res,400,{error:'Yêu cầu không hợp lệ.'});
  }catch(error){return send(res,error.status||502,{error:error.message||'Chưa xử lý được yêu cầu.'})}

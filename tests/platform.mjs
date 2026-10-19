@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright');
 import {exportDocument,extractDocument,spreadsheetDrafts} from '../lib/documents.mjs';
 // Local Supabase/Telegram doubles exercise the real handlers, not production services.
-const tables={profiles:[],posts:[],inquiries:[],assets:[],notification_log:[],property_sources:[]},users=[],files=new Map();
+const tables={profiles:[],posts:[],inquiries:[],assets:[],notification_log:[],property_sources:[],customer_watch:[],customer_imports:[],customer_match_alerts:[],customer_sync_jobs:[]},users=[],files=new Map();
 const fake=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');const chunks=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));const rawBuffer=Buffer.concat(chunks),raw=rawBuffer.toString('utf8');
  let body;try{body=JSON.parse(raw)}catch{body=null}
@@ -25,11 +25,12 @@ const fake=http.createServer(async(req,res)=>{
  if(url.pathname==='/auth/v1/user'){
   const user=users.find(u=>'Bearer '+u.id===req.headers.authorization);return user?reply(200,{id:user.id}):reply(401,{});
  }
+ if(url.pathname==='/rest/v1/rpc/claim_customer_alerts'){const rows=tables.customer_match_alerts.filter(r=>r.customer_id===body.p_customer&&body.p_slugs.includes(r.slug)&&!r.sent&&!r.claim_token);rows.forEach(r=>r.claim_token=body.p_token);return reply(200,rows.map(r=>({slug:r.slug})))}
  if(url.pathname.startsWith('/rest/v1/')){
   const name=url.pathname.split('/').pop(),table=tables[name];if(!table)return reply(404,{});
   const matches=row=>[...url.searchParams].every(([key,value])=>{
    if(['order','limit','select','offset'].includes(key))return true;
-   if(key==='or')return value.slice(1,-1).split(',').some(part=>{const [field,pattern]=part.split('.ilike.');return String(row[field]||'').toLowerCase().includes(pattern.slice(1,-1).toLowerCase())});
+   if(key==='or')return value.slice(1,-1).split(',').some(part=>{const [field,pattern]=part.split('.ilike.');return String(field.startsWith('data->>')?row.data?.[field.slice(7)]||'':row[field]||'').toLowerCase().includes(pattern.slice(1,-1).toLowerCase())});
    if(key==='public_data->>slug')return row.public_data.slug===value.slice(3);
    if(key==='public_data->media')return (row.public_data.media||[]).some(a=>JSON.parse(value.slice(3)).some(b=>a.id===b.id));
    if(value.startsWith('like.'))return String(row[key]||'').startsWith(value.slice(5).replace('*',''));
@@ -37,6 +38,8 @@ const fake=http.createServer(async(req,res)=>{
    if(value.startsWith('eq.'))return String(row[key])===value.slice(3);
    if(value.startsWith('in.('))return value.slice(4,-1).split(',').includes(row[key]);return true;
   });
+  if(req.method==='POST'&&name.startsWith('customer_')){const added=[];for(const entry of (Array.isArray(body)?body:[body])){const keys=(url.searchParams.get('on_conflict')||'').split(',').filter(Boolean),old=keys.length?table.find(r=>keys.every(k=>r[k]===entry[k])):null;if(old){if(!String(req.headers.prefer).includes('ignore-duplicates')){Object.assign(old,entry);added.push(old)}continue}const row={id:randomUUID(),created_at:new Date().toISOString(),updated_at:new Date().toISOString(),...(name==='customer_imports'?{status:'received',error:''}:{}),...(name==='customer_match_alerts'?{sent:false}:{}),...entry};table.push(row);added.push(row)}return reply(201,added)}
+  if(req.method==='DELETE'){for(let i=table.length-1;i>=0;i--)if(matches(table[i]))table.splice(i,1);return reply(200,[])}
   if(req.method==='POST'&&name==='property_sources'&&url.searchParams.get('on_conflict')==='slug'){const old=table.find(r=>r.slug===body.slug);if(old){Object.assign(old,body);return reply(200,[old])}}
   if(req.method==='POST'){const row={id:randomUUID(),created_at:new Date().toISOString(),...(name==='inquiries'?{management_status:'new',admin_notes:''}:{}),...body};table.push(row);return reply(201,[row])}
   let rows=table.filter(matches);if((url.searchParams.get('order')||'').startsWith('created_at.desc'))rows=[...rows].reverse();
@@ -188,6 +191,22 @@ try{
  const memberContext=await browser.newContext();await memberContext.addCookies([{name:'rental_member',value:salesCookie.split('=')[1],url:base}]);const memberPage=await memberContext.newPage();await memberPage.goto(base+'/thanh-vien');await memberPage.locator('#member-posting .editor-form').waitFor();const sourceForm=memberPage.locator('#member-posting .editor-form');await sourceForm.locator('.source-draft-details>summary').click();for(const [key,value]of Object.entries({title:'Kho cho thuê',location:'Đội Cấn',price:'25',size:'100',description:'Tin thử nguồn riêng.',ownerPhone1:'0966666666',partnerPhone1:'0977777777',sourceName:'Nguồn từ thành viên',mapUrl:'21.04,105.86'}))await sourceForm.locator('[name='+key+']').fill(value);await sourceForm.locator('[name=area]').selectOption('Ba Đình');await sourceForm.locator('[name=type]').selectOption('Kho xưởng');await sourceForm.locator('button[type=submit]').click();await memberPage.waitForFunction(()=>document.querySelector('#member-posting .editor-status').textContent.includes('Đã gửi tin'));const memberSource=tables.posts.find(p=>p.private_data.sourceInfo?.sourceName==='Nguồn từ thành viên');assert(memberSource);assert.equal(memberSource.author_id,tables.profiles[0].id);assert.equal(memberSource.private_data.sourceInfo.ownerPhones[0],'0966666666');assert(!JSON.stringify(memberSource.public_data).includes('0966666666'));await memberContext.close();
  assert.deepEqual(errors,[]);
  clientIP='198.51.100.9';const needLead=await post('/api/leads',{intent:'tenant',name:'Khách cần mặt bằng',phone:'0906215365',area:'Cầu Giấy',industry:'Cà phê / Trà sữa',maxBudget:30,minSize:80,requirements:'Có chỗ để xe',contactConsent:true},salesCookie);assert.equal(needLead.response.status,200);assert(tables.inquiries.at(-1).owner_notes.includes('Cà phê / Trà sữa'));assert(tables.inquiries.at(-1).owner_notes.includes('80 m²'));assert.equal((await post('/api/leads',{intent:'tenant',name:'Sai tiêu chí',phone:'0906215365',maxBudget:-10,contactConsent:true},salesCookie)).response.status,400);
+ clientIP='198.51.100.10';
+ const privateCustomer={name:'Khách theo dõi bí mật',phone:'0912345678',area:'Ba Đình',type:'VP',maxBudget:30,minSize:60,notes:'Đã dẫn, giữ kín',requirements:'Văn phòng rộng'};
+ const adminCustomer=await post('/api/workspace',{action:'customer-save',data:privateCustomer},adminCookie);assert.equal(adminCustomer.response.status,200);const adminCustomerId=adminCustomer.data.id;
+ const salesCustomer=await post('/api/workspace',{action:'customer-save',data:privateCustomer},salesCookie);assert.equal(salesCustomer.response.status,200);assert.equal((await post('/api/workspace',{action:'customer-save',data:privateCustomer},salesCookie)).response.status,409);
+ assert.equal((await fetch(base+'/api/workspace?view=customers')).status,401);
+ const salesCustomers=await (await fetch(base+'/api/workspace?view=customers',{headers:{cookie:salesCookie}})).json();assert.equal(salesCustomers.items.length,1);assert.equal(salesCustomers.items[0].id,salesCustomer.data.id);
+ assert.equal((await (await fetch(base+'/api/workspace?view=customers',{headers:{cookie:adminCookie}})).json()).items.length,2);
+ assert.equal((await (await fetch(base+'/api/workspace?view=customers',{headers:{cookie:viewerCookie}})).json()).items.length,0);
+ assert.equal((await post('/api/workspace',{action:'customer-save',id:adminCustomerId,data:privateCustomer},salesCookie)).response.status,404);
+ assert.equal((await fetch(base+'/api/workspace?view=customer-matches&id='+adminCustomerId,{headers:{cookie:salesCookie}})).status,404);
+ assert.equal((await post('/api/workspace',{action:'customer-sheets'},salesCookie)).response.status,401);
+ const matchResponse=await fetch(base+'/api/workspace?view=customer-matches&id='+salesCustomer.data.id,{headers:{cookie:salesCookie}});assert.equal(matchResponse.status,200);assert(!JSON.stringify(await matchResponse.json()).includes(secretInfo.ownerPhones[0]));assert(!JSON.stringify(await (await fetch(base+'/api/catalog')).json()).includes(privateCustomer.name));
+ const imported=await post('/api/workspace?customers=1',{action:'customer-import',text:'Tên: Khách từ tài liệu\nSĐT: 0934567890\nKhu vực: Hà Đông\nNgân sách tối đa: 25 triệu'},salesCookie);assert.equal(imported.response.status,202);for(let i=0;i<60&&tables.customer_imports.find(r=>r.id===imported.data.id)?.status==='received';i++)await new Promise(r=>setTimeout(r,50));for(let i=0;i<60&&tables.customer_imports.find(r=>r.id===imported.data.id)?.status==='processing';i++)await new Promise(r=>setTimeout(r,50));assert.equal(tables.customer_imports.find(r=>r.id===imported.data.id).status,'done');assert(tables.customer_watch.some(r=>r.data.phone==='0934567890'&&r.owner_id===tables.profiles[0].id));
+ await page.goto(base+'/thanh-vien');await page.locator('#customer-member-root .customer-record').first().waitFor();assert((await page.locator('#customer-member-root').innerText()).includes(privateCustomer.name));await page.locator('#customer-member-root [data-customer-edit]').first().click();assert(await page.locator('#customer-member-root .customer-editor').evaluate(e=>e.open));for(const width of [375,768,1440]){await page.setViewportSize({width,height:950});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'customer UI overflow '+width)}
+ await page.goto(base+'/admin');await page.locator('[data-admin-view=tools]').click();await page.locator('[data-manage=customers]').click();await page.locator('#customer-admin-root .customer-record').first().waitFor();assert(await page.locator('#customer-admin-root [data-customer-bot]').isVisible());assert(await page.locator('#customer-admin-root [data-customer-sheets]').isVisible());
+ console.log('PASS: customer watch owner isolation, admin overview, no public leakage, duplicate prevention, background text import, member editor and compact mobile layout');
  console.log('PASS: private contacts/maps, owner/admin access, member read grants, public opt-in slots only, revocable opaque Map links, no public map/phone leak, cross-owner denial and source editor UI.');
  console.log('PASS: real API/member UI with local Supabase doubles; permissions, pending/review/publish, private field isolation, document upload/import, AI missing-key behavior, saved leads despite Telegram failure, 3 Vietnamese export formats, browser downloads and responsive portals');
 }finally{await browser.close();fake.close();setTimeout(()=>process.exit(),100)}
