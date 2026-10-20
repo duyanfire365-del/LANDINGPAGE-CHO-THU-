@@ -12,7 +12,7 @@
   if(!c.maxBudget&&range){if(Number(p.price)>0&&p.price>=range[0]&&p.price<=range[1]&&(!(c.budget.startsWith('over-'))||p.price>range[0])){score+=3;reasons.push('Trong khoảng ngân sách')}else gaps.push('Khác khoảng ngân sách')}
   if(c.minSize){if(Number(p.size)>=c.minSize){score+=3;reasons.push('Đủ diện tích tối thiểu')}else gaps.push(Number(p.size)>0?'Diện tích nhỏ hơn yêu cầu':'Cần xác nhận diện tích')}
   if(c.industry){const keywords=sectors[c.industry]||[],forbidden=keywords.some(k=>new RegExp('(?:khong|cam)\\s+(?:cho\\s+)?(?:phep\\s+)?(?:phu hop\\s+)?(?:(?:kinh doanh|lam|mo)\\s+)?'+k+'(?:$|[^a-z])').test(text));if(forbidden)gaps.push('Tin đăng không cho phép ngành nghề này');else if(keywords.some(k=>text.includes(k))){score+=2;reasons.push('Tin có đề cập ngành nghề')}else gaps.push('Cần xác nhận phù hợp ngành nghề')}
-  return {post:p,score,reasons,gaps};}).filter(r=>r.score>0).sort((a,b)=>a.gaps.length-b.gaps.length||b.score-a.score).slice(0,c.limit??6)}
+  if(p.availability==='awaiting')gaps.push('Cần xác nhận tình trạng còn hàng');return {post:p,score,reasons,gaps};}).filter(r=>r.score>0).sort((a,b)=>a.gaps.length-b.gaps.length||b.score-a.score).slice(0,c.limit??6)}
  globalThis.RentalNeedMatching={match,sectors,locations,typeKey};
  if(typeof document==='undefined')return;
  const form=document.querySelector('#lead-form');if(!form)return;

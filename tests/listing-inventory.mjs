@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {inventorySnapshot} from '../lib/listing-availability.mjs';
+import {propertyDimensions,extractDimensions,dimensionFacts} from '../lib/property-dimensions.mjs';
+const now=Date.UTC(2026,9,20),day=86400000,at=days=>new Date(now-days*day).toISOString();
+const records=[{slug:'older',publishedAt:at(31),hot:true},{slug:'boundary',publishedAt:at(30)},{slug:'fresh',publishedAt:at(2),hot:true},{slug:'unknown'},{slug:'rented',publishedAt:at(40),hot:true},{slug:'paused',publishedAt:at(40),hot:true}];
+let data=inventorySnapshot(records,[{kind:'inventory:rented',record_id:'rented',created_at:at(20)},{kind:'inventory:paused',record_id:'paused',created_at:at(20)}],now);
+assert.equal(data.states.older,'awaiting');assert.equal(data.states.boundary,'available');assert.equal(data.states.fresh,'available');assert.equal(data.states.unknown,'awaiting');assert.equal(data.states.rented,'rented');assert.equal(data.states.paused,'paused');assert.equal(data.hot.fresh,true);assert.equal(data.hot.older,false);assert.equal(data.hotSelected.older,true);assert.equal(data.hot.rented,false);
+data=inventorySnapshot(records,[{kind:'inventory:available',record_id:'older',created_at:at(1)}],now);assert.equal(data.states.older,'available');assert.equal(data.hot.older,true);assert.equal(inventorySnapshot(records,[{kind:'inventory:available',record_id:'older',created_at:at(1)}],now+30*day).states.older,'awaiting');
+assert.equal(inventorySnapshot(records,[{kind:'hot:off',record_id:'fresh',created_at:at(1)}],now).hot.fresh,false);
+assert.equal(inventorySnapshot(records,[{kind:'inventory:awaiting',record_id:'fresh',created_at:at(1)}],now).states.fresh,'awaiting');
+assert.deepEqual(propertyDimensions({frontage:'5,5',roadWidth:'12',sidewalk:'no'}),{frontage:5.5,roadWidth:12,sidewalk:false});assert.throws(()=>propertyDimensions({frontage:-1}),{status:400});assert.throws(()=>propertyDimensions({roadWidth:1001}),{status:400});
+assert.deepEqual(extractDimensions('Mặt tiền 5,5m; đường trước nhà rộng 12m; không có vỉa hè'),{frontage:5.5,roadWidth:12,sidewalk:false});assert.equal(extractDimensions('Mặt tiền 5m, đường 8m, vỉa hè rộng 3m').sidewalk,true);assert.equal(propertyDimensions({sidewalk:'Không'}).sidewalk,false);assert.equal(propertyDimensions({sidewalk:'Có'}).sidewalk,true);assert.equal(extractDimensions('MT5m').frontage,5);assert.equal(extractDimensions('12 ngõ 62 Triều Khúc').roadWidth,null);assert(dimensionFacts({sidewalk:false}).includes('Vỉa hè: Không.'));
+console.log('PASS: exact 30-day boundary, stale/unknown dates, confirmation resets, rented/paused preserved, HOT suppressed until available, dimensions and explicit no-sidewalk');

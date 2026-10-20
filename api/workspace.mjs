@@ -1,10 +1,12 @@
+import {postHistory,logPostHistory} from '../lib/post-history.mjs';
+import {propertyDimensions,dimensionFacts} from '../lib/property-dimensions.mjs';
 import {saveCommand,previewCommand,executeRun} from '../lib/google-commands.mjs';
 import {customerRows,getCustomer,saveCustomer,refreshCustomer,customerScope,matchNewStock} from '../lib/customers.mjs';
 import {customerHook,connectCustomerBot,createCustomerImport,processCustomerImport,retryCustomerImport} from '../lib/customer-imports.mjs';
 import {syncCustomerSheet,sheetReady,autoCustomerSheet} from '../lib/customer-sheets.mjs';
 import {findSourceMembers,getSource,publicSource,saveSource,createMapShare,revokeMapShares,mapShare,sharedSources,sourceAccess} from '../lib/property-source.mjs';
 import {formPricing} from '../lib/source-pricing.mjs';
-import {updateInventory} from '../lib/inventory.mjs';
+import {updateInventory,updateHot} from '../lib/inventory.mjs';
 import {waitUntil} from '@vercel/functions';
 import {canonicalizeSubset,persistIdentities} from '../lib/listing-catalog.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
@@ -20,6 +22,7 @@ export default async function handler(req,res){
    const params=new URL(req.url,'http://localhost').searchParams;
    if(params.get('view')==='google-commands'){requireAdmin(req);const commands=await db('google_commands',{query:'?order=created_at.desc&limit=100'}),runs=await db('google_runs',{query:'?select=id,command_id,status,config,result,error,created_at&order=created_at.desc&limit=20'});return send(res,200,{commands,runs});}
    if(params.get('view')==='google-run'){requireAdmin(req);const id=params.get('id');if(!/^[a-f0-9-]{36}$/i.test(id||''))return send(res,400,{error:'Mã lượt không hợp lệ.'});const run=(await db('google_runs',{query:'?id=eq.'+id}))[0];if(!run)return send(res,404,{error:'Không tìm thấy lượt chạy.'});return send(res,200,{run});}
+   if(params.get('view')==='post-history')return send(res,200,await postHistory(req,params.get('slug')));
    if(params.get('view')==='customers'){const who=await actor(req),offset=Math.max(0,Math.min(100000,Number(params.get('offset'))||0));const rows=await customerRows(who,{offset,limit:21,q:params.get('q'),status:params.get('status'),type:params.get('type'),area:params.get('area'),budget:params.get('budget'),sort:params.get('sort')});const imports=await db('customer_imports',{query:'?order=created_at.desc&limit=10'+customerScope(who)});let items=rows.slice(0,20),matchError='';if(items.length)try{const {publicStock,customerMatches}=await import('../lib/customers.mjs'),stock=await publicStock();items=items.map(row=>({...row,matchCount:row.status==='closed'?0:customerMatches(row.data,stock).length}))}catch{matchError='Chưa cập nhật được nguồn; bấm Gợi ý nguồn phù hợp để thử lại.'}return send(res,200,{items,matchError,hasMore:rows.length>20,imports:imports.map(({payload,...r})=>({...r,text:payload.text||payload.extractedText||'',name:payload.name||payload.media?.name||'',hasFile:!!payload.rawPath})),admin:who.admin,sheets:who.admin&&sheetReady(),bot:who.admin&&!!process.env.TELEGRAM_CUSTOMER_BOT_TOKEN});}
    if(params.get('view')==='customer-matches'){const who=await actor(req);const {customerMatches,publicStock}=await import('../lib/customers.mjs');const row=await getCustomer(who,params.get('id'));return send(res,200,{matches:row.status==='closed'?[]:customerMatches(row.data,await publicStock()).slice(0,20)});}
    if(params.get('view')==='customer-original'){const who=await actor(req),id=params.get('id');if(!/^[a-f0-9-]{36}$/i.test(id||''))throw Object.assign(Error('Mã tệp không hợp lệ.'),{status:400});const row=(await db('customer_imports',{query:'?id=eq.'+id+customerScope(who)}))[0];if(!row?.payload?.rawPath)throw Object.assign(Error('Không tìm thấy tệp.'),{status:404});const {supa}=await import('../lib/platform.mjs');const signed=await supa('/storage/v1/object/sign/rental-private/'+row.payload.rawPath,{method:'POST',body:{expiresIn:60}});return send(res,200,{url:process.env.SUPABASE_URL.replace(/\/$/,'')+'/storage/v1'+signed.signedURL});}
@@ -75,13 +78,15 @@ export default async function handler(req,res){
   if(body.action==='source-revoke')return send(res,200,await revokeMapShares(req,body));
   if(body.action==='inventory'){const result=await updateInventory(req,body);waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,result);}
   if(body.action==='submit'){
-   const who=await actor(req,{posting:true}),record=await draft(body,who);const published=who.admin||(who.kind==='sales'&&who.can_post&&who.auto_publish===true);record.status=published?'published':'pending';if(published)record.reviewed_at=new Date().toISOString();record.private_data.publishMode=who.admin?'admin':published?'member_grant':'review';const rows=await db('posts',{method:'POST',body:record});
+   const who=await actor(req,{posting:true}),record=await draft(body,who);const published=who.admin||(who.kind==='sales'&&who.can_post&&who.auto_publish===true);const hot=body.hot===true||body.hot==='on';if(hot&&!who.admin)return send(res,403,{error:'Chỉ quản trị viên được ưu tiên tin HOT.'});record.public_data.hot=hot;record.status=published?'published':'pending';if(published)record.reviewed_at=new Date().toISOString();record.private_data.publishMode=who.admin?'admin':published?'member_grant':'review';const rows=await db('posts',{method:'POST',body:record});
    const canonical=(await canonicalizeSubset(rows))[0];await db('posts',{method:'PATCH',query:'?id=eq.'+rows[0].id,body:{public_data:canonical.public_data}});
+   await logPostHistory(canonical.public_data.slug,record.status);
    const notice=await notify(published?'Có tin mới đã đăng':'Có tin đang chờ duyệt',{id:canonical.public_data.code,name:canonical.public_data.title});await db('notification_log',{method:'POST',body:{kind:'post',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
    if(published)waitUntil(matchNewStock().then(()=>autoCustomerSheet()).catch(()=>{}));
    return send(res,201,{submitted:true,id:rows[0].id,published,status:record.status,href:canonical.public_data.href});
   }
   requireAdmin(req);
+  if(body.action==='highlight')return send(res,200,await updateHot(req,body));
   if(body.action==='normalize-identities'){waitUntil(persistIdentities().catch(()=>{}));return send(res,202,{queued:true});}
   if(body.action==='telegram-test'){
    if(!process.env.TELEGRAM_BOT_TOKEN||!process.env.TELEGRAM_CHAT_ID)return send(res,503,{error:'Cần thêm TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID vào Vercel, rồi Redeploy.'});
@@ -96,9 +101,11 @@ export default async function handler(req,res){
    if(!description||!safePublicText(description)||!Number.isFinite(size)||size<=0||size>10000000||!Number.isFinite(price)||price<=0||price>1000000)return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
    const p=rows[0].public_data;
    if(rows[0].private_data?.automation){description=description.replace(`Diện tích ${p.size} m², giá thuê tham khảo ${p.price} triệu đồng/tháng.`,`Diện tích ${size} m², giá thuê tham khảo ${price} triệu đồng/tháng.`);if(p.pricePerM2){const format=n=>new Intl.NumberFormat('vi-VN').format(n),old=`Đơn giá: ${format(p.pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(p.size)} m² là ${format(p.price)} triệu đồng/tháng.`;description=description.replace(old,pricePerM2?`Đơn giá: ${format(pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(size)} m² là ${format(price)} triệu đồng/tháng.`:'')}}
-   const public_data={...p,description,size,price,priceBasis,pricePerM2,areaText:size+' m²',facts:[...(p.facts||[]).filter(f=>!/^Đơn giá:/.test(f)),...(pricePerM2?['Đơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.']:[])]};
+   const dimensions=propertyDimensions({frontage:body.frontage===undefined?p.frontage:body.frontage,roadWidth:body.roadWidth===undefined?p.roadWidth:body.roadWidth,sidewalk:body.sidewalk===undefined?p.sidewalk:body.sidewalk});
+   const public_data={...p,...dimensions,description,size,price,priceBasis,pricePerM2,areaText:size+' m²',facts:[...(p.facts||[]).filter(f=>!/^Đơn giá:|^Mặt tiền:|^Đường rộng:|^Vỉa hè:/.test(f)),...dimensionFacts(dimensions),...(pricePerM2?['Đơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.']:[])]};
    public_data.shareText=`${p.title}\nKhu vực: ${p.address}\nDiện tích: ${size} m²\nGiá thuê: ${price} triệu đồng/tháng\n${description}\nLiên hệ: 0906215365`;
    if(pricePerM2)public_data.shareText+='\nĐơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.';
+   public_data.shareText+='\n'+dimensionFacts(dimensions).join('\n');
    const private_data={...rows[0].private_data,address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
@@ -139,7 +146,8 @@ export default async function handler(req,res){
    // Revalidate public fields, including data imported/edited outside this interface.
    const {safePublicText}=await import('../lib/posts.mjs');const p=posts[0].public_data;
    if(body.status==='published'&&(!safePublicText([p.title,p.address,p.description].join(' '))||p.hashtags||!p.title))return send(res,400,{error:'Tin có thông tin riêng tư trong phần công khai. Cần sửa bản nháp trước khi duyệt.'});
-   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{status:body.status,reviewed_at:new Date().toISOString()}});waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{ok:true});
+   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{status:body.status,reviewed_at:new Date().toISOString()}});
+   await logPostHistory(posts[0].public_data.slug,body.status);waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{ok:true});
   }
   return send(res,400,{error:'Yêu cầu không hợp lệ.'});
  }catch(error){return send(res,error.status||502,{error:error.message||'Chưa xử lý được yêu cầu.'})}
