@@ -146,6 +146,7 @@ export default async function handler(req,res){
    // Revalidate public fields, including data imported/edited outside this interface.
    const {safePublicText}=await import('../lib/posts.mjs');const p=posts[0].public_data;
    if(body.status==='published'&&(!safePublicText([p.title,p.address,p.description].join(' '))||p.hashtags||!p.title))return send(res,400,{error:'Tin có thông tin riêng tư trong phần công khai. Cần sửa bản nháp trước khi duyệt.'});
+   if(posts[0].status===body.status)return send(res,200,{ok:true,unchanged:true,status:body.status});
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{status:body.status,reviewed_at:new Date().toISOString()}});
    await logPostHistory(posts[0].public_data.slug,body.status);waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{ok:true});
   }
