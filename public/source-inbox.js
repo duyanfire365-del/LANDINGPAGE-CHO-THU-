@@ -1,0 +1,27 @@
+(() => {
+ const box=document.createElement('details');box.className='portal-card source-inbox-panel';box.id='source-inbox';box.hidden=true;box.innerHTML=`<summary>Nguồn từ bot Telegram</summary><p>Bot: @bot_nguon_mau_bot. Khi bật tự động, nguồn hợp lệ sẽ được tách thông tin, kiểm tra trùng và đăng cùng ảnh theo chế độ đã cấu hình. Địa chỉ chi tiết và hashtag giữ riêng.</p><div class="portal-links"><button class="button outline small" type="button" data-connect>Kết nối bot nhận nguồn</button><button class="button outline small" type="button" data-refresh>Tải nguồn mới</button></div><p role="status" data-status></p><div data-items></div>`;
+ document.querySelector('#admin-workspace').append(box);
+ const status=box.querySelector('[data-status]'),items=box.querySelector('[data-items]');let generation=0,page=0,latestData=null;
+ const labels={received:'Đã nhận',processing:'Đang tách thông tin / xử lý ảnh',published:'Đã tự đăng',duplicate:'Bỏ qua nguồn trùng',review:'Cần bổ sung thông tin',blocked:'Thiếu cấu hình',grouped:'Ảnh đã ghép vào album',failed:'Xử lý gián đoạn'};
+ function renderItems(data){items.replaceChildren();
+  for(const item of data.items.slice(page*10,page*10+10)){
+   const article=document.createElement('details');article.className='portal-record source-inbox-row';const date=document.createElement('summary');date.textContent=(labels[item.processing_status]||'Đã nhận')+' · '+new Date(item.created_at).toLocaleString('vi-VN')+' — '+(item.content||'Tệp đính kèm').replace(/\s+/g,' ').slice(0,100);
+   const text=document.createElement('pre');text.className='portal-source';text.style.whiteSpace='pre-wrap';text.textContent=item.content||'(Tin chỉ có tệp đính kèm)';
+   const note=document.createElement('p');note.textContent=item.processing_error||((item.media||[]).length?'Có tệp đính kèm trong Telegram. Chế độ ảnh gửi kèm dùng ảnh/album có chú thích để soạn tin; tài liệu/video chưa tự nhập.':'Nội dung gốc được lưu riêng trong quản trị.');
+   const copy=document.createElement('button');copy.type='button';copy.className='button outline small';copy.textContent='Sao chép nguồn';copy.onclick=async()=>{try{await navigator.clipboard.writeText(item.content);status.textContent='Đã sao chép nguồn. Anh có thể soạn thủ công trong Nhập tài liệu / Đăng tin.'}catch{status.textContent='Anh chọn văn bản nguồn để sao chép.'}};
+   article.append(date,text,note,copy);
+   if(item.result_url&&/^\/(?:tin\?|bds\/)/.test(item.result_url)){const link=document.createElement('a');link.className='button outline small';link.href=item.result_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Xem tin trên website';article.append(link)}
+   if(data.automation?.enabled&&['received','blocked','failed','processing','review'].includes(item.processing_status||'received')){const retry=document.createElement('button');retry.type='button';retry.className='button outline small';retry.textContent='Xử lý / Thử lại';retry.onclick=async()=>{retry.disabled=true;try{await RentalEditor.request('/api/telegram-inbox',{action:'process',id:item.id});status.textContent='Đã yêu cầu xử lý. Đợi vài phút rồi bấm Tải nguồn mới; nguồn đang chạy sẽ không chạy lặp.'}catch(error){status.textContent=error.message}finally{retry.disabled=false}};article.append(retry)}
+   items.append(article);
+  }
+  pager.hidden=data.items.length<=10;pager.querySelector('span').textContent=`Trang ${page+1} / ${Math.max(1,Math.ceil(data.items.length/10))}`;pager.querySelector('[data-inbox-prev]').disabled=page===0;pager.querySelector('[data-inbox-next]').disabled=(page+1)*10>=data.items.length;
+ }
+ const pager=document.createElement('nav');pager.className='source-pagination';pager.hidden=true;pager.setAttribute('aria-label','Trang nguồn Telegram');pager.innerHTML='<button type="button" class="button outline small" data-inbox-prev>← Trước</button><span></span><button type="button" class="button outline small" data-inbox-next>Sau →</button>';box.append(pager);pager.onclick=e=>{if(e.target.closest('[data-inbox-prev]'))page--;else if(e.target.closest('[data-inbox-next]'))page++;else return;renderItems(latestData)};
+ async function load(){
+  const version=generation;const response=await fetch('/api/telegram-inbox',{cache:'no-store'}),data=await response.json();if(version!==generation)return;if(!response.ok)throw Error(data.error);items.replaceChildren();
+  latestData=data;page=Math.min(page,Math.max(0,Math.ceil(data.items.length/10)-1));renderItems(data);
+  const a=data.automation;status.textContent=(a?.enabled?(a.mode==='provided'?'Tự đăng: dùng ảnh gửi kèm và quy tắc, không gọi AI trả phí.':a.aiReady?'Tự đăng: dùng AI và tạo ảnh.':'Tự đăng AI: đang thiếu OPENAI_API_KEY.'):'Tự đăng chưa bật. Thêm TELEGRAM_AUTO_PUBLISH=true trong Vercel rồi Redeploy.')+' Hiển thị '+data.items.length+' nguồn gần nhất. Bấm Tải nguồn mới để cập nhật kết quả.';
+ }
+ box.addEventListener('click',async event=>{const button=event.target.closest('[data-connect],[data-refresh]');if(!button)return;button.disabled=true;try{if(button.hasAttribute('data-connect')){await RentalEditor.request('/api/telegram-inbox',{action:'connect'});status.textContent='Đã kết nối. Anh gửi bài văn bản vào bot; hệ thống sẽ tách thông tin và ghép ảnh theo chế độ đã chọn.'}else await load()}catch(error){status.textContent=error.message}finally{button.disabled=false}});
+ window.addEventListener('admin-session',()=>{generation++;items.replaceChildren();status.textContent='';box.open=false;box.hidden=true;latestData=null;page=0;pager.hidden=true});
+})();

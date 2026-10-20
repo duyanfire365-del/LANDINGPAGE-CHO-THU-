@@ -1,0 +1,71 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "",
+  "installCommand": "npm ci",
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/admin(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, private"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    },
+    {
+      "source": "/thanh-vien(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, private"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "api/*.mjs": {
+      "maxDuration": 300,
+      "includeFiles": "{lib/**,public/need-matching.js,public/listings.json,public/banner.png,public/tin.html,public/images/*.jpg,node_modules/pdf-parse/dist/worker/**,node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs}"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/tin",
+      "destination": "/api/property"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/source-recovery",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

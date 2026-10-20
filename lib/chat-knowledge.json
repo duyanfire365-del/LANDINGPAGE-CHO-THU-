@@ -1,0 +1,11 @@
+{
+  "brand": "Website BĐS Mẫu",
+  "phone": "0000000000",
+  "status": "Website học tập; mọi tin đăng đều là ví dụ giả lập.",
+  "faq": [
+    {
+      "question": "Đây là website gì?",
+      "answer": "Bản mẫu học tập. Cần cấu hình thông tin và hệ thống riêng trước khi sử dụng thực tế."
+    }
+  ]
+}
