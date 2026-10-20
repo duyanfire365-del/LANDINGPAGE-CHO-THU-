@@ -16,7 +16,7 @@ const fake=http.createServer(async(req,res)=>{
  if(req.method==='OPTIONS')return reply(200,{});
  if(url.pathname==='/auth/v1/signup'){
   const user={id:randomUUID(),email:body.email,password:body.password};users.push(user);
-  tables.profiles.push({id:user.id,email:user.email,full_name:body.data.full_name,phone:body.data.phone,kind:body.data.kind,can_post:false,created_at:new Date().toISOString()});
+  tables.profiles.push({id:user.id,email:user.email,full_name:body.data.full_name,phone:body.data.phone,kind:body.data.kind,can_post:false,auto_publish:false,created_at:new Date().toISOString()});
   return reply(200,{user:{id:user.id,identities:[{id:randomUUID()}]}});
  }
  if(url.pathname==='/auth/v1/token'){
@@ -67,7 +67,7 @@ async function post(path,data,session=''){const response=await fetch(base+path,{
 const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium'});
 try{
  const name='Nguyễn Văn An',email='sale@example.test',password='Test-password-123!';
- let result=await post('/api/members',{action:'register',name,phone:'0906215365',kind:'sales',email,password,consent:true,can_post:true});assert.equal(result.response.status,200);assert.equal(tables.profiles[0].can_post,false);
+ let result=await post('/api/members',{action:'register',name,phone:'0906215365',kind:'sales',email,password,consent:true,can_post:true,auto_publish:true});assert.equal(result.response.status,200);assert.equal(tables.profiles[0].can_post,false);assert.equal(tables.profiles[0].auto_publish,false);
  result=await post('/api/members',{action:'login',email,password});assert.equal(result.response.status,200);const salesCookie=cookie(result.response);
  const oldKeyLogin=await post('/api/admin',{action:'login',password:process.env.ADMIN_SECRET});assert.equal(oldKeyLogin.response.status,401,'encryption key is not a login password');
  const login=await post('/api/admin',{action:'login',password:process.env.ADMIN_LOGIN_PASSWORD});assert.equal(login.response.status,200);const adminCookie=cookie(login.response);
@@ -235,5 +235,20 @@ try{
  console.log('PASS: Google command admin-only access, untrusted URL rejection, command-save and edit UI');
  console.log('PASS: customer watch owner isolation, admin overview, no public leakage, duplicate prevention, background text import, member editor and compact mobile layout');
  console.log('PASS: private contacts/maps, owner/admin access, member read grants, public opt-in slots only, revocable opaque Map links, no public map/phone leak, cross-owner denial and source editor UI.');
+ clientIP='198.51.100.30';
+ assert.equal((await post('/api/workspace',{action:'publish-permission',id:tables.profiles[0].id,mode:'auto'},salesCookie)).response.status,401);
+ const publicationForgery=await post('/api/workspace',{...input,title:'Thử tự cấp đăng',status:'published',auto_publish:true,canPublish:true},salesCookie);assert.equal(publicationForgery.response.status,201);assert.equal(publicationForgery.data.published,false);assert.equal(tables.posts.find(p=>p.id===publicationForgery.data.id).status,'pending');
+ delete tables.profiles[0].auto_publish;assert.equal((await post('/api/workspace',{action:'publish-permission',id:tables.profiles[0].id,mode:'auto'},adminCookie)).response.status,503);tables.profiles[0].auto_publish=false;
+ const adminPost=await post('/api/workspace',{...input,title:'Quản trị đăng trực tiếp'},adminCookie);assert.equal(adminPost.response.status,201);assert.equal(adminPost.data.published,true);assert.equal(tables.posts.find(p=>p.id===adminPost.data.id).status,'published');
+ assert.equal((await post('/api/workspace',{action:'publish-permission',id:tables.profiles[0].id,mode:'auto'},adminCookie)).response.status,200);
+ const automatic=await post('/api/workspace',{...input,title:'Thành viên được chỉ định'},salesCookie);assert.equal(automatic.response.status,201);assert.equal(automatic.data.published,true);assert.equal(tables.posts.find(p=>p.id===automatic.data.id).private_data.publishMode,'member_grant');
+ assert.equal((await post('/api/workspace',{action:'publish-permission',id:tables.profiles[0].id,mode:'review'},adminCookie)).response.status,200);
+ const manualAgain=await post('/api/workspace',input,salesCookie);assert.equal(manualAgain.data.published,false);
+ assert.equal((await post('/api/workspace',{action:'publish-permission',id:tables.profiles[0].id,mode:'auto'},adminCookie)).response.status,200);
+ assert.equal((await post('/api/workspace',{action:'permission',id:tables.profiles[0].id,canPost:false},adminCookie)).response.status,200);assert.equal(tables.profiles[0].auto_publish,false);assert.equal((await post('/api/workspace',input,salesCookie)).response.status,403);
+ assert.equal((await post('/api/workspace',{action:'permission',id:tables.profiles[0].id,canPost:true},adminCookie)).response.status,200);assert.equal(tables.profiles[0].auto_publish,false,'restoring posting never restores automatic publication');
+ await page.locator('[data-admin-view=tools]').click();await page.locator('[data-manage=members]').click();await page.locator('[data-publish-mode="'+tables.profiles[0].id+'"]').selectOption('auto');await page.locator('[data-publish-permission="'+tables.profiles[0].id+'"]').click();await page.waitForFunction(id=>document.querySelector('[data-publish-mode="'+id+'"]')?.closest('label').textContent.includes('Đã cho phép đăng tự động'),tables.profiles[0].id);assert.equal(tables.profiles[0].auto_publish,true);
+ await page.locator('[data-manage=editor]').click();assert.equal(await page.locator('#admin-editor .editor-form button[type=submit]').textContent(),'Đăng tin lên website');
+ console.log('PASS: admin immediate publication, explicit per-member auto grant, review default, forged permission denial, revocation and named admin controls');
  console.log('PASS: real API/member UI with local Supabase doubles; permissions, pending/review/publish, private field isolation, document upload/import, AI missing-key behavior, saved leads despite Telegram failure, 3 Vietnamese export formats, browser downloads and responsive portals');
 }finally{await browser.close();fake.close();setTimeout(()=>process.exit(),100)}

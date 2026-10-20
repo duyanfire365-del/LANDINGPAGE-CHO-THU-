@@ -5,11 +5,11 @@
 1. Vào **Nhập tài liệu / Đăng tin** trong quản trị, hoặc mục đăng tin của thành viên đã được cấp quyền.
 2. Mở **Dán bài đăng gốc — viết lại và điền nhanh**, dán một bài BĐS cho thuê (tối đa 16.000 ký tự).
 3. Tích **Tự tạo và gắn 1 ảnh AI sau khi điền bài, nếu chưa có ảnh** nếu muốn tạo ảnh cùng lượt. Bỏ tích nếu dùng ảnh thật hoặc chỉ muốn điền thông tin.
-4. Bấm **Viết lại & điền thông tin**. Hệ thống đọc dữ liệu, viết lại nội dung nếu AI đã kết nối và chỉ điền ô còn trống. Những nội dung đã nhập được giữ nguyên. Bài gốc được lưu riêng cùng tin khi gửi duyệt.
+4. Bấm **Viết lại & điền thông tin**. Bài đủ chi tiết được giữ nội dung hữu ích và che thông tin kín; bài sơ lược được trau chuốt bằng AI nếu đã kết nối. Hệ thống chỉ điền ô còn trống. Những nội dung đã nhập được giữ nguyên. Bài gốc được lưu riêng cùng tin khi gửi duyệt.
 5. Kiểm tra giá, diện tích, tên đường, mô tả; bổ sung ô mà bài nguồn không có dữ liệu. Giá/m² được quy đổi theo diện tích. Địa chỉ đầy đủ, số chủ nhà/đối tác, nguồn, hoa hồng và Map ở phần riêng tư, không đưa vào mô tả công khai.
 6. Muốn tạo ảnh riêng: chọn danh mục BĐS, hoàn thiện mô tả → **Tạo ảnh AI cho bài này**. Chờ tạo ảnh; ảnh tự xuất hiện trong danh sách tệp đính kèm. Không cần tải về rồi tải lên lại.
 7. Có thể bấm **Bỏ khỏi bài** nếu không muốn dùng ảnh. Thao tác này chỉ bỏ đính kèm, không xóa tệp gốc trong kho.
-8. Bấm **Gửi tin để duyệt**. Tin và ảnh được lưu cùng nhau, vẫn theo quy trình duyệt hiện có. Ảnh AI được ghi rõ là ảnh minh họa, không phải ảnh chụp thật.
+8. Quản trị viên bấm **Đăng tin lên website** để đăng ngay. Thành viên mặc định bấm **Gửi tin để duyệt**; người được cấp riêng quyền tự đăng có thể đăng ngay. [Cách cấp quyền cho từng thành viên](MEMBER_PUBLISH_SETUP.md). Tin và ảnh được lưu cùng nhau. Ảnh AI được ghi rõ là ảnh minh họa, không phải ảnh chụp thật.
 
 Mỗi lần bấm tạo ảnh sử dụng dịch vụ AI có phí. Hệ thống ưu tiên giữ ảnh đang đính kèm: tùy chọn tự tạo không tạo thêm khi bài đã có ảnh. Ảnh minh họa dựa theo loại BĐS và công năng nhận diện được, không mô phỏng chính xác căn nhà/diện tích thực tế. Dấu liên hệ/QR đi qua cơ chế đóng dấu ảnh hiện có khi hiển thị.
 

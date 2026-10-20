@@ -18,8 +18,8 @@
    status('');if(!profile){customerMount?.clear();customerMount=null;document.querySelector('#customer-member-root')?.remove();return;}if(!customerMount){const root=document.createElement('section');root.id='customer-member-root';root.className='portal-card';$('#member-workspace').append(root);customerMount=RentalCustomers.mount(root)}
    $('#member-profile').textContent=`${profile.full_name} · ${profile.kind==='sales'?'Sale / Cộng tác viên':'Khách hàng'}`;
    const canPost=profile.kind==='sales'&&profile.can_post;$('#member-posting').hidden=!canPost;
-   $('#posting-permission').textContent=canPost?'Anh/chị đã được cấp quyền gửi tin. Mọi tin đều cần quản trị viên duyệt.':profile.kind==='sales'?'Tài khoản đang chờ quản trị viên cấp quyền gửi tin.':'Anh/chị có thể gửi nhu cầu cần thuê hoặc ký gửi qua biểu mẫu.';
-   if(canPost)RentalEditor.mount($('#member-posting'),{onSubmitted:posts});await posts();
+   $('#posting-permission').textContent=canPost?(profile.auto_publish===true?'Anh/chị được quản trị viên cấp riêng quyền đăng tự động. Tin hợp lệ sẽ lên website ngay.':'Anh/chị được gửi tin. Các tin sẽ chờ quản trị viên duyệt.'):profile.kind==='sales'?'Tài khoản đang chờ quản trị viên cấp quyền gửi tin.':'Anh/chị có thể gửi nhu cầu cần thuê hoặc ký gửi qua biểu mẫu.';
+   if(canPost)RentalEditor.mount($('#member-posting'),{onSubmitted:posts,canPublish:profile.auto_publish===true});await posts();
   }catch(error){status(error.message)}
  }
  for(const action of ['login','register'])$('#member-'+action).addEventListener('submit',async event=>{

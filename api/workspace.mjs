@@ -57,7 +57,7 @@ export default async function handler(req,res){
    }
    const who=await actor(req),query=who.admin?'?order=created_at.desc&limit=500':'?author_id=eq.'+who.id+'&order=created_at.desc&limit=100';
    if(who.admin){const [members,inquiries,posts,notifications]=await Promise.all([db('profiles',{query:'?order=created_at.desc&limit=500'}),db('inquiries',{query:'?order=created_at.desc&limit=500'}),db('posts',{query}),db('notification_log',{query:'?sent=eq.false&order=created_at.desc&limit=100'})]);const standardized=await canonicalizeSubset(posts);return send(res,200,{members,inquiries,posts:standardized,notifications,identityNeedsSync:posts.some((row,i)=>row.public_data.code!==standardized[i].public_data.code||row.public_data.title!==standardized[i].public_data.title)})}
-   const [posts,inquiries]=await Promise.all([db('posts',{query}),db('inquiries',{query:'?member_id=eq.'+who.id+'&select=id,intent,area,type,created_at&order=created_at.desc&limit=100'})]);return send(res,200,{posts:(await canonicalizeSubset(posts)).map(({private_data,...post})=>post),inquiries,canPost:who.kind==='sales'&&who.can_post});
+   const [posts,inquiries]=await Promise.all([db('posts',{query}),db('inquiries',{query:'?member_id=eq.'+who.id+'&select=id,intent,area,type,created_at&order=created_at.desc&limit=100'})]);return send(res,200,{posts:(await canonicalizeSubset(posts)).map(({private_data,...post})=>post),inquiries,canPost:who.kind==='sales'&&who.can_post,autoPublish:who.kind==='sales'&&who.can_post&&who.auto_publish===true});
   }
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
@@ -75,10 +75,11 @@ export default async function handler(req,res){
   if(body.action==='source-revoke')return send(res,200,await revokeMapShares(req,body));
   if(body.action==='inventory'){const result=await updateInventory(req,body);waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,result);}
   if(body.action==='submit'){
-   const who=await actor(req,{posting:true}),record=await draft(body,who),rows=await db('posts',{method:'POST',body:record});
+   const who=await actor(req,{posting:true}),record=await draft(body,who);const published=who.admin||(who.kind==='sales'&&who.can_post&&who.auto_publish===true);record.status=published?'published':'pending';if(published)record.reviewed_at=new Date().toISOString();record.private_data.publishMode=who.admin?'admin':published?'member_grant':'review';const rows=await db('posts',{method:'POST',body:record});
    const canonical=(await canonicalizeSubset(rows))[0];await db('posts',{method:'PATCH',query:'?id=eq.'+rows[0].id,body:{public_data:canonical.public_data}});
-   const notice=await notify('Có tin đang chờ duyệt',{id:canonical.public_data.code,name:canonical.public_data.title});await db('notification_log',{method:'POST',body:{kind:'post',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
-   return send(res,201,{submitted:true,id:rows[0].id});
+   const notice=await notify(published?'Có tin mới đã đăng':'Có tin đang chờ duyệt',{id:canonical.public_data.code,name:canonical.public_data.title});await db('notification_log',{method:'POST',body:{kind:'post',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
+   if(published)waitUntil(matchNewStock().then(()=>autoCustomerSheet()).catch(()=>{}));
+   return send(res,201,{submitted:true,id:rows[0].id,published,status:record.status,href:canonical.public_data.href});
   }
   requireAdmin(req);
   if(body.action==='normalize-identities'){waitUntil(persistIdentities().catch(()=>{}));return send(res,202,{queued:true});}
@@ -119,9 +120,18 @@ export default async function handler(req,res){
    const notice=await notify('Thông báo gửi lại: '+entry.kind,records[0]);if(!notice.sent)return send(res,502,{error:notice.error||'Telegram chưa xác nhận nhận thông báo.'});
    await db('notification_log',{method:'PATCH',query:'?id=eq.'+body.id,body:{sent:true}});return send(res,200,{ok:true});
   }
+  if(body.action==='publish-permission'){
+   if(!/^[a-f0-9-]{36}$/i.test(body.id||'')||!['review','auto'].includes(body.mode))return send(res,400,{error:'Chọn đúng thành viên và chế độ duyệt.'});
+   const profile=(await db('profiles',{query:'?id=eq.'+body.id+'&kind=eq.sales'}))[0];if(!profile)return send(res,404,{error:'Không tìm thấy tài khoản Sale/CTV.'});
+   if(!Object.hasOwn(profile,'auto_publish'))return send(res,503,{error:'Cần chạy database/009_member_auto_publish.sql trong Supabase SQL Editor để bật cấp quyền đăng tự động.'});
+   if(body.mode==='auto'&&!profile.can_post)return send(res,400,{error:'Cấp quyền gửi tin cho thành viên này trước khi cho đăng tự động.'});
+   const saved=await db('profiles',{method:'PATCH',query:'?id=eq.'+body.id+'&kind=eq.sales'+(body.mode==='auto'?'&can_post=eq.true':''),body:{auto_publish:body.mode==='auto'}});if(!saved.length)return send(res,409,{error:'Quyền thành viên đã thay đổi. Tải lại danh sách rồi thử lại.'});
+   return send(res,200,{ok:true,autoPublish:body.mode==='auto'});
+  }
   if(body.action==='permission'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||typeof body.canPost!=='boolean')return send(res,400,{error:'Thông tin cấp quyền không hợp lệ.'});
-   await db('profiles',{method:'PATCH',query:'?id=eq.'+body.id+'&kind=eq.sales',body:{can_post:body.canPost}});return send(res,200,{ok:true});
+   const profile=(await db('profiles',{query:'?id=eq.'+body.id+'&kind=eq.sales'}))[0];if(!profile)return send(res,404,{error:'Không tìm thấy tài khoản Sale/CTV.'});
+   await db('profiles',{method:'PATCH',query:'?id=eq.'+body.id+'&kind=eq.sales',body:{can_post:body.canPost,...(!body.canPost&&Object.hasOwn(profile,'auto_publish')?{auto_publish:false}:{})}});return send(res,200,{ok:true});
   }
   if(body.action==='review'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||!['published','rejected'].includes(body.status))return send(res,400,{error:'Thông tin duyệt không hợp lệ.'});
