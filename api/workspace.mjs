@@ -1,3 +1,4 @@
+import {editedMedia} from '../lib/post-media.mjs';
 import {postHistory,logPostHistory} from '../lib/post-history.mjs';
 import {propertyDimensions,dimensionFacts} from '../lib/property-dimensions.mjs';
 import {saveCommand,previewCommand,executeRun} from '../lib/google-commands.mjs';
@@ -100,17 +101,20 @@ export default async function handler(req,res){
    let description=clean(body.description,3000);const {size,price,priceBasis,pricePerM2}=formPricing(body);
    if(!description||!safePublicText(description)||!Number.isFinite(size)||size<=0||size>10000000||!Number.isFinite(price)||price<=0||price>1000000)return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
    const p=rows[0].public_data;
+   const mediaChanges=await editedMedia(body,p,{admin:true,id:null});
    if(rows[0].private_data?.automation){description=description.replace(`Diện tích ${p.size} m², giá thuê tham khảo ${p.price} triệu đồng/tháng.`,`Diện tích ${size} m², giá thuê tham khảo ${price} triệu đồng/tháng.`);if(p.pricePerM2){const format=n=>new Intl.NumberFormat('vi-VN').format(n),old=`Đơn giá: ${format(p.pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(p.size)} m² là ${format(p.price)} triệu đồng/tháng.`;description=description.replace(old,pricePerM2?`Đơn giá: ${format(pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(size)} m² là ${format(price)} triệu đồng/tháng.`:'')}}
    const dimensions=propertyDimensions({frontage:body.frontage===undefined?p.frontage:body.frontage,roadWidth:body.roadWidth===undefined?p.roadWidth:body.roadWidth,sidewalk:body.sidewalk===undefined?p.sidewalk:body.sidewalk});
-   const public_data={...p,...dimensions,description,size,price,priceBasis,pricePerM2,areaText:size+' m²',facts:[...(p.facts||[]).filter(f=>!/^Đơn giá:|^Mặt tiền:|^Đường rộng:|^Vỉa hè:/.test(f)),...dimensionFacts(dimensions),...(pricePerM2?['Đơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.']:[])]};
+   const public_data={...p,...mediaChanges,...dimensions,description,size,price,priceBasis,pricePerM2,areaText:size+' m²',facts:[...(p.facts||[]).filter(f=>!/^Đơn giá:|^Mặt tiền:|^Đường rộng:|^Vỉa hè:/.test(f)),...dimensionFacts(dimensions),...(pricePerM2?['Đơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.']:[])]};
    public_data.shareText=`${p.title}\nKhu vực: ${p.address}\nDiện tích: ${size} m²\nGiá thuê: ${price} triệu đồng/tháng\n${description}\nLiên hệ: 0906215365`;
    if(pricePerM2)public_data.shareText+='\nĐơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.';
    public_data.shareText+='\n'+dimensionFacts(dimensions).join('\n');
+   if((public_data.media||[]).some(m=>m.isIllustration))public_data.shareText+='\nCó ảnh minh họa AI, không phải ảnh chụp thực tế.';
    const private_data={...rows[0].private_data,address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data:canonical.public_data}});
-   if(rows[0].status==='published')waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{saved:true});
+   if(body.assetIds!==undefined)await logPostHistory(p.slug,'photos-updated');
+   if(rows[0].status==='published')waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{saved:true,post:canonical.public_data});
   }
   if(body.action==='inquiry-update'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||!['new','contacted','following','closed'].includes(body.status)||typeof body.notes!=='string'||body.notes.length>4000)return send(res,400,{error:'Thông tin cập nhật hồ sơ không hợp lệ.'});

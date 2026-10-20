@@ -50,7 +50,7 @@ export default async function handler(req,res){
     let bytes=await readFile(new URL('../public/images/'+slug+'.jpg',import.meta.url));const qr=await brandingQR();if(qr.custom)bytes=await replaceQR(bytes,qr.bytes,{code:rows.find(r=>r.slug===slug).code});res.writeHead(200,{'Content-Type':'image/jpeg','Content-Disposition':`attachment; filename="${slug}.jpg"`});return res.end(bytes);
    }
    const item=await asset(req,query.get('id'),{publicRead:true});if(item.kind==='document')throw problem(403,'Tài liệu nguồn chỉ dành cho chủ tài khoản và quản trị viên.');
-   let url=item.kind==='image'?await branded(item,query.get('post')||''):await signed(item);if(query.get('download')==='1')url+='&download='+encodeURIComponent(item.kind==='image'?item.name.replace(/\.[^.]+$/,'')+'.jpg':item.name);
+   let url=item.kind==='image'?await branded(item,query.get('post')||query.get('slug')||''):await signed(item);if(query.get('download')==='1')url+='&download='+encodeURIComponent(item.kind==='image'?item.name.replace(/\.[^.]+$/,'')+'.jpg':item.name);
    res.writeHead(302,{Location:url,'Cache-Control':'no-store'});return res.end();
   }
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});

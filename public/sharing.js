@@ -101,6 +101,6 @@
     if (element) { const listing = window.RENTAL_LISTINGS?.find(h => h.id === Number(element.dataset.shareId)); if (listing) {prepare(listing);if(element.dataset.shareAction!=='copy')prepareAll(listing);} }
   });
   window.addEventListener('pagehide',()=>document.querySelector('#share-composer')?.close());
-  function register(listing){const rows=window.RENTAL_LISTINGS||[];const index=rows.findIndex(row=>row.id===listing.id);if(index<0)rows.push(listing);else rows[index]=listing;}
+  function register(listing){const rows=window.RENTAL_LISTINGS||(window.RENTAL_LISTINGS=[]);const index=rows.findIndex(row=>row.id===listing.id);if(index>=0&&JSON.stringify([rows[index].image,rows[index].shareImage,rows[index].mediaRevision,rows[index].media])!==JSON.stringify([listing.image,listing.shareImage,listing.mediaRevision,listing.media])){files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}if(index<0)rows.push(listing);else rows[index]=listing;}
   window.RentalSharing = {register,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
 })();
