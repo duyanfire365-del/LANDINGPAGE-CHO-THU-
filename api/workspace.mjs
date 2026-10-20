@@ -62,7 +62,7 @@ export default async function handler(req,res){
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
-  const body=await readJson(req,customerParams.has('customers')?4500000:20000);
+  const body=await readJson(req,customerParams.has('customers')?4500000:100000);
   if(body.action?.startsWith('google-')){requireAdmin(req);if(body.action==='google-save')return send(res,200,await saveCommand(body));if(body.action==='google-preview')return send(res,200,{run:await previewCommand(body)});if(body.action==='google-execute'){const run=await executeRun(body.id);return send(res,200,{result:run});}return send(res,400,{error:'Lệnh Google không hợp lệ.'});}
   if(body.action==='customer-save'){const result=await saveCustomer(req,body),who=await actor(req);waitUntil(refreshCustomer(who,result.id).then(()=>autoCustomerSheet()).catch(()=>{}));return send(res,200,result);}
   if(body.action==='customer-refresh'){const who=await actor(req);const matches=await refreshCustomer(who,body.id);waitUntil(autoCustomerSheet());return send(res,200,{matches,warning:matches.warning||''});}

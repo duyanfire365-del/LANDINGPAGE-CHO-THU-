@@ -55,7 +55,9 @@ export default async function handler(req,res){
   }
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});if(limited(req,30))throw problem(429,'Vui lòng chờ rồi thử lại.');
-  const who=await actor(req,{posting:true}),body=await readJson(req,5000);
+  const who=await actor(req,{posting:true}),body=await readJson(req,60000);
+  if(body.action==='prepare-text')return send(res,200,await (await import('../lib/editor-ai.mjs')).prepareEditorText(body.text));
+  if(body.action==='generate-editor-image')return send(res,200,await (await import('../lib/editor-ai.mjs')).createEditorImage(body,who));
   if(body.action==='set-default-qr'){requireAdmin(req);return send(res,200,await setBrandingQR(body.id));}
   if(body.action==='upload'){
    const pair=types[body.mime],size=Number(body.size);if(!pair||!Number.isInteger(size)||size<=0||size>(pair[0]==='video'?50:10)*1024*1024)throw problem(400,'Ảnh/tài liệu tối đa 10 MB; video MP4/WebM tối đa 50 MB.');
