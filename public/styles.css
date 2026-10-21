@@ -76,3 +76,6 @@ body>header>.logo .brand-logo{width:72px;height:72px}
 
 /* Desktop uses the same Arial bold face as the main heading, without heavy synthetic weight. */
 @media(min-width:701px){body>header>.logo{font-family:Arial,sans-serif;font-size:24px;font-weight:700;font-synthesis:none;letter-spacing:0;line-height:1.28}}
+
+/* Match the desktop CTA heading to the brand's standard Arial bold face. */
+@media(min-width:701px){header nav .quick-rental-copy strong{font-family:Arial,sans-serif;font-weight:700;font-synthesis:none;letter-spacing:0}}
