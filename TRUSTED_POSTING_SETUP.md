@@ -99,3 +99,11 @@ Kết quả ĐẠT chứng minh payload kiểm tra có thể ghi/đọc/xóa, kh
 - Bài gốc và phần nội bộ được lưu riêng. Notes tự trích có thể xem/sửa ở Quản trị → Tin trên website → Sửa nội dung & ảnh. Câu bổ sung Telegram chỉ nói về mức chốt dự kiến thêm vào ghi chú, không xóa/đổi giá thuê hoặc giá nhượng đã xác định. Ghi chú không được trả trong catalog/public detail hoặc danh sách member; bảng Sheets quản lý kín có cột riêng Ghi chú giá — chỉ quản trị.
 - Với tin cũ bị giá “Liên hệ”: mở Sửa nội dung & ảnh → **Đọc lại giá & ghi chú từ bài gốc** → kiểm tra các ô → **Lưu thay đổi**. Bước đọc lại chỉ chuẩn bị bản sửa, không âm thầm thay tin. Giữ ảnh, mã/đường dẫn, quyền và trạng thái đã đăng. Không cần gửi lại bài Telegram hoặc duyệt lại. Ghi chú cũ chưa có ô riêng được trích từ bài gốc khi quản trị mở danh sách; được lưu thành dữ liệu riêng khi lưu sửa.
 - Các câu “GIÁ CHỐT” kèm giá thuê chính xác không bị coi là một khoảng giá dự kiến. Không đoán mức thương lượng thành một con số chốt mới.
+
+## Số tầng, phòng ngủ và phòng WC
+
+- Đăng mới và Sửa nội dung & ảnh có ba ô Số tầng, Số phòng ngủ, Số phòng WC. Thiếu thông tin để trống; số 0 phòng ngủ/WC có nghĩa là xác nhận không có, khác với chưa biết. Số tầng cho phép nửa tầng (ví dụ 3,5); số phòng là số nguyên.
+- Telegram/bài gốc nhận các cách ghi “80m² × 2 tầng”, “3 phòng ngủ”, “3PN”, “2WC”, “Số tầng: 2”, “Phòng ngủ: 3”, “WC: 2”. Không hiểu “ở tầng 3” thành tổng 3 tầng; số khoảng, mâu thuẫn hoặc thiếu không tự đoán. Số WC chưa ghi không mặc định là 1.
+- Lệnh bổ sung có mã tin có thể cập nhật từng mục: `Hãy bổ sung MB - 0031` rồi xuống dòng ghi `Số tầng: 2`, `Phòng ngủ: 3`, `WC: 2` theo dữ liệu thực tế. Mục không gửi giữ nguyên; giữ giá, ảnh, quyền và trạng thái bài.
+- Tin cũ chưa có trường cấu trúc sẽ gợi ý trong form sửa từ bài gốc/miêu tả nếu có căn cứ. Bấm Lưu thay đổi để áp dụng. Trường đã xóa để trống không tự hồi sinh từ gợi ý. Nút đọc lại bài gốc cũng điền ba ô này.
+- Thông số đã lưu hiện ở chi tiết tin và nội dung chia sẻ. Khi đổi số đã biết, các câu ghi rõ số lượng trong mô tả được đồng bộ; không thay vị trí kiểu “tầng 3” thành số tầng cả nhà. Google Sheets, cổng Google Docs/Sheets, Excel và mẫu nhập có đủ ba cột. Chưa biết xuất ô trống; giá trị 0 được giữ nguyên. Không cần thêm cột SQL vì dữ liệu nằm trong JSON của bài đăng.
