@@ -1,4 +1,4 @@
-import {SOURCE_WEBHOOK,webhookHealth,sourceReply,receiptText,sourceStorageHealth,sourceStorageError,sourceStatusText} from '../lib/source-bot-health.mjs';
+import {SOURCE_WEBHOOK,webhookHealth,sourceReply,receiptText,sourceStorageHealth,sourceStorageError,sourceStatusText,sourceMessageStatus} from '../lib/source-bot-health.mjs';
 import {isUpdateCommand,updateReference} from '../lib/source-updates.mjs';
 import {waitUntil} from '@vercel/functions';
 import {automationConfiguration,processSource} from '../lib/source-automation.mjs';
@@ -14,7 +14,7 @@ async function telegram(method,body){
  const data=await response.json();if(!response.ok||!data.ok)throw problem(502,data.error_code===403?'Telegram từ chối gửi tin: mở đúng bot, bỏ chặn và bấm Start.':data.error_code===401?'Token bot Telegram không còn hợp lệ. Cập nhật token đúng bot rồi Redeploy.':'Telegram chưa xác nhận kết nối. Kiểm tra token, chat ID và thử lại.');return data.result;
 }
 export default async function handler(req,res){
- let verifiedOwner=false;
+ let verifiedOwner=false,stage='nhận yêu cầu';
  try{
   if(req.method==='GET'){
    requireAdmin(req);ready();const rows=await db('source_inbox',{query:'?order=created_at.desc&limit=50'});return send(res,200,{items:rows,automation:automationConfiguration()});
@@ -37,7 +37,7 @@ export default async function handler(req,res){
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
   let text=String(m.text||m.caption||'').slice(0,16000),replySource=null;
   if(isUpdateCommand(text)&&!updateReference(text)&&m.reply_to_message){let reference=updateReference(m.reply_to_message.text||m.reply_to_message.caption||'');if(!reference){let prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&message_id=eq.'+m.reply_to_message.message_id+'&limit=1'}))[0];if(prior?.media_group_id&&!prior.result_url)prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&media_group_id=eq.'+encodeURIComponent(prior.media_group_id)+'&order=message_id.asc&limit=1'}))[0]||prior;reference=updateReference(prior?.result_url||'');if(!reference&&prior?.id&&!isUpdateCommand(prior.content))replySource=prior.id;}if(reference)text+='\nTin cần cập nhật: '+(reference.slug||reference.code);}
-  if(/^\/(?:start|status)(?:@\w+)?(?:\s|$)/.test(text)){const isStatus=/^\/status(?:@\w+)?(?:\s|$)/.test(text);waitUntil((async()=>{const config=automationConfiguration();await sourceReply(telegram,isStatus?await sourceStatusText(config):'Bot nguồn đã nhận lệnh của anh. '+(config.enabled?'Tự đăng đang bật. Gửi /status để kiểm tra thêm kho nguồn và hàng đợi; gửi bài và ảnh vào cuộc trò chuyện riêng này.':'Tự đăng đang TẮT. Đặt TELEGRAM_AUTO_PUBLISH=true trong Vercel Production rồi Redeploy.'))})());return send(res,200,{ok:true});}
+  if(/^\/(?:start|status)(?:@\w+)?(?:\s|$)/.test(text)){const isStatus=/^\/status(?:@\w+)?(?:\s|$)/.test(text);waitUntil((async()=>{const config=automationConfiguration();await sourceReply(telegram,isStatus?(await sourceStatusText(config))+(m.reply_to_message?'\n\n'+await sourceMessageStatus(m.reply_to_message):'\nMuốn kiểm tra đúng một bài: Trả lời bài đó bằng /status.'):'Bot nguồn đã nhận lệnh của anh. '+(config.enabled?'Tự đăng đang bật. Gửi /status để kiểm tra thêm kho nguồn và hàng đợi; gửi bài và ảnh vào cuộc trò chuyện riêng này.':'Tự đăng đang TẮT. Đặt TELEGRAM_AUTO_PUBLISH=true trong Vercel Production rồi Redeploy.'))})());return send(res,200,{ok:true});}
   if(text||!m.media_group_id)waitUntil(sourceReply(telegram,'Đã nhận bài/ảnh từ Telegram, đang kiểm tra lưu vào kho nguồn. Đây chưa phải xác nhận đã đăng; bot sẽ báo kết quả hoặc lỗi lưu riêng.'));
   const media=[];if(replySource)media.push({kind:'source-reference',source_id:replySource,unique_id:'source-ref:'+replySource});const photo=m.photo?.at(-1);if(photo)media.push({kind:'image',file_id:photo.file_id,unique_id:photo.file_unique_id});
   for(const kind of ['document','video'])if(m[kind])media.push({kind:kind==='document'&&['image/jpeg','image/png','image/webp'].includes(m[kind].mime_type)?'image':kind,file_id:m[kind].file_id,unique_id:m[kind].file_unique_id,name:m[kind].file_name||'',mime:m[kind].mime_type||'',size:m[kind].file_size||0});
@@ -45,10 +45,18 @@ export default async function handler(req,res){
   // Keep every caption/private address intact. Exact-content dedup only; changed prices remain for review.
   const hash=createHash('sha256').update(JSON.stringify({text:text.normalize('NFC').trim(),media:media.map(a=>a.unique_id)})).digest('hex');
   // Database unique constraints make Telegram redelivery and simultaneous duplicate messages safe.
+  stage='lưu bài vào kho nguồn';
   const saved=await db('source_inbox',{method:'POST',query:'?on_conflict=content_hash',body:{update_id:update.update_id,message_id:m.message_id,chat_id:String(m.chat.id),media_group_id:m.media_group_id||null,content:text,media,content_hash:hash},headers:{Prefer:'resolution=ignore-duplicates,return=representation'}});
-  const enabled=automationConfiguration().enabled,row=saved[0]||(await db('source_inbox',{query:'?content_hash=eq.'+hash}))[0];
+  stage='tìm bài đã lưu hoặc bản trùng';
+  const enabled=automationConfiguration().enabled,row=saved?.[0]||(await db('source_inbox',{query:'?content_hash=eq.'+hash}))[0];
+  if(!row?.id)throw problem(502,'Kho nguồn chưa trả lại mã bài đã lưu.');
+  stage='xếp lại bài cần xử lý';
   if(enabled&&row&&['review','failed','blocked'].includes(row.processing_status)&&m.message_id>row.message_id)await db('source_inbox',{method:'PATCH',query:'?id=eq.'+row.id+'&processing_status=eq.'+row.processing_status,body:{processing_status:'received',processing_error:'',attempts:0,parsed_data:null}});
-  waitUntil((async()=>{if(text||!m.media_group_id)await sourceReply(telegram,receiptText(row,enabled));if(enabled&&row)await processSource(row.id)})());
+  // Complete the durable-save acknowledgement inside the webhook request; do not
+  // leave this critical feedback behind an unobserved background continuation.
+  stage='xác nhận đã lưu nguồn';
+  if(text||!m.media_group_id)await sourceReply(telegram,receiptText(row,enabled)+'\nMã nguồn: '+row.id);
+  if(enabled)waitUntil(processSource(row.id));
   return send(res,200,{ok:true});
- }catch(error){if(verifiedOwner)waitUntil(sourceReply(telegram,'Website chưa lưu hoặc xếp hàng xử lý được tin vừa gửi. '+sourceStorageError(error)+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.'));return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
+ }catch(error){if(verifiedOwner)await sourceReply(telegram,'Chưa hoàn tất bước: '+stage+'. '+sourceStorageError(error)+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.');return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
 }

@@ -68,3 +68,7 @@ Lỗi proxy 403 của môi trường Codex khi truy cập website không tự ch
 ### Trả lời lệnh được nhưng bài có ảnh không chạy
 
 Lệnh `/start` chỉ chứng minh nhận/gửi Telegram và đọc được cờ tự đăng. Lệnh `/status` kiểm tra thêm cấu hình Supabase, đọc bảng nguồn với các cột hàng đợi và gọi thử hàm claim bằng mã công việc rỗng không tồn tại (không nhận xử lý bài thật). Nếu lỗi, kết quả chỉ ra cấu hình/quyền hoặc migration cần kiểm tra: 004 cho bảng nhận nguồn, 005 cho cột/hàm tự đăng. Không chạy lại SQL hay đổi khóa chỉ dựa vào suy đoán; đối chiếu thông báo thực tế trước. Nút Kiểm tra bot / webhook vẫn trả thông tin webhook nếu kho nguồn lỗi, kèm kết quả kiểm tra kho thay vì dừng ở lỗi truy vấn.
+
+### Kiểm tra riêng bài đang treo
+
+Trong Telegram, dùng **Trả lời / Reply** ngay bài nguồn đã gửi, gõ `/status`. Ngoài kết nối chung, bot tìm bài theo chat/message ID và nội dung/ảnh trùng để trả mã nguồn, trạng thái, số lần xử lý, lỗi đã lưu và link nếu có. Không tự tạo bài mới khi kiểm tra. Nếu chưa tìm thấy bản lưu, kết quả nói rõ chưa xác nhận nguồn đã vào kho. Xác nhận đã lưu nguồn và thông báo lỗi lưu được gửi trực tiếp trong lượt webhook, không chỉ dựa vào tác vụ nền. Phản hồi kho trống không có UUID bị coi là chưa xác nhận lưu thành công.
