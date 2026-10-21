@@ -1,3 +1,5 @@
+import {splitPriceNotes,mergePriceNotes,trackedPriceNotes} from '../lib/source-price-notes.mjs';
+import {prepareTrustedText} from '../lib/trusted-intake.mjs';
 import {applySourceUpdate} from '../lib/source-updates.mjs';
 import {trustedDraft} from '../lib/trusted-intake.mjs';
 import {randomUUID} from 'node:crypto';
@@ -64,7 +66,7 @@ export default async function handler(req,res){
     const rows=await db('inquiries',{query});return send(res,200,{inquiries:rows.slice(0,20).map(row=>({...row,criteria:inquiryCriteria(row)})),hasMore:rows.length>20,page});
    }
    const who=await actor(req),query=who.admin?'?order=created_at.desc&limit=500':'?author_id=eq.'+who.id+'&order=created_at.desc&limit=100';
-   if(who.admin){const [members,inquiries,posts,notifications]=await Promise.all([db('profiles',{query:'?order=created_at.desc&limit=500'}),db('inquiries',{query:'?order=created_at.desc&limit=500'}),db('posts',{query}),db('notification_log',{query:'?sent=eq.false&order=created_at.desc&limit=100'})]);const standardized=await canonicalizeSubset(posts);return send(res,200,{members,inquiries,posts:standardized,notifications,identityNeedsSync:posts.some((row,i)=>JSON.stringify(row.public_data)!==JSON.stringify(standardized[i].public_data))})}
+   if(who.admin){const [members,inquiries,posts,notifications]=await Promise.all([db('profiles',{query:'?order=created_at.desc&limit=500'}),db('inquiries',{query:'?order=created_at.desc&limit=500'}),db('posts',{query}),db('notification_log',{query:'?sent=eq.false&order=created_at.desc&limit=100'})]);const standardized=await canonicalizeSubset(posts);return send(res,200,{members,inquiries,posts:standardized.map(row=>({...row,private_data:{...row.private_data,priceTrackingNotes:trackedPriceNotes(row.private_data)}})),notifications,identityNeedsSync:posts.some((row,i)=>JSON.stringify(row.public_data)!==JSON.stringify(standardized[i].public_data))})}
    const [posts,inquiries]=await Promise.all([db('posts',{query}),db('inquiries',{query:'?member_id=eq.'+who.id+'&select=id,intent,area,type,created_at&order=created_at.desc&limit=100'})]);return send(res,200,{posts:(await canonicalizeSubset(posts)).map(({private_data,...post})=>post),inquiries,canPost:who.kind==='sales'&&who.can_post,autoPublish:who.kind==='sales'&&who.can_post&&who.auto_publish===true});
   }
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
@@ -99,11 +101,12 @@ export default async function handler(req,res){
    const result=await notify('Thông báo thử — đã kết nối website với Telegram',{id:'kiem-tra-ket-noi'});
    return send(res,result.sent?200:502,result.sent?{sent:true}:{error:result.error});
   }
+  if(body.action==='reparse-source-prices'){if(!/^[-\da-f]{36}$/i.test(body.id||''))throw problem(400,'Mã tin không hợp lệ.');const row=(await db('posts',{query:'?id=eq.'+body.id}))[0];if(!row)throw problem(404,'Không tìm thấy tin.');const text=row.private_data?.sourceText||row.private_data?.originalText;if(!text)throw problem(400,'Tin này chưa lưu bài nguồn gốc.');const prepared=prepareTrustedText(text),p=prepared.item;return send(res,200,{fields:{price:p.price,priceMode:p.priceBasis,pricePerM2:p.pricePerM2,transferPrice:p.transferPrice,transferNegotiable:p.transferNegotiable,description:prepared.description,priceTrackingNotes:mergePriceNotes(trackedPriceNotes(row.private_data),prepared.priceTrackingNotes)}});}
   if(body.action==='edit-post'){
    if(!/^[-\da-f]{36}$/i.test(body.id))return send(res,400,{error:'Mã tin không hợp lệ.'});
    const rows=await db('posts',{query:'?id=eq.'+body.id});if(!rows[0])return send(res,404,{error:'Không tìm thấy tin.'});
    const {safePublicText}=await import('../lib/posts.mjs');
-   let description=formatDescription(clean(body.description,3000));const {size,price,priceBasis,pricePerM2}=formPricing(body,{allowIncomplete:true});
+   const separated=splitPriceNotes(clean(body.description,3000));let description=formatDescription(separated.publicSource);const {size,price,priceBasis,pricePerM2}=formPricing(body,{allowIncomplete:true});
    if(!description||!safePublicText(description)||size!==null&&(!Number.isFinite(size)||size<=0||size>10000000)||price!==null&&(!Number.isFinite(price)||price<=0||price>1000000))return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
    const p=rows[0].public_data;
    const title=body.title===undefined?p.title:clean(body.title,160),type=body.type===undefined?p.type:clean(body.type);
@@ -120,7 +123,7 @@ export default async function handler(req,res){
    public_data.shareText+='\n'+dimensionFacts(dimensions).join('\n');
    if((public_data.media||[]).some(m=>m.isIllustration))public_data.shareText+='\nCó ảnh minh họa AI, không phải ảnh chụp thực tế.';
    if(transfer.isTransfer)public_data.shareText+='\nGiá chuyển nhượng: '+(transfer.transferPrice===null?'Liên hệ':transfer.transferPrice+' triệu đồng')+(transfer.transferNegotiable?' (Có thể thương lượng)':'')+'.';
-   const private_data={...rows[0].private_data,address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
+   const private_data={...rows[0].private_data,priceTrackingNotes:mergePriceNotes(body.priceTrackingNotes===undefined?trackedPriceNotes(rows[0].private_data):clean(body.priceTrackingNotes,8000),separated.priceTrackingNotes),address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data:canonical.public_data}});
