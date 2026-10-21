@@ -73,3 +73,6 @@ body>header>.logo .brand-logo{width:72px;height:72px}
 @media(min-width:701px) and (max-width:1100px){body>header>.logo{flex-basis:auto;max-width:440px;font-size:25px}}
 @media(max-width:700px){body>header>.logo{flex-basis:100%;width:100%;max-width:100%;font-size:22px;line-height:1.25;letter-spacing:-.2px;gap:12px}body>header>.logo .brand-logo{width:60px;height:60px}}
 @media(max-width:350px){body>header>.logo{font-size:20px;gap:10px}body>header>.logo .brand-logo{width:56px;height:56px}}
+
+/* Desktop uses the same Arial bold face as the main heading, without heavy synthetic weight. */
+@media(min-width:701px){body>header>.logo{font-family:Arial,sans-serif;font-size:24px;font-weight:700;font-synthesis:none;letter-spacing:0;line-height:1.28}}
