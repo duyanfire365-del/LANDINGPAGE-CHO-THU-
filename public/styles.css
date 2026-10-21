@@ -64,3 +64,12 @@ header nav .quick-rental-link::after{content:"";position:absolute;inset:0;z-inde
 @keyframes quick-rental-point{0%,100%{transform:translateX(-1px) rotate(-5deg)}45%,65%{transform:translateX(4px) rotate(3deg)}}
 @media(max-width:700px){.quick-rental-hand{font-size:18px}.quick-rental-link .quick-rental-hot{gap:2px;padding:7px 5px}}
 @media(prefers-reduced-motion:reduce){header nav .quick-rental-link,header nav .quick-rental-link::before,header nav .quick-rental-link::after,.quick-rental-link .quick-rental-hot,.quick-rental-link .quick-rental-copy strong,.quick-rental-link .quick-rental-arrow,.quick-rental-flame,.quick-rental-hand,.quick-rental-spark{animation:none}.quick-rental-effects,header nav .quick-rental-link::before,header nav .quick-rental-link::after{display:none}}
+
+/* Keep the website name prominent beside the original, uncropped logo. */
+body>header{flex-wrap:wrap}
+body>header>.logo{flex:0 1 380px;min-width:0;max-width:380px;gap:14px;font-size:26px;font-weight:800;line-height:1.24;letter-spacing:-.35px;color:#382820;text-wrap:balance}
+body>header>.logo .brand-logo{width:72px;height:72px}
+@media(min-width:1101px){body>header>nav{flex:1 1 540px;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:12px 18px}}
+@media(min-width:701px) and (max-width:1100px){body>header>.logo{flex-basis:auto;max-width:440px;font-size:25px}}
+@media(max-width:700px){body>header>.logo{flex-basis:100%;width:100%;max-width:100%;font-size:22px;line-height:1.25;letter-spacing:-.2px;gap:12px}body>header>.logo .brand-logo{width:60px;height:60px}}
+@media(max-width:350px){body>header>.logo{font-size:20px;gap:10px}body>header>.logo .brand-logo{width:56px;height:56px}}
