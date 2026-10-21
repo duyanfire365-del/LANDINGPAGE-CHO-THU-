@@ -61,6 +61,10 @@ Máy chủ hỗ trợ hai thao tác POST tới `/api/workspace`, bắt buộc c�
 5. Mở đúng bot nguồn bằng tài khoản có ID khớp `TELEGRAM_SOURCE_OWNER_ID`; gửi `/start` hoặc `/status`. Bot trả lời tình trạng tự đăng. Tin của tài khoản khác/nhóm không được nhập kho riêng của chủ bot.
 6. Bấm **Tải nguồn mới**: nếu có tin Đã nhận/Thiếu cấu hình/Xử lý gián đoạn, mở tin và bấm **Xử lý / Thử lại**. Nếu không có tin, kiểm tra webhook/bot/tài khoản gửi trước. Không yêu cầu gửi token vào chat.
 
-Bot xác nhận nhận nội dung sau khi lưu vào nguồn kín; ảnh album có caption nhận một xác nhận để tránh nhiều tin báo cho mỗi ảnh. Tin đã đăng được báo trước các bước đối chiếu khách và đồng bộ Sheets. Lỗi gửi thông báo được ghi riêng trong `notification_log` với `kind=source-result-failed`, không đổi tin đã đăng thành tin thất bại. Bị Telegram chặn hoặc mạng lỗi vẫn có thể khiến không nhận được phản hồi; trang quản trị là nơi đối chiếu trạng thái đã lưu.
+Bot báo đã nhận từ Telegram trước khi chờ lưu vào kho, và nói rõ đó chưa phải xác nhận đã đăng; sau khi lưu nguồn kín bot mới báo đã xếp hàng xử lý; ảnh album có caption nhận một xác nhận để tránh nhiều tin báo cho mỗi ảnh. Tin đã đăng được báo trước các bước đối chiếu khách và đồng bộ Sheets. Lỗi gửi thông báo được ghi riêng trong `notification_log` với `kind=source-result-failed`, không đổi tin đã đăng thành tin thất bại. Bị Telegram chặn hoặc mạng lỗi vẫn có thể khiến không nhận được phản hồi; trang quản trị là nơi đối chiếu trạng thái đã lưu.
 
 Lỗi proxy 403 của môi trường Codex khi truy cập website không tự chứng minh webhook Telegram cũng lỗi 403. Muốn kết luận lỗi Production cần kết quả getWebhookInfo, trạng thái hàng đợi và nhật ký Vercel thực tế.
+
+### Trả lời lệnh được nhưng bài có ảnh không chạy
+
+Lệnh `/start` chỉ chứng minh nhận/gửi Telegram và đọc được cờ tự đăng. Lệnh `/status` kiểm tra thêm cấu hình Supabase, đọc bảng nguồn với các cột hàng đợi và gọi thử hàm claim bằng mã công việc rỗng không tồn tại (không nhận xử lý bài thật). Nếu lỗi, kết quả chỉ ra cấu hình/quyền hoặc migration cần kiểm tra: 004 cho bảng nhận nguồn, 005 cho cột/hàm tự đăng. Không chạy lại SQL hay đổi khóa chỉ dựa vào suy đoán; đối chiếu thông báo thực tế trước. Nút Kiểm tra bot / webhook vẫn trả thông tin webhook nếu kho nguồn lỗi, kèm kết quả kiểm tra kho thay vì dừng ở lỗi truy vấn.
