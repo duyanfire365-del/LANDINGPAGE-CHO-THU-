@@ -86,3 +86,9 @@ Chỉ tài khoản chủ bot đã xác thực được gọi lệnh. Với bài 
 ### Dừng ở thông báo nhận sớm của bản cũ
 
 Bản mới bỏ thông báo nhận bài trước khi lưu để tránh gây hiểu nhầm và gửi liên tiếp nhiều tin trong cùng chat. Telegram 429 được thử lại theo retry_after (tối đa 2 lần, mỗi lần tối đa 10 giây). Lỗi lưu trả về bước đang thực hiện và mã lỗi an toàn, không trả dữ liệu/khóa thô. Nhật ký Vercel Production có các sự kiện source-intake-write-start, source-intake-write-result, source-intake-failed, source-telegram-send-failed. Chỉ ghi tên bước, mã lỗi, ID update và cờ có mã nguồn; không ghi bài gốc, địa chỉ, ảnh hay token. Nếu chỉ có ảnh thông báo cũ, không thể suy ra nguyên nhân ghi kho: cần đối chiếu nhật ký request /api/telegram-inbox đúng thời điểm gửi.
+
+### Kiểm tra ghi kho trực tiếp từ trang quản trị
+
+Nút **Kiểm tra bot / webhook** nay có mục **Thử GHI kho**: dùng UUID riêng và ID update âm ngẫu nhiên (không trùng update thật của Telegram), ghi bản nội bộ trạng thái review với dấu health-probe, đọc lại, xóa đúng UUID/hash và xác nhận đã xóa. Worker chặn health-probe trước khi claim, giao diện không cho thử đăng bản kiểm tra. Không tạo bài công khai, không gửi ảnh, không gọi AI. Mọi thao tác chỉ qua quyền quản trị đã xác thực; `/status` Telegram vẫn chỉ kiểm tra đọc/hàm, không tự tạo probe.
+
+Kết quả ĐẠT chứng minh payload kiểm tra có thể ghi/đọc/xóa, không chứng minh mọi bài gửi đều đã lưu. Nếu CHƯA ĐẠT, xem bước và mã lỗi trên trang. Nếu không xác nhận dọn được probe, UI báo rõ thay vì báo toàn bộ thành công. Bản kiểm tra còn sót được chặn tự đăng; cần kiểm tra quyền xóa/kết nối trước. Không kết luận lỗi quyền ghi chỉ từ việc bảng có thể đọc được.
