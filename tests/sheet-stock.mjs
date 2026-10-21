@@ -9,3 +9,6 @@ console.log('PASS: adjacent rent/transfer columns, null prices, private source o
 
 const {buildImportPlan}=await import('../lib/google-commands.mjs');const plan=await buildImportPlan({format:'sheets',direction:'import',dataset:'posts'},{values:[stockHeaders,stockSheetRow({...p,pricePerM2:null,address:'Đường công khai'}, {private_data:{address:'25 Đường riêng',sourceInfo:{ownerPhones:['0911111111'],commission:'1 tháng'}}})]});assert.equal(plan.errors.length,0);assert.equal(plan.items[0].post.public_data.transferPrice,300);assert.equal(plan.items[0].post.public_data.price,null);assert.equal(plan.items[0].post.private_data.address,'25 Đường riêng');assert.equal(plan.items[0].post.private_data.sourceInfo.ownerPhones[0],'0911111111');
 console.log('PASS: upgraded managed Sheet columns can be read by the authenticated import preview without losing transfer or private fields');
+
+const {exportHeaders}=await import('../lib/google-commands.mjs');const legacyHeaders=exportHeaders([{'Tên nguồn':'Nguồn','Giá thuê (triệu/tháng)':20,'Đơn giá':0}],'posts');assert.equal(legacyHeaders[legacyHeaders.indexOf('Giá thuê (triệu/tháng)')+1],'Giá chuyển nhượng (triệu đồng)');assert.equal(stockHeaders[6],'Giá chuyển nhượng (triệu đồng)');
+console.log('PASS: transfer column is present next to rent even for export previews saved before the schema upgrade');
