@@ -1,3 +1,4 @@
+import {shareDestinations,saveShareDestinations} from '../lib/share-destinations.mjs';
 import {splitPriceNotes,mergePriceNotes,trackedPriceNotes} from '../lib/source-price-notes.mjs';
 import {prepareTrustedText} from '../lib/trusted-intake.mjs';
 import {applySourceUpdate} from '../lib/source-updates.mjs';
@@ -27,6 +28,7 @@ export default async function handler(req,res){
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='share-destinations'){requireAdmin(req);return send(res,200,await shareDestinations());}
    if(params.get('view')==='google-commands'){requireAdmin(req);const commands=await db('google_commands',{query:'?order=created_at.desc&limit=100'}),runs=await db('google_runs',{query:'?select=id,command_id,status,config,result,error,created_at&order=created_at.desc&limit=20'});return send(res,200,{commands,runs});}
    if(params.get('view')==='google-run'){requireAdmin(req);const id=params.get('id');if(!/^[a-f0-9-]{36}$/i.test(id||''))return send(res,400,{error:'Mã lượt không hợp lệ.'});const run=(await db('google_runs',{query:'?id=eq.'+id}))[0];if(!run)return send(res,404,{error:'Không tìm thấy lượt chạy.'});return send(res,200,{run});}
    if(params.get('view')==='post-history')return send(res,200,await postHistory(req,params.get('slug')));
@@ -93,6 +95,7 @@ export default async function handler(req,res){
    return send(res,201,{submitted:true,id:rows[0].id,published,status:record.status,href:canonical.public_data.href});
   }
   requireAdmin(req);
+  if(body.action==='share-destinations-save')return send(res,200,await saveShareDestinations(body));
   if(body.action==='supplement-original'){const updated=await applySourceUpdate({id:body.requestId||randomUUID(),content:String(body.text||''),assetIds:body.assetIds||[]});waitUntil(matchNewStock().catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,{saved:true,post:updated.public_data});}
   if(body.action==='highlight'){const result=await updateHot(req,body);waitUntil(autoCustomerSheet());return send(res,200,result);}
   if(body.action==='normalize-identities'){waitUntil(persistIdentities().then(()=>autoCustomerSheet()).catch(()=>{}));return send(res,202,{queued:true});}
