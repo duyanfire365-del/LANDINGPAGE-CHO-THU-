@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {identity} from '../lib/member-identity.mjs';
 import handler from '../api/members.mjs';
-assert.deepEqual(identity({channel:'phone',phone:'0912 345 678'}),{channel:'phone',phone:'+84912345678'});
+assert.throws(()=>identity({channel:'phone',phone:'0912345678'}),{status:400});
 assert.equal(identity({email:'  Anh@Example.COM '}).email,'anh@example.com');
 for(const body of [{channel:'sms',phone:'0912345678'},{channel:'phone',phone:'+18001234567'},{email:'bad'},{channel:'phone',phone:'0000000000'}])assert.throws(()=>identity(body),{status:400});
 process.env.SUPABASE_URL='https://auth.test';process.env.SUPABASE_ANON_KEY='test-anon';process.env.SUPABASE_SERVICE_ROLE_KEY='test-service';
@@ -11,16 +11,14 @@ async function request(body,origin){const headers={},req={method:'POST',url:'/ap
 try{
  const registration={action:'register',channel:'email',email:'anh@example.test',password:'long-password-for-test',name:'Anh',kind:'sales',consent:true,can_post:true,auto_publish:true};
  let r=await request(registration);assert.equal(r.status,200);assert.equal(r.data.otpRequired,true);assert.equal(r.headers['Set-Cookie'],undefined);const signup=calls.find(c=>c.path.endsWith('/signup')).body;assert.deepEqual(Object.keys(signup.data).sort(),['full_name','kind','phone']);assert.equal(signup.email,registration.email);assert.equal(signup.data.phone,'');
- calls=[];settings.mailer_autoconfirm=true;r=await request(registration);assert.equal(r.status,503);assert(!calls.some(c=>c.path.endsWith('/signup')));settings.mailer_autoconfirm=false;settings.sms_autoconfirm=true;r=await request({...registration,channel:'phone',phone:'0912345678'});assert.equal(r.status,503);settings.sms_autoconfirm=false;
- settings.external.phone=false;r=await request({...registration,channel:'phone',phone:'0912345678'});assert.equal(r.status,503);settings.external.phone=true;
- calls=[];r=await request({...registration,channel:'phone',phone:'0912345678'});assert.equal(r.status,200);const phoneSignup=calls.find(c=>c.path.endsWith('/signup')).body;assert.equal(phoneSignup.phone,'+84912345678');assert.equal(phoneSignup.email,undefined);assert.equal(phoneSignup.channel,'sms');
- fail=true;r=await request({action:'send-login-otp',channel:'phone',phone:'0912345678'});assert.equal(r.status,503);assert(!r.data.otpRequired);fail=false;
+ calls=[];settings.mailer_autoconfirm=true;r=await request(registration);assert.equal(r.status,503);assert(!calls.some(c=>c.path.endsWith('/signup')));settings.mailer_autoconfirm=false;
+ calls=[];for(const action of ['register','login','send-login-otp','resend-otp','verify-otp']){r=await request({...registration,action,channel:'phone',phone:'0912345678',purpose:'signup',token:'123456'});assert.equal(r.status,400);assert.equal(r.headers['Set-Cookie'],undefined)}assert.equal(calls.length,0,'phone authentication must never call an SMS provider');
+ fail=true;r=await request({action:'send-login-otp',email:registration.email});assert.equal(r.status,503);assert(!r.data.otpRequired);fail=false;
  r=await request({action:'verify-otp',email:registration.email,purpose:'signup',token:'000000'});assert.equal(r.status,400);assert.equal(r.headers['Set-Cookie'],undefined);
- r=await request({action:'verify-otp',channel:'phone',phone:'0912345678',purpose:'signup',token:'123456'});assert.equal(r.status,200);assert(r.headers['Set-Cookie'].includes('HttpOnly'));assert.equal(calls.at(-1).body.type,'sms');
  r=await request({action:'verify-otp',email:registration.email,purpose:'signup',token:'123456'});assert.equal(r.status,200);assert.equal(calls.at(-1).body.type,'signup');
  r=await request({action:'verify-otp',email:registration.email,purpose:'login',token:'123456'});assert.equal(r.status,200);assert.equal(calls.at(-1).body.type,'email');
  r=await request({action:'send-login-otp',email:registration.email,can_post:true});assert.equal(r.status,200);assert.deepEqual(calls.at(-1).body,{email:registration.email,create_user:false});
- r=await request({action:'resend-otp',channel:'phone',phone:'0912345678'});assert.equal(r.status,200);assert.equal(calls.at(-1).body.type,'sms');
+ r=await request({action:'resend-otp',email:registration.email});assert.equal(r.status,200);assert.equal(calls.at(-1).body.type,'signup');
  r=await request(registration,'https://other.test');assert.equal(r.status,403);
  console.log('PASS: identity normalization, provider readiness, no self grants, explicit OTP types, no session on failed/unverified registration, real provider failure messages and cross-origin rejection');
 }finally{global.fetch=original}

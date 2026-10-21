@@ -1,24 +1,71 @@
-# Đăng ký email / điện thoại và mã OTP
+# Chỉ đăng ký / đăng nhập bằng email
 
-Code hỗ trợ đăng ký, xác minh OTP, gửi lại mã, đăng nhập bằng mật khẩu hoặc OTP qua email/SMS. OTP do Supabase Auth tạo, gửi và kiểm tra; website không lưu mã, không dùng mã cố định. Không tạo phiên đăng nhập khi mới đăng ký hoặc nhập sai mã.
+Website hiện chỉ dùng email. Không cần mua dịch vụ SMS, bật Phone provider hay chạy `database/010_phone_email_otp.sql`. Nếu đã chạy file SQL đó thì vẫn giữ nguyên được, không cần hoàn tác. Số điện thoại trên biểu mẫu là thông tin liên hệ không bắt buộc, không dùng để nhận OTP.
 
-## Cấu hình bắt buộc trước khi dùng thật
+## 1. Mở Supabase
 
-1. Trong Supabase SQL Editor, chạy `database/010_phone_email_otp.sql` một lần. Thay đổi này cho phép tạo hồ sơ không có email khi đăng ký bằng điện thoại; không thay đổi quyền đã cấp và không tự cấp quyền cho tài khoản mới.
-2. Authentication → Providers / Sign In → Email: bật đăng ký Email và **Confirm email**. Tắt tự xác nhận email. Cấu hình SMTP gửi thư thực tế.
-3. Authentication → Email Templates → Confirm signup: đặt mã `{{ .Token }}` trong nội dung thư, ví dụ **Mã xác minh của anh/chị: {{ .Token }}**. Template chỉ có link xác nhận sẽ không cung cấp mã để nhập trên website. Chỉnh cả template **Magic Link** chứa `{{ .Token }}` để dùng nút đăng nhập bằng OTP.
-4. Authentication → Providers / Sign In → Phone: bật điện thoại và xác minh số điện thoại, cấu hình nhà cung cấp SMS được Supabase hỗ trợ và thông tin gửi SMS tới số Việt Nam. Tắt tự xác nhận số điện thoại; không dùng số/mã thử nghiệm cho khách thật. Mẫu SMS cần có `{{ .Code }}`.
-5. Kiểm tra giới hạn gửi và thời hạn OTP trong Supabase Auth. Website có chờ gửi lại 60 giây và giới hạn yêu cầu API; Supabase kiểm soát gửi mã, xác minh và mã hết hạn ở phía máy chủ.
-6. Chờ Vercel Ready, vào `/thanh-vien`, thử đăng ký bằng email thật và điện thoại thật, kiểm tra nhận mã, mã sai, xác minh thành công rồi đăng xuất/đăng nhập lại. Việc kiểm tra tự động trong repository dùng dịch vụ giả lập, không xác nhận email/SMS thật đã gửi.
+1. Vào https://supabase.com/dashboard và đăng nhập.
+2. Chọn dự án đang kết nối với Nguonchothue.vn.
+3. Bấm **Authentication** ở menu bên trái.
 
-Nếu chưa cấu hình dịch vụ email/SMS hoặc chưa chạy SQL, website báo lỗi gửi/đăng ký, không thông báo giả rằng đã xác minh. Không gửi khóa SMS/SMTP, mật khẩu hoặc OTP vào chat hỗ trợ; nhập chúng tại Supabase.
+## 2. Bật xác minh email
 
-## Quyền thành viên
+1. Mở **Sign In / Providers** hoặc **Providers**, chọn **Email**.
+2. Bật **Enable Email provider** và **Confirm email**.
+3. Bấm **Save**. Không bật tự xác nhận email.
 
-Tài khoản mới mặc định không có quyền đăng bài. Lựa chọn Sale/CTV khi đăng ký không tự cấp quyền.
+## 3. Đặt mẫu email có mã OTP
 
-- Quản trị → Thành viên: cấp/thu hồi quyền gửi tin; sau khi cấp có thể cho đăng tự động hoặc yêu cầu duyệt từng tin.
-- Nguồn / Map riêng: quản trị hoặc người quản lý nguồn cấp quyền xem từng nguồn cho đúng thành viên.
-- Chỉ quản trị viên duyệt xóa/khôi phục tin và quản lý các tài khoản khác. Thành viên được xóa tin thuộc chính tài khoản mình, tin sẽ ẩn và vào danh sách quản trị duyệt.
+1. Trong Authentication, mở **Email Templates** hoặc **Emails → Templates**.
+2. Chọn **Confirm signup**.
+3. Điền tiêu đề: `Mã xác minh tài khoản Nguonchothue.vn`.
+4. Dán nội dung dưới đây rồi bấm **Save**:
 
-Dữ liệu quyền do máy chủ kiểm tra; gửi các trường can_post, auto_publish, admin từ biểu mẫu không được cấp quyền.
+```html
+<h2>Xác minh tài khoản Nguonchothue.vn</h2>
+<p>Mã xác minh của anh/chị là:</p>
+<h1>{{ .Token }}</h1>
+<p>Hãy nhập mã này vào website để hoàn tất đăng ký.</p>
+<p>Nếu không đăng ký, anh/chị có thể bỏ qua email này.</p>
+```
+
+5. Mở mẫu **Magic Link**, đặt tiêu đề `Mã đăng nhập Nguonchothue.vn`.
+6. Dán nội dung dưới đây rồi bấm **Save**:
+
+```html
+<h2>Đăng nhập Nguonchothue.vn</h2>
+<p>Mã đăng nhập của anh/chị là:</p>
+<h1>{{ .Token }}</h1>
+<p>Hãy nhập mã này vào website. Không cung cấp mã cho người khác.</p>
+```
+
+Giữ nguyên chính xác `{{ .Token }}`. Supabase sẽ thay nó bằng mã thật. Mẫu chỉ có link xác nhận không cung cấp mã để nhập trên website.
+
+## 4. Kết nối dịch vụ gửi email
+
+1. Tìm **SMTP Settings** trong Authentication / Emails.
+2. Dùng thông tin SMTP từ dịch vụ gửi email của anh. Nếu chưa có, có thể đăng ký nhà cung cấp như Resend hoặc Brevo và xác minh tên miền theo hướng dẫn của họ.
+3. Bật **Custom SMTP**, điền địa chỉ gửi thuộc tên miền đã xác minh, tên người gửi, Host, Port, Username và Password do nhà cung cấp cấp.
+4. Bấm **Save**. Password ở đây là thông tin SMTP, không phải mật khẩu đăng nhập website.
+
+Dịch vụ email mặc định của Supabase có giới hạn người nhận và số lần gửi; cần cấu hình phù hợp trước khi mở cho khách đăng ký. Không cần làm bất kỳ bước cấu hình SMS nào. Không gửi mật khẩu/khóa SMTP hay OTP vào chat; nhập trực tiếp tại Supabase.
+
+## 5. Thử trên website
+
+1. Chờ Vercel Ready, mở https://nguonchothue.vn/thanh-vien.
+2. Bấm **Đăng ký thành viên**, nhập tên, email và mật khẩu ít nhất 12 ký tự; số điện thoại liên hệ có thể để trống.
+3. Tích đồng ý và bấm **Tạo tài khoản**.
+4. Kiểm tra email, cả thư mục Spam, lấy mã rồi nhập vào website.
+5. Bấm **Xác nhận và đăng nhập**.
+6. Đăng xuất, thử đăng nhập bằng email/mật khẩu hoặc **Nhận mã OTP để đăng nhập**.
+
+Mã do Supabase tạo và kiểm tra; website không dùng mã cố định. Mã sai/hết hạn không tạo phiên đăng nhập. Gửi lại mã cần chờ ít nhất 60 giây trên giao diện; Supabase kiểm soát giới hạn gửi và xác minh ở máy chủ. Kiểm tra tự động trong repository dùng dịch vụ giả lập, chưa xác nhận email thật đã được gửi.
+
+## 6. Cấp quyền thành viên
+
+- Tài khoản mới không tự có quyền đăng tin, kể cả chọn Sale/CTV.
+- Quản trị → Thành viên: cấp quyền gửi tin, chọn duyệt từng tin hoặc cho đăng tự động, rồi lưu.
+- Nguồn / Map riêng: cấp quyền xem từng nguồn cho đúng tài khoản.
+- Chỉ quản trị duyệt xóa/khôi phục; thành viên chỉ xóa được tin của chính mình.
+
+Tắt lựa chọn điện thoại trên website không xóa tài khoản hoặc thông tin liên hệ đã có.
