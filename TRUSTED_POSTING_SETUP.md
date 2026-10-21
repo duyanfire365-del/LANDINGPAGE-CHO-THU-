@@ -51,3 +51,16 @@ Máy chủ hỗ trợ hai thao tác POST tới `/api/workspace`, bắt buộc c�
 - `supplement-original`: `{action:"supplement-original",requestId:"UUID mới cho một lệnh",text:"Hãy bổ sung MB - 0029 ...",assetIds:["id ảnh bổ sung"]}` → cập nhật đúng bài. Giữ cùng requestId khi thử lại để không lặp ảnh.
 
 Ảnh tải qua API tệp có xác thực trước rồi truyền assetIds; không nhận URL tệp tùy ý từ người lạ. Không đưa cookie quản trị, mật khẩu hoặc token vào bài viết/tệp hướng dẫn. Phải dùng kênh kết nối quản trị hoạt động để thực thi lệnh từ Codex; website không tự đọc cuộc trò chuyện ChatGPT. Khi người dùng gửi bài trong phiên Codex có kết nối, dùng cùng quy tắc bảo mật và đăng trực tiếp theo ủy quyền, không yêu cầu duyệt lại.
+
+## Bot im lặng: kiểm tra ngay trong quản trị
+
+1. Chờ Vercel Production báo Ready cho bản mới.
+2. Vào Quản trị → Nguồn từ bot Telegram → **Kiểm tra bot / webhook**. Kết quả chỉ quản trị xem được, không hiển thị token/khóa webhook.
+3. Nếu webhook chưa đúng: bấm **Kết nối bot nhận nguồn**. Nếu lịch sử lỗi webhook báo 401/403, kiểm tra bảo vệ truy cập/Firewall trên Vercel và quyền truy cập endpoint webhook; chỉ cho phép đúng endpoint khi cần, vẫn giữ xác thực secret và đúng tài khoản chủ bot. Không tắt bảo vệ cả trang quản trị.
+4. Nếu tự đăng TẮT: đặt `TELEGRAM_AUTO_PUBLISH=true` trong Vercel Production rồi Redeploy. Nếu dùng ảnh thật và quy tắc, đặt `TELEGRAM_SOURCE_MODE=provided`.
+5. Mở đúng bot nguồn bằng tài khoản có ID khớp `TELEGRAM_SOURCE_OWNER_ID`; gửi `/start` hoặc `/status`. Bot trả lời tình trạng tự đăng. Tin của tài khoản khác/nhóm không được nhập kho riêng của chủ bot.
+6. Bấm **Tải nguồn mới**: nếu có tin Đã nhận/Thiếu cấu hình/Xử lý gián đoạn, mở tin và bấm **Xử lý / Thử lại**. Nếu không có tin, kiểm tra webhook/bot/tài khoản gửi trước. Không yêu cầu gửi token vào chat.
+
+Bot xác nhận nhận nội dung sau khi lưu vào nguồn kín; ảnh album có caption nhận một xác nhận để tránh nhiều tin báo cho mỗi ảnh. Tin đã đăng được báo trước các bước đối chiếu khách và đồng bộ Sheets. Lỗi gửi thông báo được ghi riêng trong `notification_log` với `kind=source-result-failed`, không đổi tin đã đăng thành tin thất bại. Bị Telegram chặn hoặc mạng lỗi vẫn có thể khiến không nhận được phản hồi; trang quản trị là nơi đối chiếu trạng thái đã lưu.
+
+Lỗi proxy 403 của môi trường Codex khi truy cập website không tự chứng minh webhook Telegram cũng lỗi 403. Muốn kết luận lỗi Production cần kết quả getWebhookInfo, trạng thái hàng đợi và nhật ký Vercel thực tế.

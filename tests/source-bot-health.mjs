@@ -1,0 +1,8 @@
+import assert from 'node:assert/strict';
+import {SOURCE_WEBHOOK,webhookHealth,sourceReply,receiptText} from '../lib/source-bot-health.mjs';
+const off={enabled:false,mode:'provided',aiReady:false,dailyLimit:20};
+assert(receiptText({processing_status:'received'},false).includes('TẮT'));assert(receiptText({processing_status:'published',result_url:'/tin?slug=live-1792500000000000'},true).includes('https://nguonchothue.vn/tin?'));
+const unhealthy=webhookHealth({username:'my_bot'},{url:'https://other.example/secret',pending_update_count:3,last_error_date:1700000000,last_error_message:'Wrong response from https://other.example/secret: 403'},off);assert(!unhealthy.webhookConnected);assert.equal(unhealthy.pendingUpdates,3);assert.equal(unhealthy.issues.length,2);assert(!JSON.stringify(unhealthy).includes('other.example'));assert(webhookHealth({}, {url:SOURCE_WEBHOOK},{...off,enabled:true}).webhookConnected);
+process.env.SUPABASE_URL='https://health-db.test';process.env.SUPABASE_SERVICE_ROLE_KEY='fake-service';process.env.SUPABASE_ANON_KEY='fake-anon';let logged;const original=global.fetch;global.fetch=async(url,options)=>{assert(String(url).includes('/notification_log'));logged=JSON.parse(options.body);return Response.json([logged])};
+try{assert.equal(await sourceReply(async()=>{throw Error('Forbidden')},'Tin đã đăng'),false);assert.equal(logged.kind,'source-result-failed');assert.equal(logged.sent,false);assert.equal(await sourceReply(async()=>({}),'OK'),true)}finally{global.fetch=original}
+console.log('PASS: disabled auto-post receipts, safe webhook diagnostics, pending delivery errors and persisted Telegram notification failures');
