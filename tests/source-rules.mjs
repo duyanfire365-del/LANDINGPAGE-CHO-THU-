@@ -3,7 +3,8 @@ import {extractByRules} from '../lib/source-rules.mjs';
 import {validateExtraction} from '../lib/source-automation.mjs';
 const text='Loại BĐS: Văn phòng\nĐịa chỉ: Số 987 đường Lạc Long Quân, Tây Hồ, Hà Nội\nKhu vực: Tây Hồ\nDiện tích: 123 m²\nGiá thuê: 32 triệu/tháng\n#Nguon';
 const parsed=validateExtraction(extractByRules(text),text);assert.equal(parsed.price,32);assert.equal(parsed.size,123);assert.equal(parsed.location,'Lạc Long Quân');assert.equal(parsed.type,'Văn phòng');
-const alley=text.replace('Số 987 đường','Số 12 ngõ 45');assert.equal(validateExtraction(extractByRules(alley),alley).location,'Tây Hồ');assert.equal(validateExtraction(extractByRules(alley+'\nTên đường: Lạc Long Quân'),alley+'\nTên đường: Lạc Long Quân').location,'Lạc Long Quân');
+// Street names stay public; house and alley numbers remain private.
+const alley=text.replace('Số 987 đường','Số 12 ngõ 45');assert.equal(validateExtraction(extractByRules(alley),alley).location,'Lạc Long Quân');assert.equal(validateExtraction(extractByRules(alley+'\nTên đường: Lạc Long Quân'),alley+'\nTên đường: Lạc Long Quân').location,'Lạc Long Quân');
 assert.throws(()=>extractByRules(text+'\nGiá thuê: 40 triệu/tháng'),{status:422});
 assert.throws(()=>extractByRules(text+'\nDiện tích: 200m2'),{status:422});
 assert.throws(()=>extractByRules(text+'\nĐịa chỉ: 23 Đỗ Quang'),{status:422});

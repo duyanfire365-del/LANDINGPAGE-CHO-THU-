@@ -60,4 +60,7 @@ header nav .quick-rental-link::after{content:"";position:absolute;inset:0;z-inde
 @keyframes quick-rental-bloom{0%,100%{opacity:.35}50%{opacity:1}}
 @keyframes quick-rental-title{0%,100%{color:#fff;text-shadow:0 0 3px #ffd56830}50%{color:#fff1ba;text-shadow:0 0 12px #ffd568b0}}
 @keyframes quick-rental-arrow{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
-@media(prefers-reduced-motion:reduce){header nav .quick-rental-link,header nav .quick-rental-link::before,header nav .quick-rental-link::after,.quick-rental-link .quick-rental-hot,.quick-rental-link .quick-rental-copy strong,.quick-rental-link .quick-rental-arrow,.quick-rental-flame,.quick-rental-spark{animation:none}.quick-rental-effects,header nav .quick-rental-link::before,header nav .quick-rental-link::after{display:none}}
+ .quick-rental-hand{display:inline-block;font-size:21px;line-height:1;transform-origin:center;animation:quick-rental-point 1.2s ease-in-out infinite}
+@keyframes quick-rental-point{0%,100%{transform:translateX(-1px) rotate(-5deg)}45%,65%{transform:translateX(4px) rotate(3deg)}}
+@media(max-width:700px){.quick-rental-hand{font-size:18px}.quick-rental-link .quick-rental-hot{gap:2px;padding:7px 5px}}
+@media(prefers-reduced-motion:reduce){header nav .quick-rental-link,header nav .quick-rental-link::before,header nav .quick-rental-link::after,.quick-rental-link .quick-rental-hot,.quick-rental-link .quick-rental-copy strong,.quick-rental-link .quick-rental-arrow,.quick-rental-flame,.quick-rental-hand,.quick-rental-spark{animation:none}.quick-rental-effects,header nav .quick-rental-link::before,header nav .quick-rental-link::after{display:none}}
