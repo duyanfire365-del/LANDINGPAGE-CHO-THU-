@@ -72,3 +72,9 @@ Lệnh `/start` chỉ chứng minh nhận/gửi Telegram và đọc được c�
 ### Kiểm tra riêng bài đang treo
 
 Trong Telegram, dùng **Trả lời / Reply** ngay bài nguồn đã gửi, gõ `/status`. Ngoài kết nối chung, bot tìm bài theo chat/message ID và nội dung/ảnh trùng để trả mã nguồn, trạng thái, số lần xử lý, lỗi đã lưu và link nếu có. Không tự tạo bài mới khi kiểm tra. Nếu chưa tìm thấy bản lưu, kết quả nói rõ chưa xác nhận nguồn đã vào kho. Xác nhận đã lưu nguồn và thông báo lỗi lưu được gửi trực tiếp trong lượt webhook, không chỉ dựa vào tác vụ nền. Phản hồi kho trống không có UUID bị coi là chưa xác nhận lưu thành công.
+
+### Khôi phục một bài gốc chưa lưu: `/danglai`
+
+Chọn **Trả lời / Reply** đúng bài gốc có ảnh do anh đã gửi vào bot nguồn, nhập `/danglai`. Chỉ chủ bot được dùng. Bot lấy nội dung và ảnh của tin được trả lời, dùng mã update của lệnh mới để thử lưu; không đăng nội dung chữ `/danglai`. Nếu nguồn cũ đang review/failed/blocked, lệnh đặt lại để xử lý. Nếu đã đăng, trả lại kết quả cũ, không tạo bài/ảnh mới. Với album nhiều ảnh, lệnh chỉ khôi phục tệp có trong tin được trả lời và các thành viên album đã được lưu; Telegram không cung cấp cả album qua một reply. Nếu bài gốc chưa có đầy đủ ảnh trong kho, bổ sung những ảnh còn lại bằng mã tin sau khi đăng.
+
+Quá trình soạn tin loại toàn bộ phần được đánh dấu **Lưu ý nội bộ/Ghi chú nội bộ** khỏi nội dung công khai, giữ nguyên trong bài gốc kín. Giá chốt nội bộ và mức báo khách không dùng làm giá thuê. Nhận diện loại Kho xưởng chỉ khớp từ `kho` riêng biệt, không khớp nhầm chữ `khoảng` trong ghi chú giá.

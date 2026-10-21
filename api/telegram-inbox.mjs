@@ -32,9 +32,10 @@ export default async function handler(req,res){
   }
   ready();const supplied=String(req.headers['x-telegram-bot-api-secret-token']||'');
   if(! /^[a-f0-9]{64}$/.test(supplied)||!timingSafeEqual(Buffer.from(supplied),Buffer.from(secret())))return send(res,403,{error:'Forbidden'});
-  const update=await readJson(req,200000),m=update.message;
+  const update=await readJson(req,200000);let m=update.message,recovering=false;
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
+  if(/^\/(?:danglai|retry)(?:@\w+)?\s*$/.test(String(m.text||''))){const original=m.reply_to_message;if(!original||String(original.from?.id)!==owner()||!Number.isSafeInteger(original.message_id)||!(original.text||original.caption||original.photo?.length||original.document||original.video)){await sourceReply(telegram,'Anh chọn Trả lời đúng bài gốc do anh gửi (có nội dung hoặc ảnh), rồi gõ /danglai. Không chọn tin thông báo của bot.');return send(res,200,{ok:true});}m={...original,chat:m.chat,from:m.from};recovering=true;}
   let text=String(m.text||m.caption||'').slice(0,16000),replySource=null;
   if(isUpdateCommand(text)&&!updateReference(text)&&m.reply_to_message){let reference=updateReference(m.reply_to_message.text||m.reply_to_message.caption||'');if(!reference){let prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&message_id=eq.'+m.reply_to_message.message_id+'&limit=1'}))[0];if(prior?.media_group_id&&!prior.result_url)prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&media_group_id=eq.'+encodeURIComponent(prior.media_group_id)+'&order=message_id.asc&limit=1'}))[0]||prior;reference=updateReference(prior?.result_url||'');if(!reference&&prior?.id&&!isUpdateCommand(prior.content))replySource=prior.id;}if(reference)text+='\nTin cần cập nhật: '+(reference.slug||reference.code);}
   if(/^\/(?:start|status)(?:@\w+)?(?:\s|$)/.test(text)){const isStatus=/^\/status(?:@\w+)?(?:\s|$)/.test(text);waitUntil((async()=>{const config=automationConfiguration();await sourceReply(telegram,isStatus?(await sourceStatusText(config))+(m.reply_to_message?'\n\n'+await sourceMessageStatus(m.reply_to_message):'\nMuốn kiểm tra đúng một bài: Trả lời bài đó bằng /status.'):'Bot nguồn đã nhận lệnh của anh. '+(config.enabled?'Tự đăng đang bật. Gửi /status để kiểm tra thêm kho nguồn và hàng đợi; gửi bài và ảnh vào cuộc trò chuyện riêng này.':'Tự đăng đang TẮT. Đặt TELEGRAM_AUTO_PUBLISH=true trong Vercel Production rồi Redeploy.'))})());return send(res,200,{ok:true});}
@@ -51,12 +52,12 @@ export default async function handler(req,res){
   const enabled=automationConfiguration().enabled,row=saved?.[0]||(await db('source_inbox',{query:'?content_hash=eq.'+hash}))[0];
   if(!row?.id)throw problem(502,'Kho nguồn chưa trả lại mã bài đã lưu.');
   stage='xếp lại bài cần xử lý';
-  if(enabled&&row&&['review','failed','blocked'].includes(row.processing_status)&&m.message_id>row.message_id)await db('source_inbox',{method:'PATCH',query:'?id=eq.'+row.id+'&processing_status=eq.'+row.processing_status,body:{processing_status:'received',processing_error:'',attempts:0,parsed_data:null}});
+  if(enabled&&['review','failed','blocked'].includes(row.processing_status)&&(recovering||m.message_id>row.message_id)){await db('source_inbox',{method:'PATCH',query:'?id=eq.'+row.id+'&processing_status=eq.'+row.processing_status,body:{processing_status:'received',processing_error:'',attempts:0,parsed_data:null}});row.processing_status='received';row.processing_error='';}
   // Complete the durable-save acknowledgement inside the webhook request; do not
   // leave this critical feedback behind an unobserved background continuation.
   stage='xác nhận đã lưu nguồn';
   if(text||!m.media_group_id)await sourceReply(telegram,receiptText(row,enabled)+'\nMã nguồn: '+row.id);
-  if(enabled)waitUntil(processSource(row.id));
+  if(enabled&&!['published','updated','duplicate'].includes(row.processing_status))waitUntil(processSource(row.id));
   return send(res,200,{ok:true});
  }catch(error){if(verifiedOwner)await sourceReply(telegram,'Chưa hoàn tất bước: '+stage+'. '+sourceStorageError(error)+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.');return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
 }
