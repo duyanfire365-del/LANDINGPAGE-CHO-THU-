@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {recoveryReply} from '../lib/source-reply.mjs';
+const original={message_id:12,chat:{id:456789},caption:'Sang nhượng quán ăn Đỗ Nhuận',photo:[{file_id:'original-photo'}]},message={chat:{id:456789},from:{id:456789},reply_to_message:original};
+assert.equal(recoveryReply(message,123).original,original,'missing original.from must not reject an authenticated owner-selected source');
+assert(recoveryReply({...message,reply_to_message:{...original,from:{id:987,is_bot:false}}},123).original,'owner may select a human-authored forwarded source');
+assert(recoveryReply({...message,reply_to_message:{...original,from:{id:123,is_bot:true}}},123).error.includes('thông báo của bot'));
+assert(recoveryReply({...message,reply_to_message:undefined,quote:{text:'Chỉ một phần bài'}},123).error.includes('chưa gửi toàn bộ'));
+assert(!recoveryReply({...message,reply_to_message:undefined,quote:{text:'Chỉ một phần bài'}},123).original);
+assert(recoveryReply({...message,reply_to_message:{message_id:12}},123).error.includes('không kèm nội dung'));
+assert(recoveryReply({...message,reply_to_message:{...original,chat:{id:999}}},123).error.includes('khác'));
+assert(recoveryReply({...message,reply_to_message:{...original,caption:'',photo:[{file_unique_id:'not-downloadable'}]}},123).error);
+console.log('PASS: owner-selected reply handles missing sender and human forwards; rejects bot notices, external/partial quotes, unavailable originals and non-downloadable media with distinct explanations');

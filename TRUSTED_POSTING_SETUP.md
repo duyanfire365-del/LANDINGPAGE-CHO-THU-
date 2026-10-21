@@ -78,3 +78,7 @@ Trong Telegram, dùng **Trả lời / Reply** ngay bài nguồn đã gửi, gõ 
 Chọn **Trả lời / Reply** đúng bài gốc có ảnh do anh đã gửi vào bot nguồn, nhập `/danglai`. Chỉ chủ bot được dùng. Bot lấy nội dung và ảnh của tin được trả lời, dùng mã update của lệnh mới để thử lưu; không đăng nội dung chữ `/danglai`. Nếu nguồn cũ đang review/failed/blocked, lệnh đặt lại để xử lý. Nếu đã đăng, trả lại kết quả cũ, không tạo bài/ảnh mới. Với album nhiều ảnh, lệnh chỉ khôi phục tệp có trong tin được trả lời và các thành viên album đã được lưu; Telegram không cung cấp cả album qua một reply. Nếu bài gốc chưa có đầy đủ ảnh trong kho, bổ sung những ảnh còn lại bằng mã tin sau khi đăng.
 
 Quá trình soạn tin loại toàn bộ phần được đánh dấu **Lưu ý nội bộ/Ghi chú nội bộ** khỏi nội dung công khai, giữ nguyên trong bài gốc kín. Giá chốt nội bộ và mức báo khách không dùng làm giá thuê. Nhận diện loại Kho xưởng chỉ khớp từ `kho` riêng biệt, không khớp nhầm chữ `khoảng` trong ghi chú giá.
+
+### Lệnh khôi phục báo chọn lại bài dù đã chọn đúng
+
+Chỉ tài khoản chủ bot đã xác thực được gọi lệnh. Với bài được chủ bot chọn trong cùng cuộc trò chuyện riêng, không bắt buộc Telegram phải cung cấp lại `from.id` của tin gốc; cho phép bài con người viết được chuyển tiếp. Vẫn không nhập tin thông báo của bot làm bài nguồn. Nếu Telegram chỉ gửi quote/external_reply, thiếu nội dung/ảnh tải được hoặc mã tin, bot giải thích đúng phần thiếu và hướng dẫn chuyển tiếp nguyên bài vào bot; không đăng một trích đoạn thay bài đầy đủ và không lặp câu “chọn đúng bài” cho mọi trường hợp.
