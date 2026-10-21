@@ -1,3 +1,4 @@
+import {deletionAction,isDeleted} from '../lib/post-deletion.mjs';
 import {shareDestinations,saveShareDestinations} from '../lib/share-destinations.mjs';
 import {splitPriceNotes,mergePriceNotes,trackedPriceNotes} from '../lib/source-price-notes.mjs';
 import {prepareTrustedText} from '../lib/trusted-intake.mjs';
@@ -28,6 +29,7 @@ export default async function handler(req,res){
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='deleted-posts'){requireAdmin(req);const offset=Number(params.get('offset')||0);if(!Number.isInteger(offset)||offset<0||offset>1000000)return send(res,400,{error:'Trang không hợp lệ.'});const rows=await db('posts',{query:'?private_data->deletion->>state=in.(pending,approved)&order=created_at.desc,id.desc&limit=101&offset='+offset});return send(res,200,{posts:rows.slice(0,100),hasMore:rows.length>100});}
    if(params.get('view')==='share-destinations'){requireAdmin(req);return send(res,200,await shareDestinations());}
    if(params.get('view')==='google-commands'){requireAdmin(req);const commands=await db('google_commands',{query:'?order=created_at.desc&limit=100'}),runs=await db('google_runs',{query:'?select=id,command_id,status,config,result,error,created_at&order=created_at.desc&limit=20'});return send(res,200,{commands,runs});}
    if(params.get('view')==='google-run'){requireAdmin(req);const id=params.get('id');if(!/^[a-f0-9-]{36}$/i.test(id||''))return send(res,400,{error:'Mã lượt không hợp lệ.'});const run=(await db('google_runs',{query:'?id=eq.'+id}))[0];if(!run)return send(res,404,{error:'Không tìm thấy lượt chạy.'});return send(res,200,{run});}
@@ -69,7 +71,7 @@ export default async function handler(req,res){
    }
    const who=await actor(req),query=who.admin?'?order=created_at.desc&limit=500':'?author_id=eq.'+who.id+'&order=created_at.desc&limit=100';
    if(who.admin){const [members,inquiries,posts,notifications]=await Promise.all([db('profiles',{query:'?order=created_at.desc&limit=500'}),db('inquiries',{query:'?order=created_at.desc&limit=500'}),db('posts',{query}),db('notification_log',{query:'?sent=eq.false&order=created_at.desc&limit=100'})]);const standardized=await canonicalizeSubset(posts);return send(res,200,{members,inquiries,posts:standardized.map(row=>({...row,private_data:{...row.private_data,priceTrackingNotes:trackedPriceNotes(row.private_data)},suggestedRooms:extractDimensions(row.private_data?.sourceText||row.private_data?.originalText||row.public_data.description||'')} )),notifications,identityNeedsSync:posts.some((row,i)=>JSON.stringify(row.public_data)!==JSON.stringify(standardized[i].public_data))})}
-   const [posts,inquiries]=await Promise.all([db('posts',{query}),db('inquiries',{query:'?member_id=eq.'+who.id+'&select=id,intent,area,type,created_at&order=created_at.desc&limit=100'})]);return send(res,200,{posts:(await canonicalizeSubset(posts)).map(({private_data,...post})=>post),inquiries,canPost:who.kind==='sales'&&who.can_post,autoPublish:who.kind==='sales'&&who.can_post&&who.auto_publish===true});
+   const [posts,inquiries]=await Promise.all([db('posts',{query}),db('inquiries',{query:'?member_id=eq.'+who.id+'&select=id,intent,area,type,created_at&order=created_at.desc&limit=100'})]);return send(res,200,{posts:(await canonicalizeSubset(posts)).map(({private_data,...post})=>({...post,deletion:private_data?.deletion?{state:private_data.deletion.state,requestedAt:private_data.deletion.requestedAt}:null})),inquiries,canPost:who.kind==='sales'&&who.can_post,autoPublish:who.kind==='sales'&&who.can_post&&who.auto_publish===true});
   }
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
@@ -86,6 +88,7 @@ export default async function handler(req,res){
   if(body.action==='source-link')return send(res,200,await createMapShare(req,body));
   if(body.action==='source-revoke')return send(res,200,await revokeMapShares(req,body));
   if(body.action==='inventory'){const result=await updateInventory(req,body);waitUntil(matchNewStock().catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,result);}
+  if(['delete-post','restore-post','approve-deletion'].includes(body.action)){const result=await deletionAction(req,body);waitUntil(autoCustomerSheet());return send(res,200,result);}
   if(body.action==='submit'||body.action==='submit-original'){
    const who=await actor(req,{posting:true});if(body.action==='submit-original'&&!who.admin)return send(res,403,{error:'Chỉ quản trị viên được đăng trực tiếp từ bài gốc.'});const record=body.action==='submit-original'?await trustedDraft({text:body.text||body.originalText,assetIds:body.assetIds}):await draft(body,who);const published=who.admin||(who.kind==='sales'&&who.can_post&&who.auto_publish===true);const hot=body.hot===true||body.hot==='on';if(hot&&!who.admin)return send(res,403,{error:'Chỉ quản trị viên được ưu tiên tin HOT.'});record.public_data.hot=hot;record.public_data.titleMode='custom';record.public_data.categoryMode=body.categoryMode==='manual'?'manual':'auto';record.status=published?'published':'pending';if(published)record.reviewed_at=new Date().toISOString();record.private_data.publishMode=who.admin?'admin':published?'member_grant':'review';const rows=await db('posts',{method:'POST',body:record});
    const canonical=(await canonicalizeSubset(rows))[0];await db('posts',{method:'PATCH',query:'?id=eq.'+rows[0].id,body:{public_data:canonical.public_data}});
@@ -108,6 +111,7 @@ export default async function handler(req,res){
   if(body.action==='edit-post'){
    if(!/^[-\da-f]{36}$/i.test(body.id))return send(res,400,{error:'Mã tin không hợp lệ.'});
    const rows=await db('posts',{query:'?id=eq.'+body.id});if(!rows[0])return send(res,404,{error:'Không tìm thấy tin.'});
+   if(isDeleted(rows[0]))return send(res,409,{error:'Tin đã xóa. Hãy vào Duyệt bài đã xóa để khôi phục trước khi sửa.'});
    const {safePublicText}=await import('../lib/posts.mjs');
    const separated=splitPriceNotes(clean(body.description,3000));let description=formatDescription(separated.publicSource);const {size,price,priceBasis,pricePerM2}=formPricing(body,{allowIncomplete:true});
    if(!description||!safePublicText(description)||size!==null&&(!Number.isFinite(size)||size<=0||size>10000000)||price!==null&&(!Number.isFinite(price)||price<=0||price>1000000))return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
@@ -127,9 +131,9 @@ export default async function handler(req,res){
    if((public_data.media||[]).some(m=>m.isIllustration))public_data.shareText+='\nCó ảnh minh họa AI, không phải ảnh chụp thực tế.';
    if(transfer.isTransfer)public_data.shareText+='\nGiá chuyển nhượng: '+(transfer.transferPrice===null?'Liên hệ':transfer.transferPrice+' triệu đồng')+(transfer.transferNegotiable?' (Có thể thương lượng)':'')+'.';
    const private_data={...rows[0].private_data,priceTrackingNotes:mergePriceNotes(body.priceTrackingNotes===undefined?trackedPriceNotes(rows[0].private_data):clean(body.priceTrackingNotes,8000),separated.priceTrackingNotes),address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
-   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
+   const previousRevision=p.contentRevision,editQuery='?id=eq.'+body.id+'&status=eq.'+rows[0].status+'&public_data->>contentRevision='+(previousRevision?'eq.'+encodeURIComponent(previousRevision):'is.null');const edited=await db('posts',{method:'PATCH',query:editQuery,body:{public_data,private_data}});if(!edited.length)return send(res,409,{error:'Tin vừa thay đổi hoặc bị xóa. Tải lại trước khi sửa.'});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
-   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data:canonical.public_data}});
+   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id+'&public_data->>contentRevision=eq.'+public_data.contentRevision,body:{public_data:canonical.public_data}});
    if(body.assetIds!==undefined)await logPostHistory(p.slug,'photos-updated');
    if(body.title!==undefined||body.type!==undefined)await logPostHistory(p.slug,'content-updated');
    waitUntil((rows[0].status==='published'?matchNewStock():Promise.resolve()).catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,{saved:true,post:canonical.public_data});
@@ -165,11 +169,12 @@ export default async function handler(req,res){
   if(body.action==='review'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||!['published','rejected'].includes(body.status))return send(res,400,{error:'Thông tin duyệt không hợp lệ.'});
    const posts=await db('posts',{query:'?id=eq.'+body.id});if(!posts[0])return send(res,404,{error:'Không tìm thấy tin.'});
+   if(isDeleted(posts[0]))return send(res,409,{error:'Tin đã xóa. Dùng mục Duyệt bài đã xóa để khôi phục.'});
    // Revalidate public fields, including data imported/edited outside this interface.
    const {safePublicText}=await import('../lib/posts.mjs');const p=posts[0].public_data;
    if(body.status==='published'&&(!safePublicText([p.title,p.address,p.description].join(' '))||p.hashtags||!p.title))return send(res,400,{error:'Tin có thông tin riêng tư trong phần công khai. Cần sửa bản nháp trước khi duyệt.'});
    if(posts[0].status===body.status)return send(res,200,{ok:true,unchanged:true,status:body.status});
-   await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{status:body.status,reviewed_at:new Date().toISOString()}});
+   const reviewRevision=p.contentRevision,reviewed=await db('posts',{method:'PATCH',query:'?id=eq.'+body.id+'&status=eq.'+posts[0].status+'&public_data->>contentRevision='+(reviewRevision?'eq.'+encodeURIComponent(reviewRevision):'is.null'),body:{status:body.status,reviewed_at:new Date().toISOString()}});if(!reviewed.length)return send(res,409,{error:'Tin vừa thay đổi hoặc bị xóa. Tải lại trước khi duyệt.'});
    await logPostHistory(posts[0].public_data.slug,body.status);waitUntil(matchNewStock().catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,{ok:true});
   }
   return send(res,400,{error:'Yêu cầu không hợp lệ.'});

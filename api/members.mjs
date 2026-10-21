@@ -1,3 +1,4 @@
+import {identity,identityFields} from '../lib/member-identity.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 import {configured,supa,member,memberCookie,clean,notify,db} from '../lib/platform.mjs';
 export default async function handler(req,res){
@@ -10,23 +11,36 @@ export default async function handler(req,res){
  try{
   const body=await readJson(req,5000);
   if(body.action==='logout'){res.setHeader('Set-Cookie',memberCookie(req,'',0));return send(res,200,{ok:true})}
-  const email=clean(body.email,254).toLowerCase(),password=typeof body.password==='string'?body.password:'';
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||password.length<12||password.length>128)return send(res,400,{error:'Nhập email hợp lệ và mật khẩu từ 12 đến 128 ký tự.'});
+  const id=identity(body),fields=identityFields(id),password=typeof body.password==='string'?body.password:'';
+  const setSession=session=>{if(!session?.access_token)throw Object.assign(Error('Chưa có phiên đăng nhập. Vui lòng xác minh tài khoản.'),{status:401});res.setHeader('Set-Cookie',memberCookie(req,session.access_token,Math.min(session.expires_in||3600,3600)))};
+  if(body.action==='verify-otp'){
+   const token=clean(body.token,10);if(!/^\d{6,10}$/.test(token))return send(res,400,{error:'Nhập mã OTP gồm 6–10 chữ số.'});
+   if(!['signup','login'].includes(body.purpose))return send(res,400,{error:'Yêu cầu mã không hợp lệ.'});
+   let session;try{session=await supa('/auth/v1/verify',{method:'POST',auth:'anon',body:{...fields,token,type:id.channel==='phone'?'sms':body.purpose==='signup'?'signup':'email'}})}catch{return send(res,400,{error:'Mã OTP không đúng, đã dùng hoặc hết hạn. Hãy yêu cầu mã mới.'})}
+   setSession(session);return send(res,200,{ok:true,verified:true});
+  }
+  if(body.action==='send-login-otp'||body.action==='resend-otp'){
+   try{await supa(body.action==='resend-otp'?'/auth/v1/resend':'/auth/v1/otp',{method:'POST',auth:'anon',body:body.action==='resend-otp'?{...fields,type:id.channel==='phone'?'sms':'signup'}:{...fields,create_user:false,...(id.channel==='phone'?{channel:'sms'}:{})}})}catch(error){return send(res,error.status===429?429:503,{error:id.channel==='phone'?'Chưa gửi được SMS OTP. Vui lòng thử lại sau; quản trị cần kiểm tra nhà cung cấp SMS trong Supabase.':'Chưa gửi được email OTP. Vui lòng thử lại sau; quản trị cần kiểm tra dịch vụ email và giới hạn gửi trong Supabase.'})}
+   return send(res,200,{otpRequired:true,channel:id.channel,purpose:body.action==='resend-otp'?'signup':'login',message:'Nếu tài khoản hợp lệ, mã xác nhận sẽ được gửi. Kiểm tra hộp thư rác nếu dùng email.'});
+  }
+
+  if(password.length<12||password.length>128)return send(res,400,{error:'Nhập mật khẩu từ 12 đến 128 ký tự.'});
   if(body.action==='register'){
-   const full_name=clean(body.name,100),phone=clean(body.phone,20),kind=body.kind;
-   if(!full_name||!/^(0|\+84)\d{9}$/.test(phone)||!['customer','sales'].includes(kind)||body.consent!==true)return send(res,400,{error:'Vui lòng điền đủ thông tin và đồng ý tạo hồ sơ.'});
-   const data=await supa('/auth/v1/signup',{method:'POST',auth:'anon',body:{email,password,data:{full_name,phone,kind}}});
+   const full_name=clean(body.name,100),phone=id.channel==='phone'?id.phone:clean(body.phone,20),kind=body.kind;
+   if(!full_name||(phone&&!/^(0|\+84)\d{9}$/.test(phone))||!['customer','sales'].includes(kind)||body.consent!==true)return send(res,400,{error:'Vui lòng điền đủ thông tin và đồng ý tạo hồ sơ.'});
+   const settings=await supa('/auth/v1/settings',{auth:'anon'});if((id.channel==='email'&&settings.mailer_autoconfirm===true)||(id.channel==='phone'&&settings.sms_autoconfirm===true))return send(res,503,{error:'Quản trị cần bật xác minh '+(id.channel==='phone'?'số điện thoại':'email')+' bằng OTP trong Supabase trước khi nhận đăng ký.'});if(settings.external?.[id.channel]===false)return send(res,503,{error:'Phương thức đăng ký này chưa được bật. Vui lòng chọn phương thức khác hoặc liên hệ quản trị.'});
+   let data;try{data=await supa('/auth/v1/signup',{method:'POST',auth:'anon',body:{...fields,password,...(id.channel==='phone'?{channel:'sms'}:{}),data:{full_name,phone,kind}}})}catch{return send(res,503,{error:id.channel==='phone'?'Chưa tạo được tài khoản bằng điện thoại. Quản trị cần kiểm tra cấu hình SMS OTP và cập nhật hồ sơ thành viên.':'Chưa gửi được mã đăng ký. Vui lòng thử lại sau hoặc liên hệ quản trị kiểm tra dịch vụ email.'})}
    // Supabase can deliberately return an obfuscated response for an existing email.
    if(data.user?.id&&data.user.identities?.length){
     const notice=await notify('Đăng ký thành viên mới',{id:data.user.id,full_name,phone});
     await db('notification_log',{method:'POST',body:{kind:'member',record_id:data.user.id,sent:notice.sent}}).catch(()=>{});
    }
-   return send(res,200,{message:'Nếu email hợp lệ, anh/chị sẽ nhận hướng dẫn xác nhận tài khoản. Sau khi xác nhận, vui lòng đăng nhập. Sale/CTV cần được quản trị viên cấp quyền trước khi gửi tin.'});
+   return send(res,200,{otpRequired:true,channel:id.channel,purpose:'signup',message:'Nếu thông tin hợp lệ, mã OTP sẽ được gửi tới '+(id.channel==='phone'?'số điện thoại':'email')+'. Nhập mã để xác minh tài khoản. Sale/CTV cần được quản trị cấp quyền gửi tin.'});
   }
   if(body.action!=='login')return send(res,400,{error:'Yêu cầu không hợp lệ.'});
-  let session;try{session=await supa('/auth/v1/token?grant_type=password',{method:'POST',auth:'anon',body:{email,password}})}catch{return send(res,401,{error:'Chưa đăng nhập được. Kiểm tra email, mật khẩu và xác nhận email.'})}
-  if(!session?.access_token)return send(res,401,{error:'Vui lòng xác nhận email trước khi đăng nhập.'});
-  res.setHeader('Set-Cookie',memberCookie(req,session.access_token,Math.min(session.expires_in||3600,3600)));
+  let session;try{session=await supa('/auth/v1/token?grant_type=password',{method:'POST',auth:'anon',body:{...fields,password}})}catch{return send(res,401,{error:'Chưa đăng nhập được. Kiểm tra email/số điện thoại, mật khẩu và xác minh tài khoản.'})}
+  if(!session?.access_token)return send(res,401,{error:'Vui lòng xác minh tài khoản trước khi đăng nhập.'});
+  setSession(session);
   return send(res,200,{ok:true});
  }catch(error){return send(res,error.status||502,{error:error.message||'Chưa kết nối được hệ thống thành viên.'})}
 }
