@@ -12,7 +12,7 @@ const secret=()=>createHmac('sha256',token()).update('rental-source-webhook-v1')
 function ready(){if(!/^\d+:[A-Za-z0-9_-]{25,}$/.test(token()||'')||!/^\d+$/.test(owner()||''))throw problem(503,'Thêm TELEGRAM_SOURCE_BOT_TOKEN và TELEGRAM_SOURCE_OWNER_ID vào Vercel Production rồi Redeploy.');}
 async function telegram(method,body){
  const response=await fetch('https://api.telegram.org/bot'+token()+'/'+method,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(8000)});
- const data=await response.json();if(!response.ok||!data.ok)throw problem(502,data.error_code===403?'Telegram từ chối gửi tin: mở đúng bot, bỏ chặn và bấm Start.':data.error_code===401?'Token bot Telegram không còn hợp lệ. Cập nhật token đúng bot rồi Redeploy.':'Telegram chưa xác nhận kết nối. Kiểm tra token, chat ID và thử lại.');return data.result;
+ const data=await response.json();if(data.error_code===429)throw Object.assign(problem(502,'Telegram tạm giới hạn gửi tin.'),{telegramCode:429,retryAfter:data.parameters?.retry_after});if(!response.ok||!data.ok)throw problem(502,data.error_code===403?'Telegram từ chối gửi tin: mở đúng bot, bỏ chặn và bấm Start.':data.error_code===401?'Token bot Telegram không còn hợp lệ. Cập nhật token đúng bot rồi Redeploy.':'Telegram chưa xác nhận kết nối. Kiểm tra token, chat ID và thử lại.');return data.result;
 }
 export default async function handler(req,res){
  let verifiedOwner=false,stage='nhận yêu cầu';
@@ -40,7 +40,6 @@ export default async function handler(req,res){
   let text=String(m.text||m.caption||'').slice(0,16000),replySource=null;
   if(isUpdateCommand(text)&&!updateReference(text)&&m.reply_to_message){let reference=updateReference(m.reply_to_message.text||m.reply_to_message.caption||'');if(!reference){let prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&message_id=eq.'+m.reply_to_message.message_id+'&limit=1'}))[0];if(prior?.media_group_id&&!prior.result_url)prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&media_group_id=eq.'+encodeURIComponent(prior.media_group_id)+'&order=message_id.asc&limit=1'}))[0]||prior;reference=updateReference(prior?.result_url||'');if(!reference&&prior?.id&&!isUpdateCommand(prior.content))replySource=prior.id;}if(reference)text+='\nTin cần cập nhật: '+(reference.slug||reference.code);}
   if(/^\/(?:start|status)(?:@\w+)?(?:\s|$)/.test(text)){const isStatus=/^\/status(?:@\w+)?(?:\s|$)/.test(text);waitUntil((async()=>{const config=automationConfiguration();await sourceReply(telegram,isStatus?(await sourceStatusText(config))+(m.reply_to_message?'\n\n'+await sourceMessageStatus(m.reply_to_message):'\nMuốn kiểm tra đúng một bài: Trả lời bài đó bằng /status.'):'Bot nguồn đã nhận lệnh của anh. '+(config.enabled?'Tự đăng đang bật. Gửi /status để kiểm tra thêm kho nguồn và hàng đợi; gửi bài và ảnh vào cuộc trò chuyện riêng này.':'Tự đăng đang TẮT. Đặt TELEGRAM_AUTO_PUBLISH=true trong Vercel Production rồi Redeploy.'))})());return send(res,200,{ok:true});}
-  if(text||!m.media_group_id)waitUntil(sourceReply(telegram,'Đã nhận bài/ảnh từ Telegram, đang kiểm tra lưu vào kho nguồn. Đây chưa phải xác nhận đã đăng; bot sẽ báo kết quả hoặc lỗi lưu riêng.'));
   const media=[];if(replySource)media.push({kind:'source-reference',source_id:replySource,unique_id:'source-ref:'+replySource});const photo=m.photo?.at(-1);if(photo)media.push({kind:'image',file_id:photo.file_id,unique_id:photo.file_unique_id});
   for(const kind of ['document','video'])if(m[kind])media.push({kind:kind==='document'&&['image/jpeg','image/png','image/webp'].includes(m[kind].mime_type)?'image':kind,file_id:m[kind].file_id,unique_id:m[kind].file_unique_id,name:m[kind].file_name||'',mime:m[kind].mime_type||'',size:m[kind].file_size||0});
   if(!text&&!media.length)return send(res,200,{ok:true});
@@ -48,9 +47,11 @@ export default async function handler(req,res){
   const hash=createHash('sha256').update(JSON.stringify({text:text.normalize('NFC').trim(),media:media.map(a=>a.unique_id)})).digest('hex');
   // Database unique constraints make Telegram redelivery and simultaneous duplicate messages safe.
   stage='lưu bài vào kho nguồn';
+  if(process.env.VERCEL)console.info(JSON.stringify({event:'source-intake-write-start',updateId:update.update_id}));
   const saved=await db('source_inbox',{method:'POST',query:'?on_conflict=content_hash',body:{update_id:update.update_id,message_id:m.message_id,chat_id:String(m.chat.id),media_group_id:m.media_group_id||null,content:text,media,content_hash:hash},headers:{Prefer:'resolution=ignore-duplicates,return=representation'}});
   stage='tìm bài đã lưu hoặc bản trùng';
   const enabled=automationConfiguration().enabled,row=saved?.[0]||(await db('source_inbox',{query:'?content_hash=eq.'+hash}))[0];
+  if(process.env.VERCEL)console.info(JSON.stringify({event:'source-intake-write-result',updateId:update.update_id,hasId:!!row?.id}));
   if(!row?.id)throw problem(502,'Kho nguồn chưa trả lại mã bài đã lưu.');
   stage='xếp lại bài cần xử lý';
   if(enabled&&['review','failed','blocked'].includes(row.processing_status)&&(recovering||m.message_id>row.message_id)){await db('source_inbox',{method:'PATCH',query:'?id=eq.'+row.id+'&processing_status=eq.'+row.processing_status,body:{processing_status:'received',processing_error:'',attempts:0,parsed_data:null}});row.processing_status='received';row.processing_error='';}
@@ -60,5 +61,5 @@ export default async function handler(req,res){
   if(text||!m.media_group_id)await sourceReply(telegram,receiptText(row,enabled)+'\nMã nguồn: '+row.id);
   if(enabled&&!['published','updated','duplicate'].includes(row.processing_status))waitUntil(processSource(row.id));
   return send(res,200,{ok:true});
- }catch(error){if(verifiedOwner)await sourceReply(telegram,'Chưa hoàn tất bước: '+stage+'. '+sourceStorageError(error)+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.');return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
+ }catch(error){if(verifiedOwner&&process.env.VERCEL)console.error(JSON.stringify({event:'source-intake-failed',stage,code:error.databaseCode||error.name||'Error',httpStatus:error.databaseStatus||error.status||0}));if(verifiedOwner)await sourceReply(telegram,'Chưa hoàn tất bước: '+stage+'. '+sourceStorageError(error)+' Mã lỗi: '+(error.databaseCode||error.name||'Error')+'. '+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.');return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
 }

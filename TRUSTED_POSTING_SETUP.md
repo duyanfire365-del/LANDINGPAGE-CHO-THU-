@@ -61,7 +61,7 @@ Máy chủ hỗ trợ hai thao tác POST tới `/api/workspace`, bắt buộc c�
 5. Mở đúng bot nguồn bằng tài khoản có ID khớp `TELEGRAM_SOURCE_OWNER_ID`; gửi `/start` hoặc `/status`. Bot trả lời tình trạng tự đăng. Tin của tài khoản khác/nhóm không được nhập kho riêng của chủ bot.
 6. Bấm **Tải nguồn mới**: nếu có tin Đã nhận/Thiếu cấu hình/Xử lý gián đoạn, mở tin và bấm **Xử lý / Thử lại**. Nếu không có tin, kiểm tra webhook/bot/tài khoản gửi trước. Không yêu cầu gửi token vào chat.
 
-Bot báo đã nhận từ Telegram trước khi chờ lưu vào kho, và nói rõ đó chưa phải xác nhận đã đăng; sau khi lưu nguồn kín bot mới báo đã xếp hàng xử lý; ảnh album có caption nhận một xác nhận để tránh nhiều tin báo cho mỗi ảnh. Tin đã đăng được báo trước các bước đối chiếu khách và đồng bộ Sheets. Lỗi gửi thông báo được ghi riêng trong `notification_log` với `kind=source-result-failed`, không đổi tin đã đăng thành tin thất bại. Bị Telegram chặn hoặc mạng lỗi vẫn có thể khiến không nhận được phản hồi; trang quản trị là nơi đối chiếu trạng thái đã lưu.
+Bot chỉ xác nhận đã nhận và lưu nguồn sau khi kho trả lại mã bài; không gửi thông báo nhận sớm trước khi ghi kho; ảnh album có caption nhận một xác nhận để tránh nhiều tin báo cho mỗi ảnh. Tin đã đăng được báo trước các bước đối chiếu khách và đồng bộ Sheets. Lỗi gửi thông báo được ghi riêng trong `notification_log` với `kind=source-result-failed`, không đổi tin đã đăng thành tin thất bại. Bị Telegram chặn hoặc mạng lỗi vẫn có thể khiến không nhận được phản hồi; trang quản trị là nơi đối chiếu trạng thái đã lưu.
 
 Lỗi proxy 403 của môi trường Codex khi truy cập website không tự chứng minh webhook Telegram cũng lỗi 403. Muốn kết luận lỗi Production cần kết quả getWebhookInfo, trạng thái hàng đợi và nhật ký Vercel thực tế.
 
@@ -82,3 +82,7 @@ Quá trình soạn tin loại toàn bộ phần được đánh dấu **Lưu ý 
 ### Lệnh khôi phục báo chọn lại bài dù đã chọn đúng
 
 Chỉ tài khoản chủ bot đã xác thực được gọi lệnh. Với bài được chủ bot chọn trong cùng cuộc trò chuyện riêng, không bắt buộc Telegram phải cung cấp lại `from.id` của tin gốc; cho phép bài con người viết được chuyển tiếp. Vẫn không nhập tin thông báo của bot làm bài nguồn. Nếu Telegram chỉ gửi quote/external_reply, thiếu nội dung/ảnh tải được hoặc mã tin, bot giải thích đúng phần thiếu và hướng dẫn chuyển tiếp nguyên bài vào bot; không đăng một trích đoạn thay bài đầy đủ và không lặp câu “chọn đúng bài” cho mọi trường hợp.
+
+### Dừng ở thông báo nhận sớm của bản cũ
+
+Bản mới bỏ thông báo nhận bài trước khi lưu để tránh gây hiểu nhầm và gửi liên tiếp nhiều tin trong cùng chat. Telegram 429 được thử lại theo retry_after (tối đa 2 lần, mỗi lần tối đa 10 giây). Lỗi lưu trả về bước đang thực hiện và mã lỗi an toàn, không trả dữ liệu/khóa thô. Nhật ký Vercel Production có các sự kiện source-intake-write-start, source-intake-write-result, source-intake-failed, source-telegram-send-failed. Chỉ ghi tên bước, mã lỗi, ID update và cờ có mã nguồn; không ghi bài gốc, địa chỉ, ảnh hay token. Nếu chỉ có ảnh thông báo cũ, không thể suy ra nguyên nhân ghi kho: cần đối chiếu nhật ký request /api/telegram-inbox đúng thời điểm gửi.
