@@ -1,3 +1,5 @@
+import {applySourceUpdate} from '../lib/source-updates.mjs';
+import {trustedDraft} from '../lib/trusted-intake.mjs';
 import {randomUUID} from 'node:crypto';
 import {formatDescription} from '../lib/listing-content.mjs';
 import {editedMedia} from '../lib/post-media.mjs';
@@ -8,7 +10,7 @@ import {customerRows,getCustomer,saveCustomer,refreshCustomer,customerScope,matc
 import {customerHook,connectCustomerBot,createCustomerImport,processCustomerImport,retryCustomerImport} from '../lib/customer-imports.mjs';
 import {syncCustomerSheet,sheetReady,autoCustomerSheet} from '../lib/customer-sheets.mjs';
 import {findSourceMembers,getSource,publicSource,saveSource,createMapShare,revokeMapShares,mapShare,sharedSources,sourceAccess} from '../lib/property-source.mjs';
-import {formPricing} from '../lib/source-pricing.mjs';
+import {formPricing,transferPricing,syncPricingDescription} from '../lib/source-pricing.mjs';
 import {updateInventory,updateHot} from '../lib/inventory.mjs';
 import {waitUntil} from '@vercel/functions';
 import {canonicalizeSubset,persistIdentities} from '../lib/listing-catalog.mjs';
@@ -76,21 +78,22 @@ export default async function handler(req,res){
   if(body.action==='customer-import-retry'){const id=await retryCustomerImport(req,body);waitUntil(processCustomerImport(id));return send(res,202,{queued:true,id});}
   if(body.action==='customer-bot-connect')return send(res,200,await connectCustomerBot(req));
   if(body.action==='customer-sheets'){requireAdmin(req);return send(res,200,await syncCustomerSheet());}
-  if(body.action==='source-save')return send(res,200,await saveSource(req,body));
+  if(body.action==='source-save'){const result=await saveSource(req,body);waitUntil(autoCustomerSheet());return send(res,200,result);}
   if(body.action==='source-link')return send(res,200,await createMapShare(req,body));
   if(body.action==='source-revoke')return send(res,200,await revokeMapShares(req,body));
-  if(body.action==='inventory'){const result=await updateInventory(req,body);waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,result);}
-  if(body.action==='submit'){
-   const who=await actor(req,{posting:true}),record=await draft(body,who);const published=who.admin||(who.kind==='sales'&&who.can_post&&who.auto_publish===true);const hot=body.hot===true||body.hot==='on';if(hot&&!who.admin)return send(res,403,{error:'Chỉ quản trị viên được ưu tiên tin HOT.'});record.public_data.hot=hot;record.public_data.titleMode='custom';record.public_data.categoryMode=body.categoryMode==='manual'?'manual':'auto';record.status=published?'published':'pending';if(published)record.reviewed_at=new Date().toISOString();record.private_data.publishMode=who.admin?'admin':published?'member_grant':'review';const rows=await db('posts',{method:'POST',body:record});
+  if(body.action==='inventory'){const result=await updateInventory(req,body);waitUntil(matchNewStock().catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,result);}
+  if(body.action==='submit'||body.action==='submit-original'){
+   const who=await actor(req,{posting:true});if(body.action==='submit-original'&&!who.admin)return send(res,403,{error:'Chỉ quản trị viên được đăng trực tiếp từ bài gốc.'});const record=body.action==='submit-original'?await trustedDraft({text:body.text||body.originalText,assetIds:body.assetIds}):await draft(body,who);const published=who.admin||(who.kind==='sales'&&who.can_post&&who.auto_publish===true);const hot=body.hot===true||body.hot==='on';if(hot&&!who.admin)return send(res,403,{error:'Chỉ quản trị viên được ưu tiên tin HOT.'});record.public_data.hot=hot;record.public_data.titleMode='custom';record.public_data.categoryMode=body.categoryMode==='manual'?'manual':'auto';record.status=published?'published':'pending';if(published)record.reviewed_at=new Date().toISOString();record.private_data.publishMode=who.admin?'admin':published?'member_grant':'review';const rows=await db('posts',{method:'POST',body:record});
    const canonical=(await canonicalizeSubset(rows))[0];await db('posts',{method:'PATCH',query:'?id=eq.'+rows[0].id,body:{public_data:canonical.public_data}});
    await logPostHistory(canonical.public_data.slug,record.status);
    const notice=await notify(published?'Có tin mới đã đăng':'Có tin đang chờ duyệt',{id:canonical.public_data.code,name:canonical.public_data.title});await db('notification_log',{method:'POST',body:{kind:'post',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
-   if(published)waitUntil(matchNewStock().then(()=>autoCustomerSheet()).catch(()=>{}));
+   waitUntil((published?matchNewStock():Promise.resolve()).catch(()=>{}).then(()=>autoCustomerSheet()).catch(()=>{}));
    return send(res,201,{submitted:true,id:rows[0].id,published,status:record.status,href:canonical.public_data.href});
   }
   requireAdmin(req);
-  if(body.action==='highlight')return send(res,200,await updateHot(req,body));
-  if(body.action==='normalize-identities'){waitUntil(persistIdentities().catch(()=>{}));return send(res,202,{queued:true});}
+  if(body.action==='supplement-original'){const updated=await applySourceUpdate({id:body.requestId||randomUUID(),content:String(body.text||''),assetIds:body.assetIds||[]});waitUntil(matchNewStock().catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,{saved:true,post:updated.public_data});}
+  if(body.action==='highlight'){const result=await updateHot(req,body);waitUntil(autoCustomerSheet());return send(res,200,result);}
+  if(body.action==='normalize-identities'){waitUntil(persistIdentities().then(()=>autoCustomerSheet()).catch(()=>{}));return send(res,202,{queued:true});}
   if(body.action==='telegram-test'){
    if(!process.env.TELEGRAM_BOT_TOKEN||!process.env.TELEGRAM_CHAT_ID)return send(res,503,{error:'Cần thêm TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID vào Vercel, rồi Redeploy.'});
    const result=await notify('Thông báo thử — đã kết nối website với Telegram',{id:'kiem-tra-ket-noi'});
@@ -100,27 +103,30 @@ export default async function handler(req,res){
    if(!/^[-\da-f]{36}$/i.test(body.id))return send(res,400,{error:'Mã tin không hợp lệ.'});
    const rows=await db('posts',{query:'?id=eq.'+body.id});if(!rows[0])return send(res,404,{error:'Không tìm thấy tin.'});
    const {safePublicText}=await import('../lib/posts.mjs');
-   let description=formatDescription(clean(body.description,3000));const {size,price,priceBasis,pricePerM2}=formPricing(body);
-   if(!description||!safePublicText(description)||!Number.isFinite(size)||size<=0||size>10000000||!Number.isFinite(price)||price<=0||price>1000000)return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
+   let description=formatDescription(clean(body.description,3000));const {size,price,priceBasis,pricePerM2}=formPricing(body,{allowIncomplete:true});
+   if(!description||!safePublicText(description)||size!==null&&(!Number.isFinite(size)||size<=0||size>10000000)||price!==null&&(!Number.isFinite(price)||price<=0||price>1000000))return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
    const p=rows[0].public_data;
    const title=body.title===undefined?p.title:clean(body.title,160),type=body.type===undefined?p.type:clean(body.type);
    if(!title||!safePublicText(title)||!categories.includes(type))return send(res,400,{error:'Kiểm tra tiêu đề và danh mục. Tiêu đề công khai không chứa số nhà, ngõ/ngách, SĐT nguồn, hoa hồng hoặc liên kết.'});
    const titleMode=body.title===undefined?p.titleMode:body.autoTitle===true||body.autoTitle==='on'?'auto':'custom';
+   const transfer=transferPricing(body,p);
    const mediaChanges=await editedMedia(body,p,{admin:true,id:null});
-   if(rows[0].private_data?.automation){description=description.replace(`Diện tích ${p.size} m², giá thuê tham khảo ${p.price} triệu đồng/tháng.`,`Diện tích ${size} m², giá thuê tham khảo ${price} triệu đồng/tháng.`);if(p.pricePerM2){const format=n=>new Intl.NumberFormat('vi-VN').format(n),old=`Đơn giá: ${format(p.pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(p.size)} m² là ${format(p.price)} triệu đồng/tháng.`;description=description.replace(old,pricePerM2?`Đơn giá: ${format(pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(size)} m² là ${format(price)} triệu đồng/tháng.`:'')}}
+   if(rows[0].private_data?.automation){description=description.replace(`Diện tích ${p.size} m², giá thuê tham khảo ${p.price} triệu đồng/tháng.`,(size===null?'Diện tích đang cập nhật.':'Diện tích '+size+' m².')+' '+(price===null?'Giá thuê: liên hệ.':'Giá thuê tham khảo '+price+' triệu đồng/tháng.'));if(p.pricePerM2){const format=n=>new Intl.NumberFormat('vi-VN').format(n),old=`Đơn giá: ${format(p.pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(p.size)} m² là ${format(p.price)} triệu đồng/tháng.`;description=description.replace(old,pricePerM2&&size&&price?`Đơn giá: ${format(pricePerM2)} đồng/m²/tháng; tổng tiền thuê tính theo ${format(size)} m² là ${format(price)} triệu đồng/tháng.`:'')}}
    const dimensions=propertyDimensions({frontage:body.frontage===undefined?p.frontage:body.frontage,roadWidth:body.roadWidth===undefined?p.roadWidth:body.roadWidth,sidewalk:body.sidewalk===undefined?p.sidewalk:body.sidewalk});
-   const public_data={...p,...mediaChanges,...dimensions,contentRevision:randomUUID(),title,titleMode,type,categories:[type,...(p.categories||[]).filter(t=>t!==p.type&&t!==type)],categoryMode:body.type===undefined?p.categoryMode:'manual',description,size,price,priceBasis,pricePerM2,areaText:size+' m²',facts:[...(p.facts||[]).filter(f=>!/^Đơn giá:|^Mặt tiền:|^Đường rộng:|^Vỉa hè:/.test(f)),...dimensionFacts(dimensions),...(pricePerM2?['Đơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.']:[])]};
-   public_data.shareText=`${title}\nKhu vực: ${p.address}\nDiện tích: ${size} m²\nGiá thuê: ${price} triệu đồng/tháng\n${description}\nLiên hệ: 0906215365`;
+   const public_data={...p,...mediaChanges,...dimensions,...transfer,contentRevision:randomUUID(),title,titleMode,type,categories:[type,...(p.categories||[]).filter(t=>t!==p.type&&t!==type)],categoryMode:body.type===undefined?p.categoryMode:'manual',description,size,price,priceBasis,pricePerM2,areaText:size===null?'Diện tích đang cập nhật':size+' m²',facts:[...(p.facts||[]).filter(f=>!/^Đơn giá:|^Mặt tiền:|^Đường rộng:|^Vỉa hè:/.test(f)),...dimensionFacts(dimensions),...(pricePerM2?['Đơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.']:[])]};
+   public_data.description=syncPricingDescription(public_data.description,p,public_data);public_data.notes=(public_data.notes||[]).filter(n=>!(price!==null&&/^Giá thuê đang cập nhật/.test(n))&&!(size!==null&&/^Diện tích đang cập nhật/.test(n)));description=public_data.description;
+   public_data.shareText=`${title}\nKhu vực: ${p.address}\nDiện tích: ${size===null?'Đang cập nhật':size+' m²'}\nGiá thuê: ${price===null?'Liên hệ':price+' triệu đồng/tháng'}\n${description}\nLiên hệ: 0906215365`;
    if(pricePerM2)public_data.shareText+='\nĐơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.';
    public_data.shareText+='\n'+dimensionFacts(dimensions).join('\n');
    if((public_data.media||[]).some(m=>m.isIllustration))public_data.shareText+='\nCó ảnh minh họa AI, không phải ảnh chụp thực tế.';
+   if(transfer.isTransfer)public_data.shareText+='\nGiá chuyển nhượng: '+(transfer.transferPrice===null?'Liên hệ':transfer.transferPrice+' triệu đồng')+(transfer.transferNegotiable?' (Có thể thương lượng)':'')+'.';
    const private_data={...rows[0].private_data,address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data,private_data}});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{public_data:canonical.public_data}});
    if(body.assetIds!==undefined)await logPostHistory(p.slug,'photos-updated');
    if(body.title!==undefined||body.type!==undefined)await logPostHistory(p.slug,'content-updated');
-   if(rows[0].status==='published')waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{saved:true,post:canonical.public_data});
+   waitUntil((rows[0].status==='published'?matchNewStock():Promise.resolve()).catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,{saved:true,post:canonical.public_data});
   }
   if(body.action==='inquiry-update'){
    if(!/^[-\da-f]{36}$/i.test(body.id)||!['new','contacted','following','closed'].includes(body.status)||typeof body.notes!=='string'||body.notes.length>4000)return send(res,400,{error:'Thông tin cập nhật hồ sơ không hợp lệ.'});
@@ -158,7 +164,7 @@ export default async function handler(req,res){
    if(body.status==='published'&&(!safePublicText([p.title,p.address,p.description].join(' '))||p.hashtags||!p.title))return send(res,400,{error:'Tin có thông tin riêng tư trong phần công khai. Cần sửa bản nháp trước khi duyệt.'});
    if(posts[0].status===body.status)return send(res,200,{ok:true,unchanged:true,status:body.status});
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id,body:{status:body.status,reviewed_at:new Date().toISOString()}});
-   await logPostHistory(posts[0].public_data.slug,body.status);waitUntil(matchNewStock().then(()=>autoCustomerSheet()));return send(res,200,{ok:true});
+   await logPostHistory(posts[0].public_data.slug,body.status);waitUntil(matchNewStock().catch(()=>{}).then(()=>autoCustomerSheet()));return send(res,200,{ok:true});
   }
   return send(res,400,{error:'Yêu cầu không hợp lệ.'});
  }catch(error){return send(res,error.status||502,{error:error.message||'Chưa xử lý được yêu cầu.'})}

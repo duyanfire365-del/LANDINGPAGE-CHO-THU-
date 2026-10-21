@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {extractRentPricing,extractTransferPricing,formPricing,transferPricing} from '../lib/source-pricing.mjs';
+import {prepareTrustedText} from '../lib/trusted-intake.mjs';
+for(const source of ['Giá thuê hơn 20 triệu/tháng','Giá thuê khoảng 20-30tr/tháng','Giá thuê 20 triệu - 30 triệu/tháng','Giá thuê 20tr/tháng\nGiá thuê 30tr/tháng','Giá thuê thỏa thuận','Chưa có giá']){const p=extractRentPricing('Diện tích 120m2\n'+source,{allowIncomplete:true,allowUncertain:true});assert.equal(p.price,null,source);assert.equal(p.size,120);}
+const missing=extractRentPricing('Chỉ có ảnh gửi kèm',{allowIncomplete:true,allowUncertain:true});assert.equal(missing.price,null);assert.equal(missing.size,null);
+assert.equal(formPricing({size:'50',price:''}).price,null);assert.equal(formPricing({size:'',price:'20'}).size,null);assert.equal(formPricing({priceMode:'per_m2',pricePerM2:110000,size:''}).price,null);
+const fee=extractTransferPricing('Sang nhượng quán\nGiá thuê: 20tr/tháng\nGiá chuyển nhượng: 300 triệu\nCó thể thương lượng');assert.equal(fee.transferPrice,300);assert.equal(fee.transferNegotiable,true);assert.equal(extractTransferPricing('Sang nhượng quán, giá thuê 20tr/tháng').transferPrice,null);assert.equal(transferPricing({transferPrice:'',transferNegotiable:true}).transferPrice,null);assert.throws(()=>transferPricing({transferPrice:-10}),{status:400});
+const prepared=prepareTrustedText('Sang nhượng quán ăn\nDiện tích 50m2\nGiá thuê hơn 20 triệu/tháng\nNguồn của Anh Kín\nSĐT chủ nhà 1: 0987654321\nHH50%');assert.equal(prepared.item.price,null);assert(!prepared.description.includes('Anh Kín'));assert(!prepared.description.includes('0987654321'));assert(!prepared.description.includes('50%'));assert(prepared.original.includes('Anh Kín'));
+
+
+assert.equal(extractRentPricing('Giá nhượng: 300 triệu',{allowIncomplete:true,allowUncertain:true}).price,null);assert.equal(extractTransferPricing('Giá chuyển nhượng 200 triệu - 300 triệu').transferPrice,null);assert.equal(extractTransferPricing('Giá chuyển nhượng từ 200 đến 300 triệu').transferPrice,null);assert.equal(extractTransferPricing('Giá chuyển nhượng: 3 tỷ').transferPrice,3000);assert.equal(extractTransferPricing('Giá chuyển nhượng: 300 triệu, không thương lượng').transferNegotiable,false);
+
+console.log('PASS: nullable/approximate rent without fabricated zero, separate transfer price and negotiability, per-m² missing area, private source copy');
+
+const {exportDocument,spreadsheetDrafts}=await import('../lib/documents.mjs');const {buildImportPlan}=await import('../lib/google-commands.mjs');
+const importRow={'Tiêu đề công khai':'Sang nhượng quán ăn','Tên đường công khai':'Cầu Diễn','Khu vực':'Nam Từ Liêm','Danh mục':'Mặt bằng kinh doanh','Giá thuê (triệu/tháng)':'','Giá chuyển nhượng (triệu đồng)':300,'Có thể thương lượng giá chuyển nhượng':'Có','Diện tích':50,'Mô tả công khai':'Không gian kinh doanh, liên hệ để xác nhận hiện trạng.'};const exported=await exportDocument([importRow],'xlsx','Mẫu');const excel=(await spreadsheetDrafts(exported.buffer))[0];assert.equal(excel.price,null);assert.equal(excel.transferPrice,300);assert.equal(excel.transferNegotiable,true);
+const plan=await buildImportPlan({format:'sheets',direction:'import',dataset:'posts'},{values:[Object.keys(importRow),Object.values(importRow)]});assert.equal(plan.errors.length,0);assert.equal(plan.items[0].post.public_data.price,null);assert.equal(plan.items[0].post.public_data.transferPrice,300);assert.equal(plan.items[0].post.public_data.transferNegotiable,true);
+console.log('PASS: Excel and Google Sheet import preserve unknown rent, transfer amount and negotiability independently.');

@@ -1,4 +1,7 @@
 (() => {
+  const priceText=value=>Number(value)>0?new Intl.NumberFormat('vi-VN').format(value)+' triệu đồng/tháng':'Giá liên hệ';
+  const sizeText=value=>Number(value)>0?new Intl.NumberFormat('vi-VN').format(value)+' m²':'Diện tích đang cập nhật';
+  const transferText=post=>'Giá chuyển nhượng: '+(Number(post.transferPrice)>0?new Intl.NumberFormat('vi-VN').format(post.transferPrice)+' triệu đồng':'Liên hệ')+(post.transferNegotiable?' — Có thể thương lượng':'');
   const files = new Map(), albums = new Map();
   const readyFiles = new Map();
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -102,5 +105,5 @@
   });
   window.addEventListener('pagehide',()=>document.querySelector('#share-composer')?.close());
   function register(listing){const rows=window.RENTAL_LISTINGS||(window.RENTAL_LISTINGS=[]);const index=rows.findIndex(row=>row.id===listing.id);if(index>=0&&JSON.stringify([rows[index].image,rows[index].shareImage,rows[index].mediaRevision,rows[index].media])!==JSON.stringify([listing.image,listing.shareImage,listing.mediaRevision,listing.media])){files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}if(index<0)rows.push(listing);else rows[index]=listing;}
-  window.RentalSharing = {register,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
+  window.RentalSharing = {register,priceText,sizeText,transferText,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
 })();

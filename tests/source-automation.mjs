@@ -1,3 +1,4 @@
+import {applySourceUpdate,isUpdateCommand,updateReference} from '../lib/source-updates.mjs';
 import assert from 'node:assert/strict';
 import {draft,safePublicText} from '../lib/posts.mjs';
 import {validateExtraction,fingerprint,sameProperty,processSource} from '../lib/source-automation.mjs';
@@ -13,7 +14,7 @@ assert.ok(sameProperty(item,{public_data:{area:'Tây Hồ',size:123},private_dat
 assert.ok(!sameProperty(item,{public_data:{area:'Tây Hồ',size:123},private_data:{address:'87 Lạc Long Quân'}}));
 let legacy=[];const runSource=id=>processSource(id,{legacyListings:async()=>legacy});
 process.env.TELEGRAM_SOURCE_MODE='ai';process.env.OPENAI_API_KEY='unit-test-key';process.env.TELEGRAM_AUTO_PUBLISH='true';process.env.SUPABASE_URL='https://db.test';process.env.SUPABASE_SERVICE_ROLE_KEY='sb_secret_test';process.env.SUPABASE_ANON_KEY='sb_publishable_test';process.env.TELEGRAM_SOURCE_BOT_TOKEN='test';process.env.TELEGRAM_SOURCE_OWNER_ID='1';
-let albumRows=[],downloads=0;let source,posts=[],assets=[],fingerprints=[],imageCalls=0,chatCalls=0,failImage=false,claim=true;
+let inboxRows=[];let privateSources=[];let albumRows=[],downloads=0;let source,posts=[],assets=[],fingerprints=[],imageCalls=0,chatCalls=0,failImage=false,claim=true;
 const fixture=()=>({id:'11111111-1111-4111-8111-111111111111',content:text,processing_status:'received',attempts:0});
 const response=data=>new Response(JSON.stringify(data),{status:200});
 global.fetch=async (raw,options={})=>{
@@ -28,11 +29,11 @@ global.fetch=async (raw,options={})=>{
   imageCalls++;if(failImage)return new Response('{}',{status:429});const bytes=Buffer.alloc(200);bytes[0]=255;bytes[1]=216;return response({data:[{b64_json:bytes.toString('base64')}]});
  }
  if(url.pathname.includes('/storage/'))return response({});
- if(url.pathname.endsWith('/rpc/claim_source_job')){if(!claim||source.processing_status==='published')return response([]);source.processing_status='processing';source.attempts++;return response([source])}
+ if(url.pathname.endsWith('/rpc/claim_source_job')){const job=albumRows.find(r=>r.id===body.job_id)||inboxRows.find(r=>r.id===body.job_id)||source;if(!claim||['published','updated'].includes(job.processing_status))return response([]);job.processing_status='processing';job.attempts++;return response([job])}
  const table=url.pathname.split('/').at(-1),method=options.method||'GET';
  if(table==='source_inbox'){
   if(url.searchParams.has('media_group_id'))return response(albumRows);
-  const target=albumRows.find(r=>'eq.'+r.id===url.searchParams.get('id'))||source;
+  const target=albumRows.find(r=>'eq.'+r.id===url.searchParams.get('id'))||inboxRows.find(r=>'eq.'+r.id===url.searchParams.get('id'))||source;
   if(method==='PATCH')Object.assign(target,body);return response([target]);
  }
  if(table==='posts'){
@@ -44,8 +45,11 @@ global.fetch=async (raw,options={})=>{
  if(table==='source_fingerprints'){
   if(method==='POST'){const exists=fingerprints.find(f=>f.fingerprint===body.fingerprint);if(exists)return response([]);fingerprints.push(body);return response([body])}return response(fingerprints);
  }
+ if(table==='property_sources'){if(method==='POST'){const old=privateSources.find(r=>r.slug===body.slug);if(old){Object.assign(old,body);return response([old])}privateSources.push(body);return response([body])}return response(privateSources.filter(r=>!url.searchParams.get('slug')||'eq.'+r.slug===url.searchParams.get('slug')));}
+ if(table==='notification_log')return response([]);
  if(table==='assets'){
   if(method==='POST'){const row={id:'22222222-2222-4222-8222-'+String(assets.length+1).padStart(12,'0'),...body};assets=assets.filter(a=>a.path!==body.path);assets.push(row);return response([row])}
+  if(url.searchParams.get('id')?.startsWith('in.(')){const ids=url.searchParams.get('id').slice(4,-1).split(',');return response(assets.filter(a=>ids.includes(a.id)));}
   const path=url.searchParams.get('path');if(path)return response(assets.filter(a=>path.startsWith('eq.')?a.path===path.slice(3):a.path.startsWith(path.slice(5).replace('*',''))));
   return response(assets);
  }
@@ -68,7 +72,7 @@ const beforeAI=chatCalls+imageCalls;await runSource(source.id);assert.equal(sour
 posts=[];assets=[];fingerprints=[];source={...fixture(),content:noApiText,media:[]};await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(posts[0].public_data.illustrationKind,'banner');assert.equal(chatCalls+imageCalls,beforeAI);
 posts=[];assets=[];fingerprints=[];source={...fixture(),content:noApiText,chat_id:'1',media_group_id:'album1',media:[{kind:'image',file_id:'album1',unique_id:'album1'}]};
 albumRows=[source,{...fixture(),id:'44444444-4444-4444-8444-444444444444',content:'',chat_id:'1',media_group_id:'album1',media:[{kind:'image',file_id:'album2',unique_id:'album2'}]}];
-await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.media.length,2);assert.equal(albumRows[1].processing_status,'grouped');assert.equal(chatCalls+imageCalls,beforeAI);
+await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.media.length,2);assert.equal(albumRows[1].processing_status,'grouped');assert.equal(albumRows[1].result_url,posts[0].public_data.href);assert.equal(chatCalls+imageCalls,beforeAI);
 console.log('Source automation passed: verified rent/size evidence, private address checks, sale/multiple-listing rejection, dedup without image cost, publish+AI media, source privacy, retry/recovery, missing key and job-claim guards.');
 
 albumRows=[];posts=[];assets=[];fingerprints=[];
@@ -93,3 +97,21 @@ albumRows=[];posts=[];assets=[];fingerprints=[];
 const streetSource='🔥 Mặt bằng 70m² tại Triều Khúc – 12 triệu/tháng, phù hợp mở quán ăn, kinh doanh ngày đêm!\n📍 12 ngõ 62 Triều Khúc\n• Tầng 1, diện tích 70m²\n• Giá thuê: 12 triệu/tháng\n• Khu vực đông sinh viên, thuận tiện kinh doanh ăn uống\n• Xe máy, ô tô đỗ thoải mái\n• Hiện đang kinh doanh quán lẩu, phù hợp khách muốn mở quán ăn hoặc kinh doanh F&B.\n📞 Quan tâm gọi ngay 0906 215 365 (Zalo/Call) để hỏi thêm thông tin và hẹn xem mặt bằng trực tiếp nhé!\n#TrieuKhuc #MatBangKinhDoanh #ChoThueMatBang #DuyHome #Dhland';
 source={...fixture(),id:'99999999-9999-4999-8999-999999999999',content:streetSource,media:[{kind:'image',file_id:'streetphoto',unique_id:'streetphoto'}]};await runSource(source.id);assert.equal(source.processing_status,'published',source.processing_error);assert.equal(posts.length,1);const streetPost=posts[0];assert.equal(streetPost.public_data.price,12);assert.equal(streetPost.public_data.size,70);assert.equal(streetPost.public_data.area,'Thanh Trì');assert(streetPost.public_data.title.includes('Triều Khúc'));assert.equal(streetPost.public_data.media.length,1);assert(streetPost.private_data.address.includes('12 ngõ 62'));assert(!JSON.stringify(streetPost.public_data).includes('12 ngõ 62'));assert.equal(chatCalls+imageCalls,beforeAI);await runSource(source.id);assert.equal(posts.length,1,'retry does not duplicate an already published listing');
 console.log('Triều Khúc screenshot regression passed: one 12-million monthly rent, 70 m², original photo, public street only, private full address, no duplicate on retry.');
+
+// Trusted owner submissions no longer need an exact rent or transfer fee.
+albumRows=[];privateSources=[];posts=[];assets=[];fingerprints=[];process.env.TELEGRAM_SOURCE_MODE='provided';
+const rangeText='Sang nhượng quán nhậu tại Cầu Diễn, Nam Từ Liêm\nDiện tích: 120m2\nGiá thuê cực tốt, chỉ hơn 20 triệu/tháng\nSĐT chủ nhà 1: 0987654321\nNguồn: Anh Nguồn Kín\nHH50%';
+source={...fixture(),content:rangeText,media:[{kind:'image',file_id:'range-1',unique_id:'range-1'},{kind:'image',file_id:'range-2',unique_id:'range-2'}]};await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(posts[0].public_data.price,null);assert.equal(posts[0].public_data.size,120);assert.equal(posts[0].public_data.transferPrice,null);assert.equal(posts[0].public_data.isTransfer,true);assert.equal(posts[0].public_data.media.length,2);assert(!JSON.stringify(posts[0].public_data).includes('0987654321'));assert(!JSON.stringify(posts[0].public_data).includes('Anh Nguồn Kín'));assert(!JSON.stringify(posts[0].public_data).includes('HH50'));assert.equal(posts[0].private_data.sourceText,rangeText);assert(posts[0].private_data.pricingNotes.length);
+const code=posts[0].public_data.code,targetSlug=posts[0].public_data.slug;assert(isUpdateCommand('Hãy bổ sung thêm dữ liệu '+code));assert(!isUpdateCommand('Mặt bằng kinh doanh đang cập nhật thông tin'));assert.equal(updateReference(code).code,code);
+const command='Hãy bổ sung thêm dữ liệu '+code+'\nGiá thuê: 24tr/tháng\nĐịa chỉ cụ thể: 25 đường Cầu Diễn, Nam Từ Liêm, Hà Nội\nGiá chuyển nhượng: 300 triệu\nCó thể thương lượng\nSĐT chủ nhà 1: 0912345678\nNguồn của: Anh Đối Tác Kín\nHoa hồng: 50%';
+source={...fixture(),id:'66666666-6666-4666-8666-666666666666',content:command,media:[{kind:'image',file_id:'update-1',unique_id:'update-1'}]};await runSource(source.id);assert.equal(source.processing_status,'updated');assert.equal(posts.length,1);assert.equal(posts[0].public_data.price,24);assert.equal(posts[0].public_data.transferPrice,300);assert.equal(posts[0].public_data.transferNegotiable,true);assert.equal(posts[0].public_data.media.length,3);assert.equal(posts[0].private_data.address,'25 đường Cầu Diễn, Nam Từ Liêm, Hà Nội');assert.equal(posts[0].private_data.sourceInfo.ownerPhones[0],'0912345678');assert.equal(privateSources[0].data.ownerPublic[0],false);assert.equal(privateSources[0].data.sourcePublic,false);assert(!JSON.stringify(posts[0].public_data).includes('0912345678'));assert(!JSON.stringify(posts[0].public_data).includes('Đối Tác Kín'));assert(!JSON.stringify(posts[0].public_data).includes('25 đường'));assert(!JSON.stringify(posts[0].public_data).includes('50%'));assert.equal(posts[0].status,'published');
+const same=await applySourceUpdate(source);assert.equal(same.reused,true);assert.equal(posts[0].public_data.media.length,3,'retries do not duplicate photos');
+const leader={...source,chat_id:'1',message_id:1,media_group_id:'late-album',processing_status:'updated',result_url:posts[0].public_data.href},late={...fixture(),id:'77777777-7777-4777-8777-777777777777',content:'',chat_id:'1',message_id:2,media_group_id:'late-album',media:[{kind:'image',file_id:'late-1',unique_id:'late-1'}]};albumRows=[leader,late];source=late;await runSource(late.id);assert.equal(late.processing_status,'grouped');assert.equal(posts[0].public_data.media.length,4,'late album photo attaches to the existing listing');assert.equal(posts.length,1);albumRows=[];
+source={...fixture(),id:'88888888-8888-4888-8888-888888888888',content:'Hãy bổ sung giá thuê 25 triệu/tháng',media:[]};await runSource(source.id);assert.equal(source.processing_status,'review','no target means no guessed update');assert.equal(posts[0].public_data.price,24);
+posts=[];assets=[];fingerprints=[];source={...fixture(),id:'99999999-9999-4999-8999-999999999999',content:'',media:[{kind:'image',file_id:'photo-only',unique_id:'photo-only'}]};await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.price,null);assert.equal(posts[0].public_data.size,null);assert(!posts[0].public_data.description.includes('null'));assert(!posts[0].public_data.shareText.includes('null'));
+console.log('PASS: range/missing prices publish immediately, private raw data, transfer fee/negotiability, multi-photo intake, targeted supplements, idempotent updates, late album photos and no-target protection');
+
+posts=[];assets=[];fingerprints=[];source={...fixture(),id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',media:[{kind:'image',file_id:'ai-provided-1',unique_id:'ai-provided-1'},{kind:'image',file_id:'ai-provided-2',unique_id:'ai-provided-2'}]};process.env.TELEGRAM_SOURCE_MODE='ai';process.env.OPENAI_API_KEY='test';const beforeGeneratedImages=imageCalls;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.media.length,2);assert.equal(posts[0].public_data.isIllustration,false);assert.equal(imageCalls,beforeGeneratedImages,'supplied photos are used even in AI mode, without paying to replace them');
+console.log('PASS: AI mode retains the supplied photo album instead of replacing it with a generated image.');
+
+posts=[];assets=[];fingerprints=[];privateSources=[];process.env.TELEGRAM_SOURCE_MODE='provided';const oldReview={...fixture(),id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',content:rangeText,processing_status:'review',media:[{kind:'image',file_id:'old-review-1',unique_id:'old-review-1'}]},replyUpdate={...fixture(),id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',content:'Hãy bổ sung thêm dữ liệu\nGiá thuê: 25tr/tháng',media:[{kind:'source-reference',source_id:oldReview.id,unique_id:'source-ref:'+oldReview.id},{kind:'image',file_id:'old-review-2',unique_id:'old-review-2'}]};inboxRows=[oldReview,replyUpdate];source=replyUpdate;await runSource(replyUpdate.id);assert.equal(oldReview.processing_status,'published');assert.equal(replyUpdate.processing_status,'updated');assert.equal(posts.length,1);assert.equal(posts[0].public_data.price,25);assert.equal(posts[0].public_data.media.length,2);assert.equal(posts[0].private_data.sourceText,rangeText);inboxRows=[];console.log('PASS: replying with a supplement to a previously blocked range-price source automatically publishes the original and applies the update to that same listing.');

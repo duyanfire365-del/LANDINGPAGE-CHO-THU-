@@ -74,11 +74,11 @@ Khi thêm/sửa khách hoặc một tin được duyệt/tự đăng, website đ
 8. Vercel → Environment Variables → Production:
    - GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: toàn bộ nội dung file JSON (giữ kín, không dán vào chat).
    - CUSTOMER_GOOGLE_SHEET_ID: MA_TEP.
-   - CUSTOMER_SHEETS_AUTO_SYNC: `true` nếu muốn tự đồng bộ sau khi thay đổi khách/nguồn. Để `false` nếu chỉ muốn bấm thủ công.
+   - CUSTOMER_SHEETS_AUTO_SYNC: `true` nếu muốn tự đồng bộ sau khi thay đổi khách/nguồn. Để `false` nếu chỉ muốn bấm thủ công; khi chưa đặt biến này nhưng đã cấu hình đủ tài khoản/ID Sheet, hệ thống mặc định tự đồng bộ.
 9. Redeploy bản Production mới nhất → chờ Ready.
 10. Quản trị → Khách theo dõi riêng → Đồng bộ Google Sheets. Khi thành công, mở Sheet, có 3 tab:
     - Khach_theo_doi: hồ sơ khách, người quản lý, ghi chú và lịch chăm sóc.
-    - Nguon_con_hang: thông tin nguồn công khai đang còn hàng; không xuất số chủ nhà, Map riêng hoặc hoa hồng.
+    - Nguon_con_hang: bảng quản lý kín toàn bộ nguồn và trạng thái (kể cả đã cho thuê, chờ xác nhận, tạm dừng, tin chờ duyệt/đã gỡ). Giá thuê nằm cột F, giá nhượng cột G, thương lượng cột H. Có địa chỉ cụ thể, mô tả, SĐT chủ/đối tác, nguồn cung cấp, hoa hồng, ngày giờ Việt Nam, Map riêng, ảnh và link. Chỉ chia sẻ file cho người được xem toàn bộ dữ liệu riêng tư.
     - Goi_y_khop: các cặp khách và nguồn khớp để anh tiện liên hệ.
 11. Không ghi dữ liệu thủ công vào 3 tab này: nội dung của chúng được làm mới mỗi lần đồng bộ. Anh có thể tạo tab ghi chú khác, hệ thống không sửa tab đó. Số điện thoại ghi bằng RAW, giữ dạng chuỗi và không chạy công thức từ nội dung nhập.
 
@@ -91,3 +91,12 @@ Nếu chưa cấu hình hoặc Google từ chối quyền, website vẫn lưu kh
 - Đối chiếu ghi rõ Giống nhau, Khác nhau, Có phần chung hoặc Chưa đủ thông tin. Không xem ô trống là tiêu chí giống nhau. Ví dụ cùng ngân sách 30 triệu, diện tích từ 40 và 80m²: xét riêng hai tiêu chí này thì nguồn từ 80m² không quá 30 triệu đáp ứng cả hai khách; khu vực, loại BĐS và các điều kiện còn lại có thể khác nên vẫn phải kiểm tra.
 - Ngành nghề chưa nêu trong tin không làm mất gợi ý nếu khu vực/loại/giá/diện tích đáp ứng. Kết quả ghi Cần xác nhận phù hợp ngành nghề. Nếu tin ghi rõ không cho phép ngành đó thì loại; nguồn đã cho thuê/tạm dừng, vượt ngân sách hoặc thiếu diện tích cũng loại.
 - Mỗi hồ sơ hiện số nguồn đã đối chiếu. Khi đang xem danh sách và không nhập/sửa hồ sơ, so sánh hay xem kết quả chi tiết, số liệu tự tải lại mỗi 60 giây. Bấm Gợi ý nguồn để đối chiếu ngay. Lỗi gửi/lưu thông báo Telegram không ngăn kết quả xuất hiện; cảnh báo hiển thị riêng trong hồ sơ.
+
+## Bảng nguồn nâng cấp
+
+- Tin đăng mới, sửa tin/ảnh, bổ sung Telegram, đổi trạng thái/HOT và sửa thông tin nguồn đều kích hoạt đồng bộ. Nếu Google tạm lỗi, dữ liệu website vẫn giữ nguyên, công việc còn chờ được thử lại trong lần thay đổi tiếp theo hoặc lịch phục hồi hằng ngày. Không đảm bảo cập nhật tức thì khi Google đang lỗi.
+- Giữ tên tab `Nguon_con_hang` để tương thích, nhưng nội dung nay gồm mọi trạng thái. Dùng mũi tên bộ lọc cột **Trạng thái nguồn** để chọn Còn hàng / Chờ xác nhận / Đã cho thuê / Tạm dừng. Header được tô màu, cố định hàng đầu và 2 cột đầu; ô trạng thái có màu riêng. Mô tả dài nằm đầy đủ trong ô, bấm ô để xem.
+- Ô giá chưa xác định để trống, không ghi số 0. Giá nhượng là khoản một lần, đơn vị triệu đồng; giá thuê là triệu đồng/tháng. Ngày chưa biết để trống.
+- Ba tab do website quản lý được thay nội dung trong phạm vi cột của hệ thống, không sửa các tab khác. Ghi chú tay nên tạo tab riêng và ghi kèm mã định danh; không đặt ghi chú theo số hàng vì danh sách có thể thay đổi. Không bật chia sẻ công khai file có địa chỉ, hoa hồng và điện thoại riêng.
+- Sau khi Vercel báo Ready: vào **Khách theo dõi riêng → Đồng bộ Google Sheets** một lần để nâng cấp bảng cũ. Nếu chưa thấy dữ liệu: kiểm tra `CUSTOMER_GOOGLE_SHEET_ID` trùng phần ID trong đường dẫn file anh đang mở, `CUSTOMER_SHEETS_AUTO_SYNC=true` ở Production, rồi Redeploy. Không gửi JSON/khóa vào chat.
+- Tải Excel: trong Google Sheets bấm **Tệp → Tải xuống → Microsoft Excel (.xlsx)**. Việc sửa trên Sheet không tự sửa website; nhập ngược dùng cổng Google Docs / Sheets và xem trước lệnh nhập.

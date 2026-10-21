@@ -27,3 +27,11 @@ global.fetch=async (raw,options={})=>{const url=new URL(raw);if(url.pathname.end
 assert.equal((await call({...update,update_id:10,message:{...update.message,message_id:11}})).status,200);await Promise.all(pending);assert.equal(resets,1);
 old.processing_status='published';await call({...update,update_id:11,message:{...update.message,message_id:12}});await Promise.all(pending);assert.equal(resets,1);
 console.log('Resend recovery passed: reviewed sources reset for processing, published sources never reset.');
+
+process.env.TELEGRAM_AUTO_PUBLISH='false';let savedReply=null;
+global.fetch=async(raw,options={})=>{const url=new URL(raw);if(options.method==='POST'){savedReply=JSON.parse(options.body);return Response.json([savedReply])}return Response.json([{result_url:'/tin?slug=live-1790000000000999'}]);};
+await call({update_id:100,message:{...update.message,message_id:100,text:'Hãy bổ sung thêm dữ liệu\nGiá thuê: 25 triệu/tháng',reply_to_message:{message_id:90,text:'Đã tự đăng MB - 0029'}}});assert(savedReply.content.includes('MB - 0029'));
+await call({update_id:101,message:{...update.message,message_id:101,text:'Hãy bổ sung thêm ảnh',reply_to_message:{message_id:91,text:'Bài nguồn ban đầu'},photo:[{file_id:'reply-photo',file_unique_id:'reply-photo'}]}});assert(savedReply.content.includes('live-1790000000000999'));assert.equal(savedReply.media[0].file_id,'reply-photo');
+console.log('PASS: owner-only reply supplements resolve the posted code or original message target, retaining attached photos');
+
+let savedContext=null;global.fetch=async(raw,options={})=>{if(options.method==='POST'){savedContext=JSON.parse(options.body);return Response.json([savedContext])}return Response.json([{id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',content:'Nguồn gốc đang thiếu giá',processing_status:'review'}]);};await call({update_id:102,message:{...update.message,message_id:102,text:'Hãy bổ sung giá thuê: 25 triệu/tháng',reply_to_message:{message_id:92,text:'Nguồn gốc đang thiếu giá'}}});assert.equal(savedContext.media[0].kind,'source-reference');assert.equal(savedContext.media[0].source_id,'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
