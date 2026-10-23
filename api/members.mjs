@@ -1,3 +1,4 @@
+import {nicknameEmail} from '../lib/admin-member.mjs';
 import {identity,identityFields} from '../lib/member-identity.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 import {configured,supa,member,memberCookie,clean,notify,db} from '../lib/platform.mjs';
@@ -11,7 +12,8 @@ export default async function handler(req,res){
  try{
   const body=await readJson(req,5000);
   if(body.action==='logout'){res.setHeader('Set-Cookie',memberCookie(req,'',0));return send(res,200,{ok:true})}
-  const id=identity(body),fields=identityFields(id),password=typeof body.password==='string'?body.password:'';
+  const aliasLogin=body.action==='login'&&!String(body.email||'').includes('@');
+  const id=identity(aliasLogin?{...body,email:nicknameEmail(body.email||body.nickname).email}:body),fields=identityFields(id),password=typeof body.password==='string'?body.password:'';
   const setSession=session=>{if(!session?.access_token)throw Object.assign(Error('Chưa có phiên đăng nhập. Vui lòng xác minh tài khoản.'),{status:401});res.setHeader('Set-Cookie',memberCookie(req,session.access_token,Math.min(session.expires_in||3600,3600)))};
   if(body.action==='verify-otp'){
    const token=clean(body.token,10);if(!/^\d{6,10}$/.test(token))return send(res,400,{error:'Nhập mã OTP gồm 6–10 chữ số.'});
@@ -24,7 +26,7 @@ export default async function handler(req,res){
    return send(res,200,{otpRequired:true,channel:id.channel,purpose:body.action==='resend-otp'?'signup':'login',message:'Nếu tài khoản hợp lệ, mã xác nhận sẽ được gửi. Kiểm tra hộp thư rác nếu dùng email.'});
   }
 
-  if(password.length<12||password.length>128)return send(res,400,{error:'Nhập mật khẩu từ 12 đến 128 ký tự.'});
+  if(password.length<(body.action==='login'?6:12)||password.length>128)return send(res,400,{error:body.action==='login'?'Nhập mật khẩu từ 6 đến 128 ký tự.':'Nhập mật khẩu từ 12 đến 128 ký tự.'});
   if(body.action==='register'){
    const full_name=clean(body.name,100),phone=clean(body.phone,20),kind=body.kind;
    if(!full_name||(phone&&!/^(0|\+84)\d{9}$/.test(phone))||!['customer','sales'].includes(kind)||body.consent!==true)return send(res,400,{error:'Vui lòng điền đủ thông tin và đồng ý tạo hồ sơ.'});

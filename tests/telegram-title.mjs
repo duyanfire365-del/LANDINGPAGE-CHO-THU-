@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {prepareTrustedText,trustedDraft} from '../lib/trusted-intake.mjs';
+import {standardizeListing} from '../lib/listing-identity.mjs';
+const text='Cho thuê mặt bằng kinh doanh\nĐịa chỉ: Số 12 ngõ 34 Trần Quốc Vượng, Cầu Giấy\nDiện tích: 80 m²\nSố tầng: 2 tầng\nGiá thuê: 25 triệu/tháng';
+const prepared=prepareTrustedText(text);
+assert.equal(prepared.title,'Cho thuê mặt bằng kinh doanh 80 m², 2 tầng — Trần Quốc Vượng, Cầu Giấy');
+const post=await trustedDraft({text});
+assert.equal(post.public_data.floors,2);
+assert.equal(standardizeListing(post.public_data,32).title,prepared.title);
+assert(post.private_data.address.includes('Số 12 ngõ 34'));
+assert(!JSON.stringify(post.public_data).includes('ngõ 34'));
+assert(!JSON.stringify(post.public_data).includes('Số 12'));
+assert(!prepareTrustedText(text.replace('Số tầng: 2 tầng\n','')).title.includes('tầng'));
+assert(!prepareTrustedText(text.replace('2 tầng','tầng 2')).title.includes('tầng'),'floor position is not a floor count');
+console.log('PASS: Telegram titles include exact area, evidenced floor count, public street/district; house/alley numbers remain private.');
