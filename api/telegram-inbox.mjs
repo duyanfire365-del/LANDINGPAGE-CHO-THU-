@@ -37,7 +37,33 @@ export default async function handler(req,res){
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
   if(/^\/(?:danglai|retry)(?:@\w+)?\s*$/.test(String(m.text||''))){const {original,error}=recoveryReply(m,token().split(':')[0]);if(error){await sourceReply(telegram,error);return send(res,200,{ok:true});}m={...original,chat:m.chat,from:m.from};recovering=true;}
-  let text=String(m.text||m.caption||'').slice(0,16000),replySource=null;
+  const command=String(m.text||m.caption||'');
+  if(/^\/dang(?:@\w+)?\s*$/iu.test(command)){
+   if(m.reply_to_message){
+    const {original,error}=recoveryReply(m,token().split(':')[0]);
+    if(error){
+     await sourceReply(telegram,error);
+     return send(res,200,{ok:true});
+    }
+    m={...original,chat:m.chat,from:m.from};
+    recovering=true;
+   }else if(!m.photo&&!m.document&&!m.video){
+    await sourceReply(
+     telegram,
+     'Anh gửi /dang kèm nội dung bài và ảnh, hoặc trả lời bài gốc bằng /dang.\n'+
+     'Ví dụ:\n/dang Cho thuê mặt bằng kinh doanh\n'+
+     'Địa chỉ: Số 12 Trần Quốc Vượng, Cầu Giấy\n'+
+     'Diện tích: 80 m²\nSố tầng: 2 tầng\n'+
+     'Giá thuê: 25 triệu/tháng\n'+
+     'Số nhà được giữ riêng, không đưa vào tiêu đề công khai.'
+    );
+    return send(res,200,{ok:true});
+   }
+  }
+  let text=String(m.text||m.caption||'')
+   .slice(0,16000)
+   .replace(/^\/dang(?:@\w+)?(?:\s+|$)/iu,'');
+  let replySource=null;
   if(isUpdateCommand(text)&&!updateReference(text)&&m.reply_to_message){let reference=updateReference(m.reply_to_message.text||m.reply_to_message.caption||'');if(!reference){let prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&message_id=eq.'+m.reply_to_message.message_id+'&limit=1'}))[0];if(prior?.media_group_id&&!prior.result_url)prior=(await db('source_inbox',{query:'?chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&media_group_id=eq.'+encodeURIComponent(prior.media_group_id)+'&order=message_id.asc&limit=1'}))[0]||prior;reference=updateReference(prior?.result_url||'');if(!reference&&prior?.id&&!isUpdateCommand(prior.content))replySource=prior.id;}if(reference)text+='\nTin cần cập nhật: '+(reference.slug||reference.code);}
   if(/^\/(?:start|status)(?:@\w+)?(?:\s|$)/.test(text)){const isStatus=/^\/status(?:@\w+)?(?:\s|$)/.test(text);waitUntil((async()=>{const config=automationConfiguration();await sourceReply(telegram,isStatus?(await sourceStatusText(config))+(m.reply_to_message?'\n\n'+await sourceMessageStatus(m.reply_to_message):'\nMuốn kiểm tra đúng một bài: Trả lời bài đó bằng /status.'):'Bot nguồn đã nhận lệnh của anh. '+(config.enabled?'Tự đăng đang bật. Gửi /status để kiểm tra thêm kho nguồn và hàng đợi; gửi bài và ảnh vào cuộc trò chuyện riêng này.':'Tự đăng đang TẮT. Đặt TELEGRAM_AUTO_PUBLISH=true trong Vercel Production rồi Redeploy.'))})());return send(res,200,{ok:true});}
   const media=[];if(replySource)media.push({kind:'source-reference',source_id:replySource,unique_id:'source-ref:'+replySource});const photo=m.photo?.at(-1);if(photo)media.push({kind:'image',file_id:photo.file_id,unique_id:photo.file_unique_id});
