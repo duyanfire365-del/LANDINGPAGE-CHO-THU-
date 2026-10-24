@@ -40,3 +40,10 @@ Cần kiểm thử một tài khoản giả trên Supabase và luồng Telegram 
 - Tin cũ dùng banner chung được hiển thị bằng mẫu theo danh mục. Khi đổi danh mục, banner đổi theo. Banner mang nhãn minh họa và hotline công khai, không chứa địa chỉ riêng hoặc số nguồn.
 - /status cho biết chế độ banner danh mục. Các biến TELEGRAM_AI_IMAGES cũ không còn bật tạo ảnh trong luồng Telegram.
 - Biên tập nội dung vẫn hoạt động cho bài mới và #suatin: bổ sung bố cục/câu liên hệ cho bài ngắn, bỏ lặp và tinh gọn bài dài, không tự thêm dữ kiện. Bài gốc giữ riêng.
+
+## Hỏi lại khi gửi bài trùng
+- Bài có thể trùng được giữ ở trạng thái chờ và bot gửi mã/tiêu đề tin cũ, giá cũ và giá vừa gửi để đối chiếu.
+- Trả lời câu hỏi của bot bằng `1`: đăng thêm MỘT tin mới, giữ nguyên tin cũ và dữ liệu nguồn riêng của từng bài. `0`: bỏ qua, không đăng thêm.
+- Nếu chỉ có một bài chờ có thể gửi riêng `1` hoặc `0`. Nếu có nhiều bài chờ, cần dùng Reply vào đúng câu hỏi. Yêu cầu chờ lưu trong Supabase, không mất khi hàm Vercel kết thúc.
+- Mỗi tin nhắn Telegram mới được xem là một lần gửi có chủ ý; nội dung giống lần trước vẫn được đưa qua bước nhận diện trùng để hỏi lại. Telegram giao lại cùng tin nhắn không tạo thêm yêu cầu hoặc bài đăng.
+- Trả lời lặp hoặc đồng thời không tạo thêm bài. #suatin và các hashtag đổi trạng thái vẫn cập nhật bài hiện có, không hỏi đăng thêm.

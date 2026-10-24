@@ -58,12 +58,12 @@ global.fetch=async (raw,options={})=>{
 source=fixture();await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(imageCalls,0);assert.equal(chatCalls,1);assert.equal(posts[0].public_data.isIllustration,true);
 const publicText=JSON.stringify(posts[0].public_data);assert.ok(!publicText.includes('987'));assert.ok(!publicText.includes('#NguonTest'));assert.equal(posts[0].private_data.sourceText,text);assert.equal(posts[0].private_data.address,item.privateAddress);assert.ok(posts[0].private_data.hashtags.includes('#NguonTest'));
 await runSource(source.id);assert.equal(posts.length,1);assert.equal(imageCalls,0);
-source={...fixture(),id:'33333333-3333-4333-8333-333333333333'};await runSource(source.id);assert.equal(source.processing_status,'duplicate');assert.equal(imageCalls,0);assert.equal(posts.length,1);
+source={...fixture(),id:'33333333-3333-4333-8333-333333333333'};await runSource(source.id);assert.equal(source.processing_status,'review');assert.equal(imageCalls,0);assert.equal(posts.length,1);
 posts=[];assets=[];fingerprints=[];failImage=true;source=fixture();await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);
 failImage=false;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(chatCalls,3); // published retry does not extract again
 source=fixture();delete process.env.OPENAI_API_KEY;await runSource(source.id);assert.equal(source.processing_status,'published');
 process.env.OPENAI_API_KEY='test';source={...fixture(),content:''};await runSource(source.id);assert.equal(source.processing_status,'review');
-posts=[];legacy=[{slug:'legacy-unit',area:'Tây Hồ',size:123,address:item.privateAddress}];source=fixture();await runSource(source.id);assert.equal(source.processing_status,'duplicate');
+posts=[];legacy=[{slug:'legacy-unit',area:'Tây Hồ',size:123,address:item.privateAddress}];source=fixture();await runSource(source.id);assert.equal(source.processing_status,'review');
 claim=false;source=fixture();await runSource(source.id);assert.equal(source.processing_status,'received');
 claim=true;legacy=[];posts=[];assets=[];fingerprints=[];delete process.env.OPENAI_API_KEY;process.env.TELEGRAM_SOURCE_MODE='provided';
 const noApiText='Loại BĐS: Văn phòng\nĐịa chỉ: Số 987 đường Lạc Long Quân, Tây Hồ, Hà Nội\nKhu vực: Tây Hồ\nDiện tích: 123m2\nGiá thuê: 32 triệu/tháng\n#NguonTest';
@@ -78,7 +78,7 @@ console.log('Source automation passed: verified rent/size evidence, private addr
 albumRows=[];posts=[];assets=[];fingerprints=[];
 const warehouse='🏭 THÔNG TIN KHO XƯỞNG\n✅ Diện tích: 280m²\n✅ Đất full thổ cư\n✅ Điện 3 pha\n✅ Khung xưởng chắc chắn, chiều cao khoảng 6–8m\n✅ Cốt nền chắc chắn\n✅ Có WC khép kín\n✅ Đường vào rộng, thuận tiện vận chuyển và bốc dỡ hàng hóa\n* Kho chứa hàng\n* Kho phân phối\n* Xưởng sản xuất\n* Xưởng gia công\n💰 Giá thuê: 16 triệu/tháng\n#pc';
 source={...fixture(),content:warehouse,media:[]};await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.type,'Kho xưởng');assert.equal(posts[0].public_data.size,280);assert.equal(posts[0].public_data.price,16);assert.ok(posts[0].public_data.address.includes('liên hệ để biết vị trí'));assert.ok(posts[0].public_data.description.includes('điện ba pha'));assert.ok(posts[0].public_data.description.includes('6–8 m'));assert.ok(posts[0].public_data.description.includes('kho phân phối'));assert.equal(posts[0].private_data.address,'');assert.ok(!posts[0].public_data.description.includes('#pc'));assert.equal(chatCalls+imageCalls,beforeAI);
-const published=posts[0];source={...fixture(),id:'55555555-5555-4555-8555-555555555555',content:warehouse.replace('#pc','#newtag'),media:[]};await runSource(source.id);assert.equal(source.processing_status,'duplicate');assert.equal(posts.length,1);
+const published=posts[0];source={...fixture(),id:'55555555-5555-4555-8555-555555555555',content:warehouse.replace('#pc','#newtag'),media:[]};await runSource(source.id);assert.equal(source.processing_status,'review');assert.equal(posts.length,1);
 source={...fixture(),id:'66666666-6666-4666-8666-666666666666',content:warehouse.replace('Điện 3 pha','Có cửa cuốn'),media:[]};await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,2);
 console.log('Warehouse regression passed: no address/photo/API required, facts retained, honest location, content dedup and distinct unknown-address properties kept.');
 
@@ -133,3 +133,12 @@ await runSource(source.id);assert.equal(source.processing_status,'published',sou
 await runSource(source.id);assert.equal(imageCalls,imageBefore,'website banner never calls image generation');
 posts=[];assets=[];fingerprints=[];process.env.TELEGRAM_AI_IMAGES='false';source={...fixture(),id:'acacacac-acac-4cac-8cac-acacacacacac',content:noApiText,media:[]};await runSource(source.id);assert.equal(imageCalls,imageBefore);assert.equal(posts[0].public_data.illustrationKind,'banner');delete process.env.TELEGRAM_AI_IMAGES;
 console.log('PASS: photo-free posts use category banners without image-generation calls, including when an API key is configured.');
+
+// Confirmation permits one additional post without overwriting the original.
+albumRows=[];posts=[];assets=[];fingerprints=[];delete process.env.OPENAI_API_KEY;process.env.TELEGRAM_SOURCE_MODE='provided';
+source={...fixture(),content:noApiText,media:[]};await runSource(source.id);assert.equal(posts.length,1);const originalPrice=posts[0].public_data.price;
+source={...fixture(),id:'edededed-eded-4ded-8ded-edededededed',content:noApiText.replace('32 triệu','35 triệu'),media:[]};await runSource(source.id);assert.equal(source.processing_status,'review');assert.equal(source.parsed_data._duplicateDecision.state,'pending');assert.equal(posts.length,1);
+source.parsed_data._duplicateDecision.state='approved';source.processing_status='received';source.attempts=0;
+await runSource(source.id);assert.equal(source.processing_status,'published',source.processing_error);assert.equal(posts.length,2);assert.equal(posts[0].public_data.price,originalPrice);assert.equal(posts[1].public_data.price,35);
+await runSource(source.id);assert.equal(posts.length,2,'approval replay must not create a third post');
+console.log('PASS: duplicate asks before publishing; explicit approval creates exactly one additional listing at the new price and preserves the old listing.');

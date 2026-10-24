@@ -1,3 +1,4 @@
+import {answerDuplicateConfirmation} from '../lib/source-duplicate-confirmation.mjs';
 import {recoveryReply} from '../lib/source-reply.mjs';
 import {SOURCE_WEBHOOK,webhookHealth,sourceReply,receiptText,sourceStorageHealth,sourceStorageError,sourceStatusText,sourceMessageStatus,sourceWriteHealth} from '../lib/source-bot-health.mjs';
 import {isUpdateCommand,updateReference} from '../lib/source-updates.mjs';
@@ -36,6 +37,11 @@ export default async function handler(req,res){
   const update=await readJson(req,200000);let m=update.message,recovering=false;
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
+  if(/^[01]$/.test(String(m.text||'').trim())){
+   const decision=await answerDuplicateConfirmation(m,text=>sourceReply(telegram,text));
+   if(decision.queuedId)waitUntil(processSource(decision.queuedId));
+   return send(res,200,{ok:true});
+  }
   if(/^\/(?:danglai|retry)(?:@\w+)?\s*$/.test(String(m.text||''))){const {original,error}=recoveryReply(m,token().split(':')[0]);if(error){await sourceReply(telegram,error);return send(res,200,{ok:true});}m={...original,chat:m.chat,from:m.from};recovering=true;}
   const command=String(m.text||m.caption||'');
   if(/^\/dang(?:@\w+)?\s*$/iu.test(command)){
@@ -70,11 +76,18 @@ export default async function handler(req,res){
   for(const kind of ['document','video'])if(m[kind])media.push({kind:kind==='document'&&['image/jpeg','image/png','image/webp'].includes(m[kind].mime_type)?'image':kind,file_id:m[kind].file_id,unique_id:m[kind].file_unique_id,name:m[kind].file_name||'',mime:m[kind].mime_type||'',size:m[kind].file_size||0});
   if(!text&&!media.length)return send(res,200,{ok:true});
   // Keep every caption/private address intact. Exact-content dedup only; changed prices remain for review.
-  const hash=createHash('sha256').update(JSON.stringify({text:text.normalize('NFC').trim(),media:media.map(a=>a.unique_id),...(isUpdateCommand(text)?{editUpdateId:update.update_id}:{})})).digest('hex');
+  const hash=createHash('sha256').update(JSON.stringify({text:text.normalize('NFC').trim(),media:media.map(a=>a.unique_id),message_id:m.message_id,...(isUpdateCommand(text)?{editUpdateId:update.update_id}:{})})).digest('hex');
   // Database unique constraints make Telegram redelivery and simultaneous duplicate messages safe.
   stage='lưu bài vào kho nguồn';
   if(process.env.VERCEL)console.info(JSON.stringify({event:'source-intake-write-start',updateId:update.update_id}));
-  const saved=await db('source_inbox',{method:'POST',query:'?on_conflict=content_hash',body:{update_id:update.update_id,message_id:m.message_id,chat_id:String(m.chat.id),media_group_id:m.media_group_id||null,content:text,media,content_hash:hash},headers:{Prefer:'resolution=ignore-duplicates,return=representation'}});
+  let saved;
+  try{
+   saved=await db('source_inbox',{method:'POST',query:'?on_conflict=content_hash',body:{update_id:update.update_id,message_id:m.message_id,chat_id:String(m.chat.id),media_group_id:m.media_group_id||null,content:text,media,content_hash:hash},headers:{Prefer:'resolution=ignore-duplicates,return=representation'}});
+  }catch(error){
+   if(error.databaseCode!=='23505')throw error;
+   const delivered=(await db('source_inbox',{query:'?update_id=eq.'+update.update_id+'&chat_id=eq.'+encodeURIComponent(String(m.chat.id))+'&limit=1'}))[0];
+   if(!delivered)throw error;saved=[delivered];
+  }
   stage='tìm bài đã lưu hoặc bản trùng';
   const enabled=automationConfiguration().enabled,row=saved?.[0]||(await db('source_inbox',{query:'?content_hash=eq.'+hash}))[0];
   if(process.env.VERCEL)console.info(JSON.stringify({event:'source-intake-write-result',updateId:update.update_id,hasId:!!row?.id}));

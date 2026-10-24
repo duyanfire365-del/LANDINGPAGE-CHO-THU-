@@ -14,10 +14,10 @@ assert.equal((await call(update,{url:'/api/telegram-inbox',method:'GET'})).statu
 assert.equal((await call({...update,message:{...update.message,from:{id:999}}})).status,200);assert.equal(calls,0);
 assert.equal((await call({...update,message:{...update.message,chat:{id:-12,type:'group'}}})).status,200);assert.equal(calls,0);
 assert.equal((await call(update)).status,200);assert.equal(rows.size,1);assert.equal([...rows.values()][0].content,update.message.text);
-await call(update);await call({...update,update_id:2,message:{...update.message,message_id:6}});assert.equal(rows.size,1);
-await call({...update,update_id:3,message:{...update.message,message_id:7,text:update.message.text.replace('30 triệu','35 triệu')}});assert.equal(rows.size,2);
-await call({update_id:4,message:{message_id:8,chat:update.message.chat,from:update.message.from,photo:[{file_id:'small',file_unique_id:'small'},{file_id:'large',file_unique_id:'large'}],media_group_id:'album1'}});assert.equal(rows.size,3);assert.equal([...rows.values()][2].media[0].file_id,'large');
-await call({update_id:5,message:{...update.message,text:'/start'}});assert.equal(rows.size,3);
+await call(update);await call({...update,update_id:2,message:{...update.message,message_id:6}});assert.equal(rows.size,2);
+await call({...update,update_id:3,message:{...update.message,message_id:7,text:update.message.text.replace('30 triệu','35 triệu')}});assert.equal(rows.size,3);
+await call({update_id:4,message:{message_id:8,chat:update.message.chat,from:update.message.from,photo:[{file_id:'small',file_unique_id:'small'},{file_id:'large',file_unique_id:'large'}],media_group_id:'album1'}});assert.equal(rows.size,4);assert.equal([...rows.values()][3].media[0].file_id,'large');
+await call({update_id:5,message:{...update.message,text:'/start'}});assert.equal(rows.size,4);
 console.log('Telegram inbox: secret verification, admin guard, owner-only intake, private source preservation, exact dedup, changed-price preservation, media references and Start handling passed.');
 // A fresh owner resend of a formerly blocked source should retry without requiring text changes.
 process.env.TELEGRAM_AUTO_PUBLISH='true';process.env.TELEGRAM_SOURCE_MODE='provided';
