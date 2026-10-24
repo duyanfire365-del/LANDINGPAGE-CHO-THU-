@@ -13,3 +13,8 @@ assert.throws(()=>sourceInfo({sourceName:'Nguồn https://maps.app.goo.gl/Hidden
 assert.equal(extractSourceInfo('HH50%').commission,'HH50%');assert.equal(extractSourceInfo('H50%').commission,'H50%');assert.equal(extractSourceInfo('Hoa hồng: 1 tháng tiền thuê').commission,'Hoa hồng: 1 tháng tiền thuê');assert.equal(extractSourceInfo('Giá thuê 20tr. HH: 10 triệu').commission,'HH: 10 triệu');assert.equal(extractSourceInfo('Kho cao H50m').commission,'');
 
 const commissionNames=sourceInfo({sourceName:'Anh Hùng HH50%',sourcePublic:true,mapLabel:'Cổng chính HH50%'});assert.equal(commissionNames.sourceName,'Anh Hùng');assert.equal(commissionNames.mapLabel,'Cổng chính');assert(commissionNames.commission.includes('HH50%'));assert.throws(()=>mapURL('https://www.google.com/maps?q=DiaChi%20HH50%25'),{status:400});
+
+const named=extractSourceInfo('Chủ nhà anh Nam: 0987654321, đối tác chị Lan: 0912345678\nHoa hồng: 1 tháng tiền thuê\nGhi chú kín: hẹn trước khi xem\nMã cổng riêng 4321');
+assert(named.ownerPhones.includes('0987654321'));assert(named.partnerPhones.includes('0912345678'));assert(named.privateNotes.includes('Mã cổng riêng 4321'));assert(named.commission.includes('1 tháng'));
+const reverse=extractSourceInfo('0987654321 (chủ nhà); 0912345678 (đối tác)');assert(reverse.ownerPhones.includes('0987654321'));assert(reverse.partnerPhones.includes('0912345678'));
+console.log('PASS: named/inline and phone-first labels route to owner/partner groups; generic private notes and commission are retained.');

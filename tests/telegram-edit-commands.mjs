@@ -42,6 +42,14 @@ try{
  const full=original.replace('12 triệu','19 triệu')+'\nKho sạch, có điện ba pha, xe tải tiếp cận thuận tiện.\n#suatin';
  await applySourceUpdate(src('edit-6',full));assert.equal(row.public_data.price,19);assert(row.public_data.description.includes('điện ba pha'));assert(!row.public_data.description.includes('Số 12'));
  await applySourceUpdate(src('edit-7','#suatin KX - 7777\nMô tả: Kho có điện ba pha, mới sửa sạch đẹp.'));assert(row.public_data.description.includes('mới sửa sạch đẹp'));
+ row.private_data.sourceInfo={ownerPhones:['0966666666','',''],partnerPhones:['0977777777','','']};
+ await applySourceUpdate(src('private-edit','Sửa tin KX - 7777\nMô tả: Kho mới sửa, có điện ba pha.\nChủ nhà anh Nam: 0987654321\nĐối tác chị Lan: 0912345678\nHoa hồng: 1 tháng tiền thuê\nGhi chú kín: hẹn chủ trước 30 phút\nMã cổng riêng 4321'));
+ assert(row.private_data.sourceInfo.ownerPhones.includes('0987654321'));assert(row.private_data.sourceInfo.partnerPhones.includes('0912345678'));
+ assert(row.private_data.sourceInfo.ownerPhones.includes('0966666666'),'adding owner keeps the previous owner number');
+ assert(row.private_data.sourceInfo.commission.includes('1 tháng'));assert(row.private_data.sourceInfo.privateNotes.includes('Mã cổng riêng 4321'));
+ assert(row.public_data.description.includes('Kho mới sửa'));assert(!/0987654321|0912345678|Mã cổng|Hoa hồng|hẹn chủ/.test(JSON.stringify(row.public_data)));
+ await applySourceUpdate(src('explicit-slot','Sửa tin KX - 7777\nChủ nhà 1: 0955555555'));
+ assert.equal(row.private_data.sourceInfo.ownerPhones[0],'0955555555');
  const deleted={id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',status:'rejected',public_data:{...row.public_data,code:'KX - 0088',listingSequence:88,codeMode:'manual'},private_data:{deletion:{state:'approved',previousStatus:'published'}}};
  records.push(deleted);assert.equal((await reserveManualCode('KX - 0088','Kho xưởng',id)).code,'KX - 0088');
  const canonical=standardizeRows([{...deleted,public_data:{...deleted.public_data,codeReleased:true}},{...row,public_data:{...row.public_data,code:'KX - 0088',listingSequence:88,codeMode:'manual'}}]);assert.equal(canonical[1].public_data.code,'KX - 0088');

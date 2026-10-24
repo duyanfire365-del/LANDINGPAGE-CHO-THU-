@@ -26,3 +26,10 @@ Cần kiểm thử một tài khoản giả trên Supabase và luồng Telegram 
 - Có thể dùng `#conhang #hot KX - 0001`. Với tin cũ nên kèm mã hoặc trả lời bài gốc. Lệnh trạng thái ngắn không kèm mã/ngữ cảnh cập nhật tin đăng/cập nhật thành công gần nhất trong cuộc trò chuyện riêng của chủ bot.
 - Lệnh sửa không dùng hạn mức tạo bài/ảnh AI. Vẫn cần Telegram webhook và xử lý nền Vercel hoạt động; không cam kết cập nhật tức thời nếu dịch vụ ngoài gián đoạn.
 - Kiểm tra: `node tests/telegram-edit-commands.mjs`, `node tests/telegram-inbox.mjs`, `node tests/source-automation.mjs`, `node tests/intake-admin-updates.mjs`, `npm run check`.
+
+## Sửa nội dung và chuyển dữ liệu kín vào đúng mục
+- Dùng `Sửa tin KX - 0001` hoặc `#suatin KX - 0001`, sau đó xuống dòng ghi các trường cần sửa.
+- `Mô tả: ...` hoặc `Nội dung: ...` cập nhật phần công khai. `Giá thuê: ...`, `Diện tích: ...`, `Địa chỉ: ...` cập nhật các thông tin tương ứng.
+- `Chủ nhà anh Nam: 0987654321` và `Đối tác chị Lan: 0912345678` được đọc vào đúng nhóm điện thoại kín. Nhập `Chủ nhà 1: ...` để thay đúng ô 1; số không chỉ định ô được bổ sung vào chỗ còn trống. Giao diện hiện có ba ô mỗi nhóm; bản gốc và ghi chú kín giữ nguyên thông tin còn lại.
+- `Hoa hồng: ...` vào ô hoa hồng; `Ghi chú kín: ...`, `Thông tin nội bộ: ...` và các dòng tiếp theo vào ô ghi chú/dữ liệu kín. Nên đặt phần kín ở cuối bài; dùng dòng `Nội dung công khai:` để kết thúc phần kín nếu cần viết tiếp nội dung công khai.
+- Xem trong quản trị → tin tương ứng → Nguồn / Map riêng → Hoa hồng và Ghi chú / dữ liệu kín. Hai mục này chỉ quản trị và chủ bài xem được; không có tùy chọn công khai.

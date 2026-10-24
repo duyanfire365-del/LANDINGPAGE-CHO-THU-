@@ -10,6 +10,7 @@ await page.route('https://local.test/**',async route=>{const req=route.request()
   let data={};if(req.method()==='POST'){const body=req.postDataJSON();submitted.push(body);if(body.action==='member-create')data={created:true,nickname:body.nickname};if(body.action==='edit-post')data={saved:true,post:{...post.public_data,code:body.code}};}
   else if(url.pathname==='/api/admin')data={listings:[]};
   else if(url.pathname==='/api/workspace'&&!url.search)data={members:[],inquiries:[],posts:[post],notifications:[]};
+  else if(url.searchParams.get('view')==='source-private')data={slug:post.public_data.slug,code:post.public_data.code,canEdit:true,canViewCommission:true,sharedEmails:[],recipients:[],data:{ownerPhones:['0987654321'],partnerPhones:['0912345678'],commission:'Hoa hồng: 1 tháng',privateNotes:'Hẹn chủ trước 30 phút'}};
   else if(url.searchParams.get('view')==='connections')data={storageReady:true,storageConfigured:true,telegramConfigured:true};
   else data={items:[],customers:[],inquiries:[],sources:[],records:[],members:[],history:[],events:[],items:[],posts:[],automation:{enabled:true}};
   await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data)});return;
@@ -29,6 +30,8 @@ try{
  const edit=page.locator('#post-edit-dialog');await edit.locator('[name=code]').fill('KX - 0077');await edit.locator('button[type=submit]').click();
  await page.waitForFunction(()=>!document.querySelector('#post-edit-dialog'));
  assert(submitted.some(b=>b.action==='edit-post'&&b.code==='KX - 0077'));
+if(!await page.locator('#management-posts .source-row').evaluate(el=>el.open))await page.locator('#management-posts .source-row>summary').click();await page.locator('#management-posts [data-source-open]').click();
+ await page.locator('dialog[open] .source-info-fields [name=privateNotes]').waitFor();assert.equal(await page.locator('dialog[open] .source-info-fields [name=privateNotes]').inputValue(),'Hẹn chủ trước 30 phút');
  assert.deepEqual(errors,[]);
  console.log('PASS: admin UI creates nickname-only member, clears password, and submits a manual listing code without browser errors.');
 }finally{await browser.close();}
