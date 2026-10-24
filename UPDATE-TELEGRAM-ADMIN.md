@@ -34,9 +34,9 @@ Cần kiểm thử một tài khoản giả trên Supabase và luồng Telegram 
 - `Hoa hồng: ...` vào ô hoa hồng; `Ghi chú kín: ...`, `Thông tin nội bộ: ...` và các dòng tiếp theo vào ô ghi chú/dữ liệu kín. Nên đặt phần kín ở cuối bài; dùng dòng `Nội dung công khai:` để kết thúc phần kín nếu cần viết tiếp nội dung công khai.
 - Xem trong quản trị → tin tương ứng → Nguồn / Map riêng → Hoa hồng và Ghi chú / dữ liệu kín. Hai mục này chỉ quản trị và chủ bài xem được; không có tùy chọn công khai.
 
-## Ảnh AI và biên tập nội dung
-- Bài mới không có ảnh: tự tạo một ảnh minh họa AI nếu có OPENAI_API_KEY, cả khi TELEGRAM_SOURCE_MODE=provided. Model dùng SOURCE_IMAGE_MODEL (mặc định gpt-image-1). Có ảnh anh gửi thì giữ ảnh đó; lệnh sửa tin/trạng thái không tự thay ảnh hiện có.
-- Ảnh sinh mang nhãn minh họa, không phải ảnh thực tế; prompt chỉ dùng danh mục và đặc điểm đã lọc công khai, không gửi địa chỉ riêng, điện thoại hay hoa hồng. Thử lại sẽ dùng ảnh đã lưu thay vì tạo thêm.
-- Chưa có khóa OpenAI: vẫn đăng bằng banner và thông báo rõ trong Telegram; dùng /status để kiểm tra. Nếu nhà cung cấp từ chối hoặc hết số dư, nguồn được giữ lại và bot báo lỗi để xử lý/thử lại. Phí tạo ảnh tính theo tài khoản OpenAI của anh.
-- TELEGRAM_AI_IMAGES=false để tắt tự tạo ảnh. Mặc định bật khi có khóa.
-- Nội dung công khai được biên tập bằng luật: bổ sung bố cục và câu liên hệ cho bài ngắn; bỏ câu lặp, lời rao trùng và rút gọn bài dài. Không tự thêm tiện ích, vị trí hay số liệu. Bài gốc vẫn lưu riêng. Áp dụng cả khi dùng #suatin.
+## Banner tự chọn trên website và biên tập nội dung
+- Bài mới không có ảnh dùng banner theo danh mục: kho xưởng, mặt bằng, nhà nguyên căn, đất, văn phòng… Website có sẵn 11 mẫu PNG; không gọi dịch vụ tạo ảnh AI từ Telegram, không cần khóa hay phí API cho ảnh.
+- Bài có ảnh gửi kèm giữ ảnh đó. Ảnh AI đã tạo từ trước cũng được giữ; chức năng tạo ảnh AI thủ công trong công cụ quản trị không bị thay đổi.
+- Tin cũ dùng banner chung được hiển thị bằng mẫu theo danh mục. Khi đổi danh mục, banner đổi theo. Banner mang nhãn minh họa và hotline công khai, không chứa địa chỉ riêng hoặc số nguồn.
+- /status cho biết chế độ banner danh mục. Các biến TELEGRAM_AI_IMAGES cũ không còn bật tạo ảnh trong luồng Telegram.
+- Biên tập nội dung vẫn hoạt động cho bài mới và #suatin: bổ sung bố cục/câu liên hệ cho bài ngắn, bỏ lặp và tinh gọn bài dài, không tự thêm dữ kiện. Bài gốc giữ riêng.
