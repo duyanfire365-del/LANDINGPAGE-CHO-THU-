@@ -38,6 +38,7 @@ try{
  await applySourceUpdate(src('edit-5','#tamdung'));assert.equal(row.public_data.availability,'paused');
  assert.equal(await inferUpdateTarget(src('x',original+'\n#suatin'),records),slug);
  await assert.rejects(inferUpdateTarget(src('x',original+'\n#suatin'),[row,{...row,id:'another'}]),{status:422});
+ await applySourceUpdate(src('status-old-copy',original+'\n#hot'));assert.equal(row.public_data.price,18,'status-only repost must not revert the latest price');
  const full=original.replace('12 triệu','19 triệu')+'\nKho sạch, có điện ba pha, xe tải tiếp cận thuận tiện.\n#suatin';
  await applySourceUpdate(src('edit-6',full));assert.equal(row.public_data.price,19);assert(row.public_data.description.includes('điện ba pha'));assert(!row.public_data.description.includes('Số 12'));
  await applySourceUpdate(src('edit-7','#suatin KX - 7777\nMô tả: Kho có điện ba pha, mới sửa sạch đẹp.'));assert(row.public_data.description.includes('mới sửa sạch đẹp'));
