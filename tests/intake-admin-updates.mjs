@@ -31,12 +31,12 @@ global.fetch=async()=>Response.json([{id:'other',public_data:{code:'KX - 0077'}}
 await assert.rejects(reserveManualCode('KX - 0077','Kho xưởng','a'),{status:409});
 global.fetch=originalFetch;
 console.log('PASS: hashtag precedence, private source phones, normalized titles, manual-code retention and collision rejection, admin-created confirmed nickname accounts without password disclosure.');
-// Two independent requests cannot reserve the same code for different posts.
-const claims=new Map();global.fetch=async(raw,options={})=>{const url=new URL(raw);if(url.pathname==='/rest/v1/posts')return Response.json([]);const key=decodeURIComponent(url.pathname.split('/').at(-1));if(options.method==='POST'){if(claims.has(key))return Response.json({code:'Duplicate'},{status:409});claims.set(key,JSON.parse(options.body));return Response.json({Key:key});}return claims.has(key)?Response.json(claims.get(key)):Response.json({}, {status:404});};
-const competing=await Promise.allSettled([reserveManualCode('MB - 0077','Mặt bằng kinh doanh','one'),reserveManualCode('MB - 0077','Mặt bằng kinh doanh','two')]);
-assert.equal(competing.filter(r=>r.status==='fulfilled').length,1);assert.equal(competing.find(r=>r.status==='rejected').reason.status,409);
-const owner=claims.get('MB - 0077.json').postId;assert.equal((await reserveManualCode('MB - 0077','Mặt bằng kinh doanh',owner)).code,'MB - 0077');
+// Deleted listings and abandoned Storage reservations cannot block reuse.
+let calls=[];global.fetch=async(raw)=>{calls.push(String(raw));return Response.json([{id:'deleted',public_data:{code:'MB - 0077',legacyCodes:['MB - 0078']},private_data:{deletion:{state:'pending'}}}])};
+assert.equal((await reserveManualCode('MB - 0077','Mặt bằng kinh doanh','one')).code,'MB - 0077');
+assert.equal((await reserveManualCode('MB - 0078','Mặt bằng kinh doanh','one')).code,'MB - 0078');
+assert(calls.every(url=>url.includes('/rest/v1/posts')));
 global.fetch=originalFetch;
-console.log('PASS: atomic private-storage reservations reject concurrent collisions and allow same-owner retry without SQL migration.');
+console.log('PASS: codes from deleted listings are reusable; code edits no longer depend on Storage.');
 
 const country=await trustedDraft({text:text.replace('+84 912 345 678','84912345678')});assert(!JSON.stringify(country.public_data).includes('84912345678'));

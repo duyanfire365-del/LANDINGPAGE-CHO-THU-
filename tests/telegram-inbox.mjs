@@ -49,3 +49,11 @@ recovered.processing_status='published';recovered.result_url='/tin?slug=live-179
 console.log('PASS: owner reply /danglai recovers the original text and Telegram image with a fresh update ID; published replay and bot replies cannot create another post');
 
 recovered=null;assert.equal((await call({...retry,update_id:304,message:{...retry.message,message_id:304,reply_to_message:{...originalPost,from:undefined}}})).status,200);assert.equal(recovered.content,originalPost.caption);assert.equal(recovered.media[0].file_id,'restaurant-photo');console.log('PASS: actual webhook accepts a complete owner-selected reply when Telegram omits the original sender');
+// Distinct edit commands must not be swallowed by exact-content post dedup.
+process.env.TELEGRAM_AUTO_PUBLISH='false';const editHashes=[];
+global.fetch=async(raw,options={})=>{if(String(raw).startsWith('https://api.telegram.org'))return Response.json({ok:true,result:{}});if(options.method==='POST'){const body=JSON.parse(options.body);editHashes.push(body.content_hash);return Response.json([{id:'66666666-6666-4666-8666-666666666666',...body}]);}return Response.json([])};
+await call({update_id:900,message:{...update.message,message_id:900,text:'#hot KX - 7777'}});
+await call({update_id:901,message:{...update.message,message_id:901,text:'#hot KX - 7777'}});
+await call({update_id:901,message:{...update.message,message_id:901,text:'#hot KX - 7777'}});
+assert.notEqual(editHashes[0],editHashes[1]);assert.equal(editHashes[1],editHashes[2]);
+console.log('PASS: new hashtag-edit messages remain distinct commands; Telegram delivery retries retain the same dedup key.');
