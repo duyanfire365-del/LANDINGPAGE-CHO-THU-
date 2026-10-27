@@ -1,3 +1,7 @@
+import {splitPrivateNotes} from '../lib/source-private-notes.mjs';
+import {polishListingCopy} from '../lib/listing-copy-polish.mjs';
+import {sensitiveCopy} from '../lib/listing-privacy.mjs';
+import {standardTitle} from '../lib/listing-identity.mjs';
 import {reserveManualCode} from '../lib/manual-listing-code.mjs';
 import {createAdminMember} from '../lib/admin-member.mjs';
 import {deletionAction,isDeleted} from '../lib/post-deletion.mjs';
@@ -116,10 +120,10 @@ export default async function handler(req,res){
    const rows=await db('posts',{query:'?id=eq.'+body.id});if(!rows[0])return send(res,404,{error:'Không tìm thấy tin.'});
    if(isDeleted(rows[0]))return send(res,409,{error:'Tin đã xóa. Hãy vào Duyệt bài đã xóa để khôi phục trước khi sửa.'});
    const {safePublicText}=await import('../lib/posts.mjs');
-   const separated=splitPriceNotes(clean(body.description,3000));let description=formatDescription(separated.publicSource);const {size,price,priceBasis,pricePerM2}=formPricing(body,{allowIncomplete:true});
+   const hidden=splitPrivateNotes(clean(body.description,3000)),separated=splitPriceNotes(hidden.publicSource);let description=polishListingCopy({text:separated.publicSource});const {size,price,priceBasis,pricePerM2}=formPricing(body,{allowIncomplete:true});
    if(!description||!safePublicText(description)||size!==null&&(!Number.isFinite(size)||size<=0||size>10000000)||price!==null&&(!Number.isFinite(price)||price<=0||price>1000000))return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
    const p=rows[0].public_data;
-   const title=body.title===undefined?p.title:clean(body.title,160),type=body.type===undefined?p.type:clean(body.type);
+   const rawTitle=body.title===undefined?p.title:clean(body.title,160),type=body.type===undefined?p.type:clean(body.type),title=sensitiveCopy(rawTitle)?standardTitle({...p,type,size,price}):rawTitle;
    if(!title||!safePublicText(title)||!categories.includes(type))return send(res,400,{error:'Kiểm tra tiêu đề và danh mục. Tiêu đề công khai không chứa số nhà, ngõ/ngách, SĐT nguồn, hoa hồng hoặc liên kết.'});
    const titleMode=body.title===undefined?p.titleMode:body.autoTitle===true||body.autoTitle==='on'?'auto':'custom';
    const transfer=transferPricing(body,p);
@@ -131,13 +135,13 @@ export default async function handler(req,res){
     const chosen=await reserveManualCode(body.code,type,body.id);
     Object.assign(public_data,chosen,{legacyCodes:[...new Set([...(p.legacyCodes||[]),p.code].filter(c=>c!==chosen.code))]});
    }else if(body.code!==undefined&&!String(body.code).trim()){public_data.codeMode='auto';}
-   public_data.description=syncRoomDescription(syncPricingDescription(public_data.description,p,public_data),p,public_data);public_data.notes=(public_data.notes||[]).filter(n=>!(price!==null&&/^Giá thuê đang cập nhật/.test(n))&&!(size!==null&&/^Diện tích đang cập nhật/.test(n)));description=public_data.description;
+   public_data.description=syncRoomDescription(syncPricingDescription(public_data.description,p,public_data),p,public_data);public_data.notes=(public_data.notes||[]).filter(n=>!(price!==null&&/^Giá thuê đang cập nhật/.test(n))&&!(size!==null&&/^Diện tích đang cập nhật/.test(n)));description=public_data.description=polishListingCopy({title,text:public_data.description});
    public_data.shareText=`${title}\nKhu vực: ${p.address}\nDiện tích: ${size===null?'Đang cập nhật':size+' m²'}\nGiá thuê: ${price===null?'Liên hệ':price+' triệu đồng/tháng'}\n${description}\nLiên hệ: 0906215365`;
    if(pricePerM2)public_data.shareText+='\nĐơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.';
    public_data.shareText+='\n'+dimensionFacts(dimensions).join('\n');
    if((public_data.media||[]).some(m=>m.isIllustration))public_data.shareText+='\nCó ảnh minh họa AI, không phải ảnh chụp thực tế.';
    if(transfer.isTransfer)public_data.shareText+='\nGiá chuyển nhượng: '+(transfer.transferPrice===null?'Liên hệ':transfer.transferPrice+' triệu đồng')+(transfer.transferNegotiable?' (Có thể thương lượng)':'')+'.';
-   const private_data={...rows[0].private_data,priceTrackingNotes:mergePriceNotes(body.priceTrackingNotes===undefined?trackedPriceNotes(rows[0].private_data):clean(body.priceTrackingNotes,8000),separated.priceTrackingNotes),address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
+   const private_data={...rows[0].private_data,sourceInfo:{...rows[0].private_data?.sourceInfo,privateNotes:mergePriceNotes(rows[0].private_data?.sourceInfo?.privateNotes,hidden.privateNotes,separated.priceTrackingNotes,sensitiveCopy(rawTitle)?rawTitle:'',body.transferNegotiable?'Có thể thương lượng (ghi chú của người đăng)':'')},priceTrackingNotes:mergePriceNotes(body.priceTrackingNotes===undefined?trackedPriceNotes(rows[0].private_data):clean(body.priceTrackingNotes,8000),separated.priceTrackingNotes),address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
    const previousRevision=p.contentRevision,editQuery='?id=eq.'+body.id+'&status=eq.'+rows[0].status+'&public_data->>contentRevision='+(previousRevision?'eq.'+encodeURIComponent(previousRevision):'is.null');const edited=await db('posts',{method:'PATCH',query:editQuery,body:{public_data,private_data}});if(!edited.length)return send(res,409,{error:'Tin vừa thay đổi hoặc bị xóa. Tải lại trước khi sửa.'});
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id+'&public_data->>contentRevision=eq.'+public_data.contentRevision,body:{public_data:canonical.public_data}});

@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import {protectPublishedCopy} from '../lib/listing-privacy-sync.mjs';
+const old={id:1,slug:'hn-001',code:'MB - 0001',title:'Sang nhượng quán bánh cuốn An Phúc',address:'Trung Kính, Cầu Giấy, Hà Nội',area:'Cầu Giấy',type:'Mặt bằng kinh doanh',size:80,price:30,transferPrice:200,transferNegotiable:true,image:'/image.jpg',shareImage:'/image.jpg',media:[{id:'photo'}],description:'Quán bánh cuốn An Phúc đang kinh doanh.\nCó thang máy.\nCó thang máy.\nGiá chốt: 25 triệu\nĐối diện trường Ánh Dương',facts:['Có thang máy.','Đang kinh doanh quán bánh cuốn','Diện tích: 80m²'],notes:['Liên hệ chủ nhà chị Lan','Ảnh minh họa AI.'],imageAlt:'Ảnh minh họa quán bánh cuốn An Phúc',shareText:'Giá chốt: 25 triệu'};
+const result=protectPublishedCopy(old),p=result.publicData;
+for(const f of ['id','slug','code','size','price','transferPrice','image','shareImage','media'])assert.deepEqual(p[f],old[f]);
+assert(!/An Phúc|Ánh Dương|giá chốt|chủ nhà|đang kinh doanh/iu.test(JSON.stringify(p)));assert.equal(p.transferNegotiable,false);assert(result.privateNotes.includes('Giá chốt'));assert(result.privateNotes.includes('chủ nhà'));assert(p.description.includes('thang máy'));assert.equal(p.description.match(/thang máy/g)?.length,1);assert.deepEqual(protectPublishedCopy(p).publicData,p);assert.equal(old.transferNegotiable,true,'planner must not mutate source');
+console.log('PASS: published-copy backfill is idempotent, retains identity/media/prices, anonymizes all public surfaces and preserves confidential notes.');

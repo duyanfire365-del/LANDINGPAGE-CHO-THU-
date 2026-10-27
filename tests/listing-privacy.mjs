@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {sensitiveCopy,separateSensitiveCopy} from '../lib/listing-privacy.mjs';
+import {splitPrivateNotes} from '../lib/source-private-notes.mjs';
+import {extractRentPricing} from '../lib/source-pricing.mjs';
+import {trustedDraft} from '../lib/trusted-intake.mjs';
+import {draft,safePublicText} from '../lib/posts.mjs';
+import {polishListingCopy} from '../lib/listing-copy-polish.mjs';
+const confidential=['Hiện đang kinh doanh quán bánh cuốn An Phúc','Đang kinh doanh ngành hàng mỹ phẩm','Gia chot: 25tr','Chốt 25tr','Giá sang nhượng chốt: 25tr','Bớt 3tr','TL sâu','Giá có thể thượng xuống 26 triệu','Có thể bớt xuống 26 triệu','Giảm được 3 triệu','Liên hệ đối tác Anh Hùng 0987654321','Liên hệ chủ nhà chị Lan','Đối diện quán bánh cuốn An Phúc','Cách trường Ánh Dương 20m','Tên cửa hàng: An Phúc','Doanh thu 200 triệu/tháng','Sang nhượng quán bánh cuốn An Phúc','Hiện trạng: quán cafe','Quán bánh cuốn full đồ','Đang vận hành quán nhậu','Liên hệ bên nguồn','Giá cuối: 25 triệu','Giá net 25 triệu','Giá sàn 25 triệu','Có thể thương lượng xuống 26tr','Giá còn xuống được 26 triệu'];
+for(const line of confidential){assert(sensitiveCopy(line),line);assert.equal(separateSensitiveCopy(line).publicSource,'',line);assert(splitPrivateNotes(line).privateNotes.includes(line));assert(!safePublicText(line));}
+for(const line of ['Phù hợp làm văn phòng.','Có thang máy.','Diện tích: 80m²','Giá thuê: 30 triệu/tháng','Trung tâm thương mại','Mặt bằng thuận tiện kinh doanh.','Phù hợp mở quán ăn.'])assert(!sensitiveCopy(line),line);
+const source=['Cho thuê mặt bằng Trung Kính, Cầu Giấy','Địa chỉ: 12 Trung Kính, Cầu Giấy','Diện tích: 80m²','Giá thuê: 30 triệu/tháng; Giá chốt: 25tr','Có thang máy.','Có thang máy.','Phù hợp làm văn phòng.',...confidential].join('\n');
+assert.equal(extractRentPricing(source).price,30);
+assert.equal(extractRentPricing('80m2\nGiá thuê: 30tr/tháng, Có thể bớt xuống 26 triệu',{allowIncomplete:true,allowUncertain:true}).price,30);
+const post=await trustedDraft({text:source});
+const output=JSON.stringify(post.public_data);
+for(const line of confidential)assert(!output.includes(line),line);
+for(const line of confidential)assert(post.private_data.sourceInfo.privateNotes.includes(line),line);
+assert(post.private_data.sourceText===source);assert.equal(post.public_data.price,30);assert.equal(post.public_data.size,80);assert.equal(post.public_data.transferNegotiable,false);assert(post.public_data.description.includes('thang máy'));assert.equal(post.public_data.description.match(/Có thang máy/g)?.length,1);assert(!output.includes('0987654321'));assert(!output.includes('12 Trung Kính'));
+const explicit=await draft({title:'Mặt bằng đang kinh doanh quán An Phúc',location:'Trung Kính',area:'Cầu Giấy',type:'Mặt bằng kinh doanh',size:80,price:30,description:'Có thang máy.\nGiá chốt: 25 triệu\nLiên hệ chủ nhà chị Lan\nĐối diện quán An Phúc',originalText:source,sourceInfo:{privateNotes:'Ghi chú sẵn có',sourceName:'Anh Hùng',sourcePublic:true,ownerPhones:['0987654321'],ownerPublic:[true]}},{admin:true,id:null});
+assert(!JSON.stringify(explicit.public_data).includes('An Phúc'));assert(explicit.private_data.sourceInfo.privateNotes.includes('Giá chốt: 25 triệu'));assert(explicit.private_data.sourceInfo.privateNotes.includes('Ghi chú sẵn có'));assert.equal(explicit.private_data.sourceInfo.sourcePublic,false);assert.equal(explicit.private_data.sourceInfo.ownerPublic[0],false);
+const compact=polishListingCopy({title:'Mặt bằng cho thuê',text:'Diện tích: 80m²\nDiện tích: 80 m².\nCó thang máy.\nCó thang máy.\nLiên hệ ngay\nHotline tư vấn',facts:['Diện tích: 80 m².','Giá thuê: 30 triệu đồng/tháng.']});
+assert.equal(compact.match(/Diện tích/g)?.length,1);assert.equal(compact.match(/thang máy/g)?.length,1);assert.equal(compact.match(/Liên hệ/g)?.length,1);assert(compact.length<500);
+console.log('PASS: confidential business/negotiation/source/landmark clauses stay private; public advertised rent and useful facts survive; explicit drafts, private flags and compact copy are protected.');
