@@ -4,7 +4,8 @@ import {extractByRules} from '../lib/source-rules.mjs';
 import {safePublicText} from '../lib/posts.mjs';
 import {validateExtraction} from '../lib/source-automation.mjs';
 const sample='🏭 CHO THUÊ KHO XƯỞNG TRỤC CẦU BƯỚU – BỆNH VIỆN K\n📍 Vị trí: Trục Cầu Bướu, khu vực gần Bệnh viện K\n📐 Diện tích: 1.600m²\nKho đã có mái che, nhà xưởng đầy đủ, có thể vào sử dụng ngay.\n💰 Giá thuê: 110.000đ/m²/tháng (GIÁ CHỐT)\n#khoxuong #thanhtri #hadong\nH50%';
-const item=validateExtraction(extractByRules(sample),sample);assert.equal(item.price,176);assert.equal(item.pricePerM2,110000);assert.equal(item.priceBasis,'per_m2');assert.equal(item.size,1600);assert.equal(item.type,'Kho xưởng');assert.match(item.location,/Cầu Bươu/);assert.equal(item.area,'Hà Nội','conflicting tags are not a district');assert(sample.includes(item.priceEvidence));assert(sample.includes(item.sizeEvidence));
+const privatePrice=extractRentPricing(sample,{allowIncomplete:true});assert.equal(privatePrice.price,null);assert.equal(privatePrice.pricePerM2,null);
+const publicSample=sample.replace(' (GIÁ CHỐT)','');const item=validateExtraction(extractByRules(publicSample),publicSample);assert.equal(item.price,176);assert.equal(item.pricePerM2,110000);assert.equal(item.priceBasis,'per_m2');assert.equal(item.size,1600);assert.equal(item.type,'Kho xưởng');assert.match(item.location,/Cầu Bươu/);assert.equal(item.area,'Hà Nội','conflicting tags are not a district');assert(sample.includes(item.priceEvidence));assert(sample.includes(item.sizeEvidence));
 for(const [text,expected,unit] of [
  ['Diện tích 1600m² Giá thuê 110.000đ/1m²/1tháng',176,110000],
  ['KX DT 1600m2 gia thue 110k/m2/th',176,110000],

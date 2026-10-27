@@ -45,9 +45,7 @@ window.RENTAL_LISTINGS = [
     "size": 45,
     "areaText": "45 m² × 3 tầng",
     "facts": [
-      "Mặt tiền 4,5 m.",
-      "Sang nhượng kèm trang thiết bị, gồm một tháng tiền đặt cọc",
-      "Thanh toán: 1 tháng, đặt cọc 1 tháng"
+      "Mặt tiền 4,5 m."
     ],
     "description": "giá sang nhượng và tiền thuê được tách riêng.\n\nDiện tích: 45 m².\n\nGiá thuê: 13 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
@@ -59,7 +57,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 45 m² — Ao Sen, Hà Đông",
     "address": "Ao Sen, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 45 m² — Ao Sen, Hà Đông\nMã tin: MB - 0002\nKhu vực: Ao Sen, Hà Đông, Hà Nội\ngiá sang nhượng và tiền thuê được tách riêng.\n\nDiện tích: 45 m².\n\nGiá thuê: 13 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 4,5 m.\nSang nhượng kèm trang thiết bị, gồm một tháng tiền đặt cọc\nThanh toán: 1 tháng, đặt cọc 1 tháng\nGiá chuyển nhượng: 90 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 45 m² — Ao Sen, Hà Đông\nMã tin: MB - 0002\nKhu vực: Ao Sen, Hà Đông, Hà Nội\ngiá sang nhượng và tiền thuê được tách riêng.\n\nDiện tích: 45 m².\n\nGiá thuê: 13 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 4,5 m.\nGiá chuyển nhượng: 90 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-002"
     ],
@@ -79,10 +77,7 @@ window.RENTAL_LISTINGS = [
     "size": 60,
     "areaText": "60 m²",
     "facts": [
-      "Phù hợp nhiều mô hình kinh doanh, trừ xe máy",
-      "cần làm rõ điều kiện ưu đãi",
-      "Hợp đồng thuê: 1 năm",
-      "Thanh toán: 3 tháng, đặt cọc 1 tháng"
+      "Phù hợp nhiều mô hình kinh doanh, trừ xe máy"
     ],
     "description": "Mặt bằng rộng 60 m² với mặt tiền 7 m.\n\ngiá chào 33 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [
@@ -96,7 +91,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 60 m² — Lê Văn Thiêm, Thanh Xuân",
     "address": "Lê Văn Thiêm, Thanh Xuân, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng mặt tiền 7 m tại lê văn thiêm",
-    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Lê Văn Thiêm, Thanh Xuân\nMã tin: MB - 0003\nKhu vực: Lê Văn Thiêm, Thanh Xuân, Hà Nội\nMặt bằng rộng 60 m² với mặt tiền 7 m.\n\ngiá chào 33 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nPhù hợp nhiều mô hình kinh doanh, trừ xe máy\ncần làm rõ điều kiện ưu đãi\nHợp đồng thuê: 1 năm\nThanh toán: 3 tháng, đặt cọc 1 tháng\nGiá chào 33 triệu/tháng\ncần xác nhận lại địa chỉ chi tiết.\nLiên hệ: 0906215365",
+    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Lê Văn Thiêm, Thanh Xuân\nMã tin: MB - 0003\nKhu vực: Lê Văn Thiêm, Thanh Xuân, Hà Nội\nMặt bằng rộng 60 m² với mặt tiền 7 m.\n\ngiá chào 33 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nPhù hợp nhiều mô hình kinh doanh, trừ xe máy\nGiá chào 33 triệu/tháng\ncần xác nhận lại địa chỉ chi tiết.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-003"
     ],
@@ -181,8 +176,7 @@ window.RENTAL_LISTINGS = [
     "size": 80,
     "areaText": "Nguồn ghi 80 m² × 2 tầng; tầng 2 ghi 60 m²",
     "facts": [
-      "Giá sang nhượng chào: 320 triệu đồng",
-      "Thanh toán: 3 tháng, đặt cọc 3 tháng"
+      "Giá sang nhượng chào: 320 triệu đồng"
     ],
     "description": "cần xác nhận lại diện tích từng tầng.\n\nDiện tích: 80 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [
@@ -196,7 +190,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 80 m² — Phạm Huy Thông, Ba Đình",
     "address": "Phạm Huy Thông, Ba Đình, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 80 m² — Phạm Huy Thông, Ba Đình\nMã tin: MB - 0005\nKhu vực: Phạm Huy Thông, Ba Đình, Hà Nội\ncần xác nhận lại diện tích từng tầng.\n\nDiện tích: 80 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nGiá sang nhượng chào: 320 triệu đồng\nThanh toán: 3 tháng, đặt cọc 3 tháng\nThông tin diện tích cần được xác nhận lại trước khi giao dịch.\nGiá chuyển nhượng: 320 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 80 m² — Phạm Huy Thông, Ba Đình\nMã tin: MB - 0005\nKhu vực: Phạm Huy Thông, Ba Đình, Hà Nội\ncần xác nhận lại diện tích từng tầng.\n\nDiện tích: 80 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nGiá sang nhượng chào: 320 triệu đồng\nThông tin diện tích cần được xác nhận lại trước khi giao dịch.\nGiá chuyển nhượng: 320 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-006"
     ],
@@ -218,8 +212,7 @@ window.RENTAL_LISTINGS = [
     "facts": [
       "Lô góc, hai mặt tiền 10 m và 3 m.",
       "Nhà riêng biệt",
-      "Trang thiết bị đầy đủ theo nguồn\ngiá sang nhượng gồm 30 triệu đồng tiền cọc",
-      "Thanh toán: 3 tháng, đặt cọc 1 tháng"
+      "Trang thiết bị đầy đủ theo nguồn"
     ],
     "description": "Diện tích: 40 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
@@ -231,7 +224,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 40 m² — Ao Sen, Hà Đông",
     "address": "Ao Sen, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 40 m² — Ao Sen, Hà Đông\nMã tin: MB - 0006\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nDiện tích: 40 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nLô góc, hai mặt tiền 10 m và 3 m.\nNhà riêng biệt\nTrang thiết bị đầy đủ theo nguồn\ngiá sang nhượng gồm 30 triệu đồng tiền cọc\nThanh toán: 3 tháng, đặt cọc 1 tháng\nGiá chuyển nhượng: 220 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 40 m² — Ao Sen, Hà Đông\nMã tin: MB - 0006\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nDiện tích: 40 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nLô góc, hai mặt tiền 10 m và 3 m.\nNhà riêng biệt\nTrang thiết bị đầy đủ theo nguồn\nGiá chuyển nhượng: 220 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-007"
     ],
@@ -285,9 +278,7 @@ window.RENTAL_LISTINGS = [
     "areaText": "250 m² × 2 tầng; thêm gác xép 30 m²",
     "facts": [
       "Mặt tiền 10 m.",
-      "Phù hợp nhiều mô hình kinh doanh theo nguồn",
-      "Hợp đồng thuê: 3–5 năm",
-      "Thanh toán: 4 tháng, đặt cọc 2 tháng"
+      "Phù hợp nhiều mô hình kinh doanh theo nguồn"
     ],
     "description": "Mặt bằng tại Nguyễn Chí Thanh, nguồn ghi 250 m² × 2 tầng và gác xép 30 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
@@ -298,7 +289,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 250 m² — Nguyễn Chí Thanh, Đống Đa",
     "address": "Nguyễn Chí Thanh, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: mặt bằng hai tầng tại nguyễn chí thanh",
-    "shareText": "Cho thuê mặt bằng kinh doanh 250 m² — Nguyễn Chí Thanh, Đống Đa\nMã tin: MB - 0008\nKhu vực: Nguyễn Chí Thanh, Đống Đa, Hà Nội\nMặt bằng tại Nguyễn Chí Thanh, nguồn ghi 250 m² × 2 tầng và gác xép 30 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 10 m.\nPhù hợp nhiều mô hình kinh doanh theo nguồn\nHợp đồng thuê: 3–5 năm\nThanh toán: 4 tháng, đặt cọc 2 tháng\nLiên hệ: 0906215365",
+    "shareText": "Cho thuê mặt bằng kinh doanh 250 m² — Nguyễn Chí Thanh, Đống Đa\nMã tin: MB - 0008\nKhu vực: Nguyễn Chí Thanh, Đống Đa, Hà Nội\nMặt bằng tại Nguyễn Chí Thanh, nguồn ghi 250 m² × 2 tầng và gác xép 30 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 10 m.\nPhù hợp nhiều mô hình kinh doanh theo nguồn\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-009"
     ],
@@ -397,10 +388,8 @@ window.RENTAL_LISTINGS = [
     "price": 22,
     "size": 21,
     "areaText": "21 m² × 3,5 tầng",
-    "facts": [
-      "Thanh toán: 3 tháng, đặt cọc 1 tháng"
-    ],
-    "description": "Nhà riêng biệt tại Đường Láng, mặt tiền 4,5 m.\n\ncần lưu ý thời hạn thuê dưới 20 tháng theo nguồn.\n\nDiện tích: 21 m².\n\nGiá thuê: 22 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "facts": [],
+    "description": "Nhà riêng biệt tại Đường Láng, mặt tiền 4,5 m.\n\nDiện tích: 21 m².\n\nGiá thuê: 22 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
     "image": "/images/hn-012.webp",
     "shareImage": "/images/hn-012.jpg",
@@ -409,7 +398,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê nhà nguyên căn 21 m² — Đường Láng, Đống Đa",
     "address": "Đường Láng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: nhà kinh doanh riêng biệt tại đường láng",
-    "shareText": "Cho thuê nhà nguyên căn 21 m² — Đường Láng, Đống Đa\nMã tin: NC - 0002\nKhu vực: Đường Láng, Đống Đa, Hà Nội\nNhà riêng biệt tại Đường Láng, mặt tiền 4,5 m.\n\ncần lưu ý thời hạn thuê dưới 20 tháng theo nguồn.\n\nDiện tích: 21 m².\n\nGiá thuê: 22 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nThanh toán: 3 tháng, đặt cọc 1 tháng\nLiên hệ: 0906215365",
+    "shareText": "Cho thuê nhà nguyên căn 21 m² — Đường Láng, Đống Đa\nMã tin: NC - 0002\nKhu vực: Đường Láng, Đống Đa, Hà Nội\nNhà riêng biệt tại Đường Láng, mặt tiền 4,5 m.\n\nDiện tích: 21 m².\n\nGiá thuê: 22 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-012"
     ],
@@ -463,8 +452,7 @@ window.RENTAL_LISTINGS = [
     "size": 60,
     "areaText": "60 m² × 2 tầng",
     "facts": [
-      "Nhà riêng biệt",
-      "Sang nhượng kèm trang thiết bị, một tháng tiền cọc và một tháng tiền nhà theo nguồn"
+      "Nhà riêng biệt"
     ],
     "description": "Diện tích: 60 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
@@ -476,7 +464,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 60 m² — Nguyễn Viết Xuân, Hà Đông",
     "address": "Nguyễn Viết Xuân, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Nguyễn Viết Xuân, Hà Đông\nMã tin: MB - 0012\nKhu vực: Nguyễn Viết Xuân, Hà Đông, Hà Nội\nDiện tích: 60 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nNhà riêng biệt\nSang nhượng kèm trang thiết bị, một tháng tiền cọc và một tháng tiền nhà theo nguồn\nGiá chuyển nhượng: 200 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Nguyễn Viết Xuân, Hà Đông\nMã tin: MB - 0012\nKhu vực: Nguyễn Viết Xuân, Hà Đông, Hà Nội\nDiện tích: 60 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nNhà riêng biệt\nGiá chuyển nhượng: 200 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-014"
     ],
@@ -529,7 +517,6 @@ window.RENTAL_LISTINGS = [
     "areaText": "110 m²: 70 m² trong nhà + 40 m² sân vườn",
     "facts": [
       "Mặt tiền 6 m.",
-      "Sang nhượng kèm trang thiết bị, một tháng tiền cọc và ba tháng tiền nhà theo nguồn",
       "Phù hợp cà phê, workshop hoặc không gian sáng tạo"
     ],
     "description": "Quán cà phê có sân vườn, tổng diện tích 110 m², phù hợp workshop hoặc không gian sáng tạo.\n\nGiá thuê: 15 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
@@ -542,7 +529,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 110 m² — Nghĩa Tân, Cầu Giấy",
     "address": "Nghĩa Tân, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 110 m² — Nghĩa Tân, Cầu Giấy\nMã tin: MB - 0014\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nQuán cà phê có sân vườn, tổng diện tích 110 m², phù hợp workshop hoặc không gian sáng tạo.\n\nGiá thuê: 15 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 6 m.\nSang nhượng kèm trang thiết bị, một tháng tiền cọc và ba tháng tiền nhà theo nguồn\nPhù hợp cà phê, workshop hoặc không gian sáng tạo\nGiá chuyển nhượng: 250 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 110 m² — Nghĩa Tân, Cầu Giấy\nMã tin: MB - 0014\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nQuán cà phê có sân vườn, tổng diện tích 110 m², phù hợp workshop hoặc không gian sáng tạo.\n\nGiá thuê: 15 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 6 m.\nPhù hợp cà phê, workshop hoặc không gian sáng tạo\nGiá chuyển nhượng: 250 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-016"
     ],
@@ -595,9 +582,7 @@ window.RENTAL_LISTINGS = [
     "areaText": "50 m² × 3,5 tầng",
     "facts": [
       "Mặt tiền 4 m.",
-      "Nhà riêng biệt",
-      "Thời hạn thuê còn trên 20 tháng theo nguồn",
-      "Thanh toán: 3 tháng, đặt cọc 1 tháng"
+      "Nhà riêng biệt"
     ],
     "description": "giá sang nhượng 100 triệu đồng, tiền thuê 24 triệu/tháng.\n\nDiện tích: 50 m².\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
@@ -609,7 +594,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 50 m² — Trần Duy Hưng, Cầu Giấy",
     "address": "Trần Duy Hưng, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 50 m² — Trần Duy Hưng, Cầu Giấy\nMã tin: MB - 0016\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\ngiá sang nhượng 100 triệu đồng, tiền thuê 24 triệu/tháng.\n\nDiện tích: 50 m².\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 4 m.\nNhà riêng biệt\nThời hạn thuê còn trên 20 tháng theo nguồn\nThanh toán: 3 tháng, đặt cọc 1 tháng\nGiá chuyển nhượng: 100 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 50 m² — Trần Duy Hưng, Cầu Giấy\nMã tin: MB - 0016\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\ngiá sang nhượng 100 triệu đồng, tiền thuê 24 triệu/tháng.\n\nDiện tích: 50 m².\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 4 m.\nNhà riêng biệt\nGiá chuyển nhượng: 100 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-018"
     ],
@@ -630,8 +615,7 @@ window.RENTAL_LISTINGS = [
     "areaText": "200 m²",
     "facts": [
       "Nhà riêng biệt",
-      "Phù hợp kho chứa hàng, kho trung chuyển hoặc xưởng phù hợp điều kiện sử dụng",
-      "Thanh toán: 3 tháng, đặt cọc 1 tháng"
+      "Phù hợp kho chứa hàng, kho trung chuyển hoặc xưởng phù hợp điều kiện sử dụng"
     ],
     "description": "Kho xưởng riêng biệt 200 m² tại Mỹ Đình, mặt tiền 10,3 m, giá thuê 16 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [
@@ -644,7 +628,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê kho xưởng 200 m² — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm",
     "address": "Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: kho xưởng riêng biệt 200 m² tại mỹ đình",
-    "shareText": "Cho thuê kho xưởng 200 m² — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm\nMã tin: KX - 0001\nKhu vực: Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội\nKho xưởng riêng biệt 200 m² tại Mỹ Đình, mặt tiền 10,3 m, giá thuê 16 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nNhà riêng biệt\nPhù hợp kho chứa hàng, kho trung chuyển hoặc xưởng phù hợp điều kiện sử dụng\nThanh toán: 3 tháng, đặt cọc 1 tháng\nCần kiểm tra công năng và điều kiện pháp lý, phòng cháy chữa cháy phù hợp với hoạt động dự kiến.\nLiên hệ: 0906215365",
+    "shareText": "Cho thuê kho xưởng 200 m² — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm\nMã tin: KX - 0001\nKhu vực: Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội\nKho xưởng riêng biệt 200 m² tại Mỹ Đình, mặt tiền 10,3 m, giá thuê 16 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nNhà riêng biệt\nPhù hợp kho chứa hàng, kho trung chuyển hoặc xưởng phù hợp điều kiện sử dụng\nCần kiểm tra công năng và điều kiện pháp lý, phòng cháy chữa cháy phù hợp với hoạt động dự kiến.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-019"
     ],
@@ -665,8 +649,7 @@ window.RENTAL_LISTINGS = [
     "size": 85,
     "areaText": "85 m² × 5,5 tầng",
     "facts": [
-      "Phù hợp văn phòng và mô hình kinh doanh sạch",
-      "Thanh toán: 6 tháng, đặt cọc 1 tháng"
+      "Phù hợp văn phòng và mô hình kinh doanh sạch"
     ],
     "description": "Nhà 5,5 tầng tại Trần Duy Hưng, diện tích 85 m² mỗi tầng theo nguồn, mặt tiền 5 m.\n\nGiá thuê: 70 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
@@ -677,7 +660,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê nhà nguyên căn 85 m² — Trần Duy Hưng, Cầu Giấy",
     "address": "Trần Duy Hưng, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: nhà 5,5 tầng tại trần duy hưng",
-    "shareText": "Cho thuê nhà nguyên căn 85 m² — Trần Duy Hưng, Cầu Giấy\nMã tin: NC - 0003\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nNhà 5,5 tầng tại Trần Duy Hưng, diện tích 85 m² mỗi tầng theo nguồn, mặt tiền 5 m.\n\nGiá thuê: 70 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nPhù hợp văn phòng và mô hình kinh doanh sạch\nThanh toán: 6 tháng, đặt cọc 1 tháng\nLiên hệ: 0906215365",
+    "shareText": "Cho thuê nhà nguyên căn 85 m² — Trần Duy Hưng, Cầu Giấy\nMã tin: NC - 0003\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nNhà 5,5 tầng tại Trần Duy Hưng, diện tích 85 m² mỗi tầng theo nguồn, mặt tiền 5 m.\n\nGiá thuê: 70 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nPhù hợp văn phòng và mô hình kinh doanh sạch\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-020"
     ],
@@ -765,8 +748,6 @@ window.RENTAL_LISTINGS = [
     "areaText": "Trong nhà: 100 m²; sân ngoài trời: 150 m²; có thêm gác",
     "facts": [
       "Có sân ngoài trời 150 m² và gác theo nguồn",
-      "Giá sang nhượng gồm một tháng tiền cọc theo nguồn",
-      "Thanh toán: 3 tháng, đặt cọc 2 tháng",
       "Có thể trao đổi chuyển đổi sang mô hình hàng ăn"
     ],
     "description": "Mặt bằng chân đế có 100 m² trong nhà, sân ngoài trời 150 m² và gác\n\nphù hợp trao đổi nhu cầu kinh doanh ăn uống.\n\nGiá thuê: 33 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
@@ -780,7 +761,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 100 m² — Trung Kính, Cầu Giấy",
     "address": "Trung Kính, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa bằng AI: sang nhượng mặt bằng có sân rộng tại trung kính",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 100 m² — Trung Kính, Cầu Giấy\nMã tin: MB - 0017\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nMặt bằng chân đế có 100 m² trong nhà, sân ngoài trời 150 m² và gác\n\nphù hợp trao đổi nhu cầu kinh doanh ăn uống.\n\nGiá thuê: 33 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nCó sân ngoài trời 150 m² và gác theo nguồn\nGiá sang nhượng gồm một tháng tiền cọc theo nguồn\nThanh toán: 3 tháng, đặt cọc 2 tháng\nCó thể trao đổi chuyển đổi sang mô hình hàng ăn\nGiá chuyển nhượng: 280 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 100 m² — Trung Kính, Cầu Giấy\nMã tin: MB - 0017\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nMặt bằng chân đế có 100 m² trong nhà, sân ngoài trời 150 m² và gác\n\nphù hợp trao đổi nhu cầu kinh doanh ăn uống.\n\nGiá thuê: 33 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nCó sân ngoài trời 150 m² và gác theo nguồn\nCó thể trao đổi chuyển đổi sang mô hình hàng ăn\nGiá chuyển nhượng: 280 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-023"
     ],
@@ -831,10 +812,7 @@ window.RENTAL_LISTINGS = [
     "price": 50,
     "size": 200,
     "areaText": "200 m² × 3 tầng theo nguồn",
-    "facts": [
-      "Sang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn",
-      "Thanh toán: 3 tháng, đặt cọc 1 tháng"
-    ],
+    "facts": [],
     "description": "Nhà hàng ba tầng tại Trần Điền, diện tích theo nguồn 200 m² × 3 tầng, mặt tiền 10 m.\n\ngiá thuê và sang nhượng được tách riêng.\n\nGiá thuê: 50 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
     "transferPrice": 600,
@@ -846,7 +824,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 200 m² — Trần Điền, Hoàng Mai",
     "address": "Trần Điền, Hoàng Mai, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 200 m² — Trần Điền, Hoàng Mai\nMã tin: MB - 0019\nKhu vực: Trần Điền, Hoàng Mai, Hà Nội\nNhà hàng ba tầng tại Trần Điền, diện tích theo nguồn 200 m² × 3 tầng, mặt tiền 10 m.\n\ngiá thuê và sang nhượng được tách riêng.\n\nGiá thuê: 50 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nSang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn\nThanh toán: 3 tháng, đặt cọc 1 tháng\nGiá chuyển nhượng: 600 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 200 m² — Trần Điền, Hoàng Mai\nMã tin: MB - 0019\nKhu vực: Trần Điền, Hoàng Mai, Hà Nội\nNhà hàng ba tầng tại Trần Điền, diện tích theo nguồn 200 m² × 3 tầng, mặt tiền 10 m.\n\ngiá thuê và sang nhượng được tách riêng.\n\nGiá thuê: 50 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nGiá chuyển nhượng: 600 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-025"
     ],
@@ -938,8 +916,7 @@ window.RENTAL_LISTINGS = [
     "areaText": "Tầng 1: 60 m²",
     "facts": [
       "Mặt tiền 8 m.",
-      "Có lối đi riêng",
-      "Sang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn"
+      "Có lối đi riêng"
     ],
     "description": "giá sang nhượng tính riêng tiền thuê.\n\nDiện tích: 60 m².\n\nGiá thuê: 27 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
     "notes": [],
@@ -952,7 +929,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 60 m² — Hoàng Ngân, Thanh Xuân",
     "address": "Hoàng Ngân, Thanh Xuân, Hà Nội",
     "imageAlt": "Ảnh minh họa BĐS: Mặt bằng kinh doanh",
-    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Hoàng Ngân, Thanh Xuân\nMã tin: MB - 0021\nKhu vực: Hoàng Ngân, Thanh Xuân, Hà Nội\ngiá sang nhượng tính riêng tiền thuê.\n\nDiện tích: 60 m².\n\nGiá thuê: 27 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 8 m.\nCó lối đi riêng\nSang nhượng kèm trang thiết bị và một tháng tiền cọc theo nguồn\nGiá chuyển nhượng: 270 triệu đồng.\nLiên hệ: 0906215365",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Hoàng Ngân, Thanh Xuân\nMã tin: MB - 0021\nKhu vực: Hoàng Ngân, Thanh Xuân, Hà Nội\ngiá sang nhượng tính riêng tiền thuê.\n\nDiện tích: 60 m².\n\nGiá thuê: 27 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.\nMặt tiền 8 m.\nCó lối đi riêng\nGiá chuyển nhượng: 270 triệu đồng.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-028"
     ],
