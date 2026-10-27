@@ -16,6 +16,7 @@ global.fetch=async(raw,options={})=>{
    if(rule.startsWith('eq.')&&String(row[key])!==rule.slice(3))return false;
    if(rule.startsWith('in.(')&&!rule.slice(4,-1).split(',').includes(String(row[key])))return false;
   }
+  for(const field of ['id','claim']){const filter=url.searchParams.get('parsed_data->_publishing->notice->>'+field);const value=row.parsed_data?._publishing?.notice?.[field];if(filter==='is.null'&&value!=null)return false;if(filter?.startsWith('eq.')&&String(value)!==filter.slice(3))return false;}
   if(url.searchParams.has('parsed_data->_publishing->notice->>sent')&&row.parsed_data?._publishing?.notice?.sent!==false)return false;
   return true;
  });
@@ -43,5 +44,5 @@ const raced=await Promise.all([publishContinuously({...input,requestId:'race-pub
 const jpg=await sharp({create:{width:640,height:480,channels:3,background:'#b9a18b'}}).jpeg().toBuffer();const one=await uploadPublishingImage({base64:jpg.toString('base64'),illustration:true});const two=await uploadPublishingImage({base64:jpg.toString('base64'),illustration:true});assert.equal(one.asset.id,two.asset.id);assert.equal(uploads,1);assert(one.asset.path.startsWith('editor-ai/publishing/'));
 assets.push({id:randomUUID(),path:'other-owner/private.jpg',owner_id:'another-owner',kind:'image',mime:'image/jpeg'});await assert.rejects(()=>preparePublishing({...input,assetIds:[assets.at(-1).id]},options),/luồng nhập/);
 const status=await publishingStatus(input.requestId);assert.equal(status.published,true);assert(!JSON.stringify(status).includes('0987654321'));assert(!JSON.stringify(status).includes(source));
-const pending=jobs.find(j=>j.id===first.id);pending.parsed_data._publishing.notice.sent=false;await retryPendingPublishingNotices();assert.equal(pending.parsed_data._publishing.notice.sent,true);
+const pending=jobs.find(j=>j.id===first.id);pending.parsed_data._publishing.notice.sent=false;const previous=sent.length;await Promise.all([retryPendingPublishingNotices(),retryPendingPublishingNotices()]);assert.equal(pending.parsed_data._publishing.notice.sent,true);assert.equal(sent.length,previous+1,'concurrent outbox workers claim the notice once');
 console.log('PASS: permanent auth and restricted actions; privacy/evidence guards; request replay and conflicting-payload rejection; concurrent dedup; changed rent/owner review; durable Telegram retry; content-addressed AI uploads; foreign-asset rejection.');
