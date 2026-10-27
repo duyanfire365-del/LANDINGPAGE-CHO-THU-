@@ -105,3 +105,7 @@ Trang chủ trả sẵn Open Graph (website, tiêu đề, mô tả, banner JPEG 
 ## Đợt nguồn 19/10/2026
 
 Nhận 10 tệp, thêm 8 tin HN-023–HN-030 và bỏ qua 2 bản trùng HN-018/HN-017. Xem `IMPORT_2026-10-19.md`. Tổng bộ nguồn tĩnh hiện có 30 tin, từng tin có ảnh minh họa AI riêng và dữ liệu chính xác/hashtag được mã hóa cho quản trị. Phí và tên nguồn mới chỉ ở ghi chú riêng. Tin có ngày bổ sung mới được ưu tiên đầu danh sách; bộ lọc vẫn dùng giá thuê tháng.
+
+## Nhập tin liên tục từ Codex
+
+Luồng cố định `/api/publishing` nhận tin và ảnh qua quyền quản trị hoặc khóa tự động hóa riêng, có mã lượt để tiếp tục khi gián đoạn, lọc trùng và báo Telegram. Xem [PUBLISHING_SETUP.md](PUBLISHING_SETUP.md) và metadata không chứa bí mật tại `.openai/publishing.json`. Không tạo cổng nhập tạm cho mỗi đợt.

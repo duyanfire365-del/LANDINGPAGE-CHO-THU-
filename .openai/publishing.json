@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "endpoint": "https://nguonchothue.vn/api/publishing",
+  "vercelProjectId": "prj_eSTMDz1bqgiMiL8bdOxGRp6JiBmb",
+  "vercelTeamId": "team_j1hFC3NdLis15keoq0akfwnG",
+  "supabaseProjectId": "oefziauzarwqcuagrhjl",
+  "credentialEnvironmentVariable": "PUBLISHING_AUTOMATION_KEY",
+  "documentation": "PUBLISHING_SETUP.md",
+  "client": "scripts/publish-client.mjs",
+  "warning": "This file contains routing metadata only. Never add credentials, owner addresses, raw uploaded documents, or private manifest data."
+}
