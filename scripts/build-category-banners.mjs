@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import {watermarkImage,zaloQR,qrPlacement} from '../lib/image-branding.mjs';
 import {mkdir} from 'node:fs/promises';
 const categories=[['mb','Mặt bằng kinh doanh','#a34532','shop'],['vp','Văn phòng','#385d84','office'],['kx','Kho xưởng','#3d6867','warehouse'],['nc','Nhà nguyên căn','#a77339','house'],['chcc','Căn hộ chung cư','#536a94','office'],['chdv','Căn hộ dịch vụ','#79648e','office'],['pt','Phòng trọ','#6b805d','house'],['bt','Biệt thự, nhà liền kề','#727944','villa'],['ko','Ki-ốt','#aa5a4b','shop'],['dat','Đất cho thuê','#567b4b','land'],['bds','Bất động sản cho thuê','#826b5c','house']];
 await mkdir(new URL('../public/banners/',import.meta.url),{recursive:true});
@@ -11,6 +12,10 @@ for(const [key,title,color,kind] of categories){
  else drawing='<path d="M730 385h305v215H730Z" fill="#fff0d7"/><path d="m700 385 180-135 185 135Z" fill="#e4be8c"/><path d="M850 460h75v140h-75zM760 435h55v65h-55zm195 0h55v65h-55z" fill="'+color+'"/>'+(kind==='villa'?'<path d="M650 600V410m440 190V410" stroke="#d6e3bc" stroke-width="22"/><circle cx="650" cy="390" r="55" fill="#b1c694"/><circle cx="1090" cy="390" r="55" fill="#b1c694"/>':'');
  const lines=title.length>20?title.split(/, /):[title];
  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#faf3e9"/><rect x="620" width="580" height="800" fill="${color}"/><circle cx="930" cy="390" r="270" fill="#ffffff" opacity=".07"/><path d="M660 610h480" stroke="#fff" stroke-width="5" opacity=".5"/>${drawing}<text x="65" y="125" font-family="DejaVu Sans" font-size="24" letter-spacing="3" fill="${color}">NGUỒN CHO THUÊ</text><rect x="65" y="190" width="80" height="6" fill="${color}"/>${lines.map((line,i)=>`<text x="65" y="${310+i*65}" font-family="DejaVu Sans" font-weight="bold" font-size="${title.length>20?35:40}" fill="#342d27">${line}</text>`).join('')}<text x="65" y="500" font-family="DejaVu Sans" font-size="24" fill="#6e6255">Liên hệ để xem và xác nhận hiện trạng</text><text x="65" y="565" font-family="DejaVu Sans" font-weight="bold" font-size="34" fill="${color}">0906 215 365</text><rect y="695" width="1200" height="105" fill="#eee3d5"/><text x="65" y="755" font-family="DejaVu Sans" font-size="23" fill="#65584b">ẢNH MINH HỌA THEO DANH MỤC · KHÔNG PHẢI ẢNH THỰC TẾ</text></svg>`;
- await sharp(Buffer.from(svg)).png().toFile(new URL('../public/banners/'+key+'.png',import.meta.url).pathname);
+ const base=await sharp(Buffer.from(svg)).png().toBuffer();
+ const branded=await watermarkImage(base,{format:'png',qr:false});
+ const {left,top,size}=qrPlacement(1200,800,{layout:'banner'});
+ const qr=await sharp(zaloQR()).resize(size,size,{kernel:'nearest'}).png().toBuffer();
+ await sharp(branded).composite([{input:qr,left,top}]).png().toFile(new URL('../public/banners/'+key+'.png',import.meta.url).pathname);
 }
 console.log('Built '+categories.length+' category illustration banners.');

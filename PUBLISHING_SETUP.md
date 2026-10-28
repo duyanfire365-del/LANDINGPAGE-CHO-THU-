@@ -60,3 +60,6 @@ Khi thiếu ảnh, bot tạo một ảnh AI bằng Vercel AI Gateway (OIDC trên
 - Chỉ danh mục và ý tưởng thuộc danh sách cho phép được đưa vào yêu cầu tạo ảnh; địa chỉ, liên hệ, giá, nội dung gốc và chỉ thị trong nguồn không được gửi vào prompt ảnh.
 
 Cổng nhập cố định có thêm `generate-illustration` với `{requestId,type,concept}`; `concept` thuộc `generic`, `coffee_office`, `retail`, `restaurant`, `office`, `warehouse`, `home`. Vẫn dùng đăng nhập quản trị hoặc Bearer key hiện có, không mở cổng công khai và không thay đổi quyền quản trị. Ảnh tạo qua cổng được lưu riêng; chỉ hiển thị công khai sau khi gắn vào bài đã đăng.
+
+### Chế độ không dùng AI trả phí (28/10/2026)
+Production đặt `TELEGRAM_AUTO_IMAGES=false` và `TELEGRAM_SOURCE_MODE=provided`. Tin có ảnh giữ ảnh nguồn; tin thiếu ảnh dùng mẫu theo danh mục. Các mẫu được dựng khi build, có QR Zalo, số điện thoại và website mờ, không gọi nhà cung cấp AI. OIDC không tự tạo chi phí khi không gọi dịch vụ.
