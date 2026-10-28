@@ -13,6 +13,6 @@ assert(new Set(Array.from({length:40},(_,i)=>pickIllustration({...p,slug:'listin
 for(const image of ['/images/source.jpg','/api/files?action=media&id=real']){const real={...p,image,media:[{kind:'image',id:'real'}]};assert.deepEqual(withCategoryBanner(real),real)}
 assert.equal(withCategoryBanner({...p,image:'/banners/mb.png'}).image,pickIllustration(p).path);
 console.log('PASS 61 image allocation, contextual matching, stable variation, negations, private source exclusion and supplied photo priority.');
-const expanded={...p,listingSequence:100};assert(pickIllustration(expanded).generated);assert.equal(pickIllustration(expanded).path,'/api/illustration?slug=sample-cafe');assert.deepEqual(pickIllustration(expanded),pickIllustration(expanded));
-assert.match(withCategoryBanner({...expanded,image:'/api/illustration?slug=sample-cafe'}).image,/^\/api\/illustration\?/);
+const expanded={...p,listingSequence:100};assert(pickIllustration(expanded).generated);assert.equal(pickIllustration(expanded).path,'/api/files?action=illustration&slug=sample-cafe');assert.deepEqual(pickIllustration(expanded),pickIllustration(expanded));
+assert.match(withCategoryBanner({...expanded,image:'/api/files?action=illustration&slug=sample-cafe'}).image,/^\/api\/files\?action=illustration&/);
 console.log('PASS automatic procedural replenishment beyond the base category pool, stable per-post image and no AI requests.');

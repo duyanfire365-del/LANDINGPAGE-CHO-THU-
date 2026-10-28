@@ -1,3 +1,4 @@
+import illustrationResponse from '../lib/illustration-response.mjs';
 import {extractSourceInfo} from '../lib/property-source.mjs';
 import {extractRentPricing} from '../lib/source-pricing.mjs';
 import {brandingQR,setBrandingQR,replaceQR} from '../lib/branding-settings.mjs';
@@ -36,6 +37,7 @@ export default async function handler(req,res){
  try{
   const query=new URL(req.url,'http://localhost').searchParams;
   if(req.method==='GET'){
+   if(query.get('action')==='illustration')return illustrationResponse(req,res);
    if(query.get('action')==='zalo-qr'){const qr=await brandingQR();res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'no-store'});return res.end(qr.bytes)}
    if(['static-view','banner-view'].includes(query.get('action'))){
     const banner=query.get('action')==='banner-view',slug=query.get('slug');let record;
