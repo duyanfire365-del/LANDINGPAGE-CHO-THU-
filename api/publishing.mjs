@@ -1,3 +1,4 @@
+import {createSourceIllustration,sourceImageConfiguration} from '../lib/source-illustration.mjs';
 import {waitUntil} from '@vercel/functions';
 import {createHash,timingSafeEqual} from 'node:crypto';
 import {authenticated} from './admin.mjs';
@@ -18,8 +19,9 @@ export default async function handler(req,res){
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu khác nguồn không được chấp nhận.'});
   if(limited(req,60))return send(res,429,{error:'Vui lòng chờ một phút rồi tiếp tục với cùng mã lượt nhập.'});
   const body=await readJson(req,1500000);
-  if(body.action==='health'){let storageReady=false;if(configured())try{await db('source_inbox',{query:'?select=id&limit=1'});storageReady=true}catch{}return send(res,200,{permanent:true,storageReady,automationKeyConfigured:(process.env.PUBLISHING_AUTOMATION_KEY||'').length>=32,telegramReady:!!(process.env.TELEGRAM_SOURCE_BOT_TOKEN&&process.env.TELEGRAM_SOURCE_OWNER_ID),expiresAt:null,actions:['health','upload-image','preview','publish','status','retry-notification']})}
+  if(body.action==='health'){let storageReady=false;if(configured())try{await db('source_inbox',{query:'?select=id&limit=1'});storageReady=true}catch{}return send(res,200,{permanent:true,storageReady,automationKeyConfigured:(process.env.PUBLISHING_AUTOMATION_KEY||'').length>=32,telegramReady:!!(process.env.TELEGRAM_SOURCE_BOT_TOKEN&&process.env.TELEGRAM_SOURCE_OWNER_ID),expiresAt:null,images:sourceImageConfiguration(),actions:['health','upload-image','preview','publish','status','retry-notification','generate-illustration']})}
   if(!configured())return send(res,503,{error:'Chưa kết nối Supabase; nguồn chưa được đăng.'});
+  if(body.action==='generate-illustration')return send(res,200,{asset:await createSourceIllustration({requestId:body.requestId,type:body.type,concept:body.concept||'generic',namespace:'publishing'})});
   if(body.action==='upload-image')return send(res,200,await uploadPublishingImage(body));
   if(body.action==='preview'){const {record,match}=await preparePublishing(body,actor);return send(res,200,{publicData:record.public_data,duplicate:!!match,existing:match?{code:match.public_data.code,href:match.public_data.href||'/bds/'+match.public_data.slug}:null})}
   if(body.action==='publish'){waitUntil(retryPendingPublishingNotices().catch(()=>{}));const result=await publishContinuously(body,actor);return send(res,result.status==='importing'?202:200,result)}

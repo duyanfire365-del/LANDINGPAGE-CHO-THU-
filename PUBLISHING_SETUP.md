@@ -46,3 +46,17 @@ Manifest: `{ "items": [{"requestId":"stable-source-id", "text":"bài gốc", "fi
 Client chuẩn hóa ảnh thành JPEG, thử lại lỗi mạng/429/5xx có giới hạn, giữ mã lượt, tiếp tục những tin khác nếu một tin lỗi và ghi `publishing-results.json` cạnh manifest. Khi Telegram báo chưa xác nhận, client gọi gửi lại thông báo. Client đọc khóa từ môi trường, không nhúng khóa vào manifest.
 
 Không có dịch vụ nào bảo đảm không gián đoạn tuyệt đối. Tính liên tục ở đây là endpoint/khóa không tự hết hạn theo đợt, dữ liệu bền vững, có mã lượt để tiếp tục và không phải sửa/deploy mã mỗi lần gửi file.
+
+## Tin Telegram ngắn và ảnh minh họa tự động
+
+Tin ghi tắt được xử lý bằng quy tắc và mẫu biên tập có kiểm chứng: `66m2/sàn` không bị cộng thành diện tích toàn nhà; `tt3c1`, phí và giá sang nhượng được lưu kín. Mốc `dưới 50` không có đơn vị được giữ để xác nhận. Nội dung công khai mở rộng bằng thông số nguồn và câu tư vấn có điều kiện, không tự thêm thang máy, nội thất, giao thông hoặc pháp lý.
+
+Khi thiếu ảnh, bot tạo một ảnh AI bằng Vercel AI Gateway (OIDC trên Vercel hoặc `AI_GATEWAY_API_KEY`), hoặc dùng kết nối OpenAI đã có. Mặc định Gateway dùng `google/gemini-3.1-flash-image`, đã đối chiếu danh mục model khi triển khai. Có thể đặt `SOURCE_IMAGE_MODEL` để chọn model tương thích với nhà cung cấp đang dùng. Dịch vụ cần quyền và số dư; nếu gặp lỗi, bài vẫn được lưu/đăng bằng banner và bot báo riêng cho chủ.
+
+- `TELEGRAM_AUTO_IMAGES=false`: tắt tạo ảnh tự động; mặc định bật.
+- `SOURCE_IMAGE_DAILY_LIMIT`: tối đa 20 lượt mặc định/ngày UTC, có khóa chỗ lưu trong `notification_log`; lượt gọi lỗi cũng dùng một chỗ. Mỗi mã ảnh tối đa 3 lần thử/ngày.
+- Một mã ảnh dùng lại ảnh đã lưu. Khóa xử lý ngăn gọi AI đồng thời cho cùng mã; khóa quá 6 phút có thể phục hồi. Không bảo đảm hoàn tiền/khôi phục kết quả nếu nhà cung cấp đã tạo ảnh nhưng việc lưu bị gián đoạn trước khi ghi nhận.
+- Ảnh JPEG sRGB 1536×1024, được gắn QR, số điện thoại, website và mã tin qua luồng ảnh hiện có. Luôn ghi rõ đây là ảnh minh họa AI.
+- Chỉ danh mục và ý tưởng thuộc danh sách cho phép được đưa vào yêu cầu tạo ảnh; địa chỉ, liên hệ, giá, nội dung gốc và chỉ thị trong nguồn không được gửi vào prompt ảnh.
+
+Cổng nhập cố định có thêm `generate-illustration` với `{requestId,type,concept}`; `concept` thuộc `generic`, `coffee_office`, `retail`, `restaurant`, `office`, `warehouse`, `home`. Vẫn dùng đăng nhập quản trị hoặc Bearer key hiện có, không mở cổng công khai và không thay đổi quyền quản trị. Ảnh tạo qua cổng được lưu riêng; chỉ hiển thị công khai sau khi gắn vào bài đã đăng.

@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {sourceShorthand} from '../lib/source-shorthand.mjs';
+import {prepareTrustedText,trustedDraft} from '../lib/trusted-intake.mjs';
+import {safePublicText} from '../lib/posts.mjs';
+const source='50B Minh Họa, 6 tầng 66m2/sàn, 4m. 48tr. dưới 50. Cầu Giấy.\nSang nhượng quán cà phê & văn phòng 250tr (đồ cà phê) tt3c1. phi 30tr';
+const prepared=prepareTrustedText(source),p=prepared.item;
+assert.equal(p.price,48);assert.equal(p.transferPrice,250);assert.equal(p.size,66);assert.equal(p.floors,6);assert.equal(p.frontage,4);assert.equal(p.location,'Minh Họa');assert.equal(p.privateAddress,'50B Minh Họa');assert.equal(p.area,'Cầu Giấy');
+assert(prepared.sourceInfo.privateNotes.includes('Thanh toán: 3 tháng'));assert(prepared.sourceInfo.privateNotes.includes('cọc: 1 tháng'));assert(prepared.sourceInfo.privateNotes.includes('chưa ghi đơn vị'));assert(prepared.sourceInfo.commission.includes('30tr'));
+const post=await trustedDraft({text:source});const publicText=JSON.stringify(post.public_data);
+assert.equal(post.private_data.privateTransferPrice,250);assert.equal(post.public_data.transferPrice,null);assert(!/50B|250|tt3c1|phi 30|50 tháng|quán cà phê/iu.test(publicText));assert(safePublicText(post.public_data.description));assert(post.public_data.description.includes('mỗi sàn'));assert(post.public_data.description.includes('48 triệu'));assert(post.public_data.description.includes('Khách có thể'));assert(!/thang máy|điều hòa|sầm uất|đông dân|bãi đỗ xe/iu.test(post.public_data.description));
+assert(post.public_data.description.length>300&&post.public_data.description.length<1500);assert.equal(post.private_data.sourceText,source);
+for(const text of ['Kho cao 4m, diện tích 100m2','Cho thuê 100 m2, cao 4m, giá 12tr','Giá thuê 4 triệu/tháng','66m2, đường rộng 4m'])assert.equal(sourceShorthand(text).frontage,null,text);
+assert.equal(prepareTrustedText('Cho thuê nhà 2,5 tầng\nCầu Giấy\n100m2\nGiá thuê: 30tr').item.floors,2.5);
+const missing=prepareTrustedText('Cho thuê văn phòng tại Cầu Giấy');assert(missing.description.includes('Diện tích đang cập nhật'));assert(missing.description.includes('Giá thuê: liên hệ'));assert(!/\b(?:30|80|100)\b/.test(missing.description));
+console.log('PASS: screenshot shorthand, per-floor area, private transfer/fees/payment, unknown duration units, guarded frontage inference, missing facts and grounded editorial expansion.');
