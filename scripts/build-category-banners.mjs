@@ -19,3 +19,4 @@ for(const [key,title,color,kind] of categories){
  await sharp(branded).composite([{input:qr,left,top}]).png().toFile(new URL('../public/banners/'+key+'.png',import.meta.url).pathname);
 }
 console.log('Built '+categories.length+' category illustration banners.');
+await (await import('../lib/illustration-library-build.mjs')).buildIllustrationLibrary();

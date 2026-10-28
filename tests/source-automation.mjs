@@ -130,7 +130,7 @@ await applySourceUpdate({id:'00000000-0000-4000-8000-000000000001',content:'Số
 // Image generation is independent of rule-based/provided-text extraction mode.
 albumRows=[];posts=[];assets=[];fingerprints=[];process.env.OPENAI_API_KEY='test';process.env.TELEGRAM_SOURCE_MODE='provided';delete process.env.TELEGRAM_AI_IMAGES;
 source={...fixture(),id:'abababab-abab-4bab-8bab-abababababab',content:noApiText,media:[]};const imageBefore=imageCalls,chatBefore=chatCalls;
-await runSource(source.id);assert.equal(source.processing_status,'published',source.processing_error);assert.equal(imageCalls,imageBefore);assert.equal(chatCalls,chatBefore);assert.equal(posts[0].public_data.illustrationKind,'banner');assert.equal(posts[0].public_data.image,'/banners/vp.png');
+await runSource(source.id);assert.equal(source.processing_status,'published',source.processing_error);assert.equal(imageCalls,imageBefore);assert.equal(chatCalls,chatBefore);assert.equal(posts[0].public_data.illustrationKind,'banner');assert.match(posts[0].public_data.image,/^\/illustrations\/vp-/);
 await runSource(source.id);assert.equal(imageCalls,imageBefore,'website banner never calls image generation');
 posts=[];assets=[];fingerprints=[];process.env.TELEGRAM_AI_IMAGES='false';source={...fixture(),id:'acacacac-acac-4cac-8cac-acacacacacac',content:noApiText,media:[]};await runSource(source.id);assert.equal(imageCalls,imageBefore);assert.equal(posts[0].public_data.illustrationKind,'banner');delete process.env.TELEGRAM_AI_IMAGES;
 console.log('PASS: photo-free posts use category banners without image-generation calls, including when an API key is configured.');
