@@ -13,3 +13,9 @@ for(const text of ['Kho cao 4m, diện tích 100m2','Cho thuê 100 m2, cao 4m, g
 assert.equal(prepareTrustedText('Cho thuê nhà 2,5 tầng\nCầu Giấy\n100m2\nGiá thuê: 30tr').item.floors,2.5);
 const missing=prepareTrustedText('Cho thuê văn phòng tại Cầu Giấy');assert(missing.description.includes('Diện tích đang cập nhật'));assert(missing.description.includes('Giá thuê: liên hệ'));assert(!/\b(?:30|80|100)\b/.test(missing.description));
 console.log('PASS: screenshot shorthand, per-floor area, private transfer/fees/payment, unknown duration units, guarded frontage inference, missing facts and grounded editorial expansion.');
+const {inferCategory}=await import('../lib/listing-content.mjs');
+assert.equal(inferCategory('quán the coffee, 200m2'),'Mặt bằng kinh doanh');
+assert.equal(inferCategory('Cho thuê văn phòng gần coffee shop'),'Văn phòng');
+assert.equal(inferCategory('Nhà nguyên căn gần coffee shop'),'Nhà nguyên căn');
+const business=prepareTrustedText('Mặt bằng kinh doanh, Cầu Giấy, diện tích 200m2. Giá thuê 120tr/tháng');
+assert(business.description.includes('200 m²'));assert(business.description.includes('showroom'));assert(business.description.includes('phương án'));assert(!/sầm uất|ô tô tránh|đông khách|doanh thu/iu.test(business.description));
