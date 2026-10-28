@@ -54,7 +54,7 @@ Tin ghi tắt được xử lý bằng quy tắc và mẫu biên tập có kiể
 Khi thiếu ảnh, bot tạo một ảnh AI bằng Vercel AI Gateway (OIDC trên Vercel hoặc `AI_GATEWAY_API_KEY`), hoặc dùng kết nối OpenAI đã có. Mặc định Gateway dùng `google/gemini-3.1-flash-image`, đã đối chiếu danh mục model khi triển khai. Có thể đặt `SOURCE_IMAGE_MODEL` để chọn model tương thích với nhà cung cấp đang dùng. Dịch vụ cần quyền và số dư; nếu gặp lỗi, bài vẫn được lưu/đăng bằng banner và bot báo riêng cho chủ.
 
 - `TELEGRAM_AUTO_IMAGES=false`: tắt tạo ảnh tự động; mặc định bật.
-- `SOURCE_IMAGE_DAILY_LIMIT`: tối đa 20 lượt mặc định/ngày UTC, có khóa chỗ lưu trong `notification_log`; lượt gọi lỗi cũng dùng một chỗ. Mỗi mã ảnh tối đa 3 lần thử/ngày.
+- Không áp dụng hạn mức tổng số ảnh AI/ngày trên website (`dailyLimit: null`); biến cũ `SOURCE_IMAGE_DAILY_LIMIT` không còn giới hạn lượt. Mỗi mã ảnh lỗi vẫn tối đa 3 lần thử/ngày UTC để tránh vòng lặp tính phí. Hạn mức tốc độ, số dư và ngân sách của nhà cung cấp vẫn có hiệu lực.
 - Một mã ảnh dùng lại ảnh đã lưu. Khóa xử lý ngăn gọi AI đồng thời cho cùng mã; khóa quá 6 phút có thể phục hồi. Không bảo đảm hoàn tiền/khôi phục kết quả nếu nhà cung cấp đã tạo ảnh nhưng việc lưu bị gián đoạn trước khi ghi nhận.
 - Ảnh JPEG sRGB 1536×1024, được gắn QR, số điện thoại, website và mã tin qua luồng ảnh hiện có. Luôn ghi rõ đây là ảnh minh họa AI.
 - Chỉ danh mục và ý tưởng thuộc danh sách cho phép được đưa vào yêu cầu tạo ảnh; địa chỉ, liên hệ, giá, nội dung gốc và chỉ thị trong nguồn không được gửi vào prompt ảnh.
