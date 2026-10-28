@@ -1,7 +1,8 @@
 .git
 .vercel
 tests
-scripts
+scripts/*
+!scripts/build-category-banners.mjs
 output
 design-system
 dist
