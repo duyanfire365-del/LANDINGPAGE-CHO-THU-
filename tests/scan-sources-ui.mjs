@@ -4,6 +4,7 @@ import {createHmac} from 'node:crypto';
 import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright');
 import handler from '../api/workspace.mjs';
+import PDFDocument from 'pdfkit';
 process.env.SUPABASE_URL='https://scan-ui-db.test';process.env.SUPABASE_ANON_KEY='fake';process.env.SUPABASE_SERVICE_ROLE_KEY='fake';process.env.ADMIN_SECRET='fake-ui-test-secret-no-production-key-12345';
 const v=JSON.parse(await readFile('lib/admin-password.json','utf8')),value=String(Date.now()+3600000)+'.ui-test',signature=createHmac('sha256','rental-admin-session:'+process.env.ADMIN_SECRET+':'+v.hash).update(value).digest('base64url'),cookie='rental_admin='+value+'.'+signature;
 const original=global.fetch;let record=null,writes=0;
@@ -30,6 +31,9 @@ try{
  await page.locator('[data-scan-schedule] [name=enabled]').check();await page.locator('[data-scan-schedule] button').click();await page.locator('[data-scan-schedule-state]').filter({hasText:'Đã lưu yêu cầu'}).waitFor();assert((await page.locator('[data-scan-schedule-state]').textContent()).includes('chưa có lượt quét tự động'));
  await page.locator('[data-scan-search]').fill('example.com/b');assert.equal(await page.locator('[data-scan-list] article').count(),1);await page.locator('[data-scan-toggle]').click();await page.locator('[data-scan-list]').filter({hasText:'Đã tạm dừng'}).waitFor();await page.locator('[data-scan-remove]').click();await page.locator('[data-scan-count]').filter({hasText:'2 nguồn đã lưu'}).waitFor();
  await page.setViewportSize({width:390,height:844});await page.locator('[data-scan-search]').fill('');await page.waitForTimeout(200);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'portal should fit mobile');
+ const pdf=new PDFDocument(),chunks=[];const pdfDone=new Promise(resolve=>{pdf.on('data',x=>chunks.push(x));pdf.on('end',()=>resolve(Buffer.concat(chunks)))});pdf.text('https://example.com/from-pdf');pdf.text('Hidden group link',72,130,{link:'https://www.facebook.com/groups/789/'});pdf.end();
+ assert((await page.locator('[data-scan-file] input').getAttribute('accept')).includes('.pdf'));assert.equal(await page.locator('a[href="/scan-template.pdf"]').count(),1);
+ await page.locator('[data-scan-file] input').setInputFiles({name:'sources.pdf',mimeType:'application/pdf',buffer:await pdfDone});await page.locator('[data-scan-file] button[type=submit]').click();await page.locator('[data-scan-save]').filter({hasText:'2 link'}).waitFor();await page.locator('[data-scan-save]').click();await page.locator('[data-scan-count]').filter({hasText:'4 nguồn đã lưu'}).waitFor();
  await page.evaluate(()=>window.dispatchEvent(new CustomEvent('admin-session',{detail:false})));assert.equal(await page.locator('#scan-sources-root').textContent(),'');assert.equal(errors.length,0,errors.join('\n'));
  console.log('PASS real admin UI → portal tab → preview/deduplication → TXT upload → private save → schedule → search/pause/delete → mobile → logout clears data; backend and storage mock integrated.');
 }finally{await browser.close();global.fetch=original}
