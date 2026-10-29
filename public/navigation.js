@@ -9,3 +9,10 @@
   if(ownReferrer&&history.length>1)history.back();else location.assign('/');
  }));
 })();
+
+// Public header logo; keep the original brand intact until the custom image loads.
+(() => {
+ const brand=document.querySelector('header a.logo');if(!brand)return;const original=[...brand.childNodes],originalLabel=brand.getAttribute('aria-label');let version=0;
+ async function refresh(){const ticket=++version;try{const r=await fetch('/api/catalog?view=website-brand',{cache:'no-store'});if(!r.ok)return;const data=await r.json();if(ticket!==version)return;if(!data.custom){brand.replaceChildren(...original);brand.classList.remove('website-logo-custom');if(originalLabel)brand.setAttribute('aria-label',originalLabel);else brand.removeAttribute('aria-label');return}if(typeof data.url!=='string'||!data.url.startsWith('/api/files?action=website-logo&'))return;const image=new Image();image.className='website-header-logo';image.alt=data.alt||'Logo website';image.width=data.width;image.height=data.height;image.onload=()=>{if(ticket!==version)return;brand.replaceChildren(image);brand.classList.add('website-logo-custom');brand.setAttribute('aria-label',image.alt+' — Trang chủ')};image.src=data.url}catch{/* Keep the original brand if configuration or image cannot load. */}}
+ window.RentalSiteBrand={refresh};window.addEventListener('website-logo-updated',refresh);refresh();
+})();

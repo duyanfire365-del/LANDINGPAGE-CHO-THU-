@@ -1,5 +1,8 @@
 import {syncWebsiteCustomers,sendInquirySummary} from '../lib/inquiry-unification.mjs';
 import {updateConsignmentStatus,matchConsignment,consignmentPublishSource} from '../lib/consignment-results.mjs';
+import {websiteLogoMetadata,saveWebsiteLogo} from '../lib/website-logo.mjs';
+import {matchingBotView,runMatchingBots,saveMatchingProfile,saveStockMatchingCriteria} from '../lib/matching-bots.mjs';
+import {botsEnabled,sendBot,botChannels} from '../lib/three-bot-queue.mjs';
 import {scanResults,ingestResults,updateResult,exportResults} from '../lib/scan-results.mjs';
 import {protectFrontage,hideNarrowFrontageText} from '../lib/frontage-privacy.mjs';
 import {scanSources,saveScanSources,scanUpload,linkPreview} from '../lib/scan-sources.mjs';
@@ -33,6 +36,7 @@ import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 import {actor,requireAdmin,db,clean,notify,configured,telegramConfiguration} from '../lib/platform.mjs';
 import {draft,categories} from '../lib/posts.mjs';
 import {intentLabels,inquiryCriteria} from '../lib/inquiries.mjs';
+const laterMatchingBots=()=>{if(botsEnabled())waitUntil(runMatchingBots().catch(()=>{}))};
 export default async function handler(req,res){
  try{
   const customerParams=new URL(req.url,'http://localhost').searchParams;
@@ -40,6 +44,8 @@ export default async function handler(req,res){
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='website-logo'){requireAdmin(req);return send(res,200,await websiteLogoMetadata());}
+   if(params.get('view')==='matching-bots'){requireAdmin(req);return send(res,200,await matchingBotView(params.get('customer')||'',params.get('q')||''));}
    if(params.get('view')==='scan-results'){requireAdmin(req);return send(res,200,await scanResults());}
    if(params.get('view')==='scan-sources'){requireAdmin(req);return send(res,200,await scanSources());}
    if(params.get('view')==='deleted-posts'){requireAdmin(req);const offset=Number(params.get('offset')||0);if(!Number.isInteger(offset)||offset<0||offset>1000000)return send(res,400,{error:'Trang không hợp lệ.'});const rows=await db('posts',{query:'?private_data->deletion->>state=in.(pending,approved)&order=created_at.desc,id.desc&limit=101&offset='+offset});return send(res,200,{posts:rows.slice(0,100),hasMore:rows.length>100});}
@@ -89,15 +95,18 @@ export default async function handler(req,res){
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
-  const body=await readJson(req,customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
-  if(String(body.action||'').startsWith('scan-result-')){requireAdmin(req);if(body.action==='scan-result-ingest')return send(res,200,await ingestResults(body));if(body.action==='scan-result-export'){const result=await exportResults(body.filters||{},body.format||'xlsx');res.writeHead(200,{'Content-Type':result.mime,'Content-Disposition':'attachment; filename=ket-qua-quet.'+result.extension,'Cache-Control':'no-store, private'});return res.end(result.buffer);}return send(res,200,await updateResult(body));}
+  if(customerParams.has('website-logo'))requireAdmin(req);
+  const body=await readJson(req,customerParams.has('website-logo')||customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
+  if(String(body.action||'').startsWith('website-logo-')){requireAdmin(req);return send(res,200,await saveWebsiteLogo(body));}
+  if(String(body.action||'').startsWith('matching-bots-')){requireAdmin(req);if(body.action==='matching-bots-run')return send(res,200,await runMatchingBots());if(body.action==='matching-bots-stock'){const result=await saveStockMatchingCriteria(body);laterMatchingBots();return send(res,200,result)}if(body.action==='matching-bots-profile'){const result=await saveMatchingProfile(body);laterMatchingBots();return send(res,200,result)}if(body.action==='matching-bots-test'){if(!Object.hasOwn(botChannels,body.channel))throw Object.assign(Error('Kênh bot không hợp lệ.'),{status:400});return send(res,200,await sendBot(body.channel,'Kiểm tra kết nối: '+botChannels[body.channel].label+'\nhttps://nguonchothue.vn/admin'))}return send(res,400,{error:'Thao tác không hợp lệ.'})}
+  if(String(body.action||'').startsWith('scan-result-')){requireAdmin(req);if(body.action==='scan-result-ingest'){const result=await ingestResults(body);laterMatchingBots();return send(res,200,result)}if(body.action==='scan-result-export'){const result=await exportResults(body.filters||{},body.format||'xlsx');res.writeHead(200,{'Content-Type':result.mime,'Content-Disposition':'attachment; filename=ket-qua-quet.'+result.extension,'Cache-Control':'no-store, private'});return res.end(result.buffer);}return send(res,200,await updateResult(body));}
   if(String(body.action||'').startsWith('scan-')){requireAdmin(req);if(body.action==='scan-preview'){const text=body.file?await scanUpload(body.file):body.text;const current=await scanSources();return send(res,200,{text,preview:linkPreview(text,current.items),revision:current.revision});}return send(res,200,await saveScanSources(body));}
   if(body.action?.startsWith('google-')){requireAdmin(req);if(body.action==='google-save')return send(res,200,await saveCommand(body));if(body.action==='google-preview')return send(res,200,{run:await previewCommand(body)});if(body.action==='google-execute'){const run=await executeRun(body.id);return send(res,200,{result:run});}return send(res,400,{error:'Lệnh Google không hợp lệ.'});}
   if(body.action==='inquiry-summary'){requireAdmin(req);return send(res,200,await sendInquirySummary(body.filters||{}));}
   if(body.action==='inquiry-sync'){requireAdmin(req);const result=await syncWebsiteCustomers();waitUntil(matchNewStock());return send(res,200,{...result,matchingQueued:true});}
   if(body.action==='consignment-status'){requireAdmin(req);return send(res,200,await updateConsignmentStatus(body));}
   if(body.action==='consignment-match'){requireAdmin(req);return send(res,200,await matchConsignment(body.id));}
-  if(body.action==='customer-save'){const result=await saveCustomer(req,body),who=await actor(req);waitUntil(refreshCustomer(who,result.id).then(()=>autoCustomerSheet()).catch(()=>{}));return send(res,200,result);}
+  if(body.action==='customer-save'){const result=await saveCustomer(req,body),who=await actor(req);laterMatchingBots();waitUntil(refreshCustomer(who,result.id).then(()=>autoCustomerSheet()).catch(()=>{}));return send(res,200,result);}
   if(body.action==='customer-refresh'){const who=await actor(req);const matches=await refreshCustomer(who,body.id);waitUntil(autoCustomerSheet());return send(res,200,{matches,warning:matches.warning||''});}
   if(body.action==='customer-import'){const id=await createCustomerImport(req,body);waitUntil(processCustomerImport(id));return send(res,202,{queued:true,id});}
   if(body.action==='customer-import-retry'){const id=await retryCustomerImport(req,body);waitUntil(processCustomerImport(id));return send(res,202,{queued:true,id});}
