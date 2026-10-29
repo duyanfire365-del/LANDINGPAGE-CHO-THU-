@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 import M from '../public/scan-results-model.js';
 import {resultInput,scanResults,ingestResults,updateResult,exportResults} from '../lib/scan-results.mjs';
 import handler from '../api/workspace.mjs';
+import {extractDocument} from '../lib/documents.mjs';
 const now=new Date('2026-10-29T08:00:00Z');
 const raw={kind:'owner',originalUrl:'https://example.com/a',content:'Tôi chính chủ cho thuê số 2 Đặng Tất. Giá 10 triệu/tháng.',address:'Số 2 Đặng Tất',district:'Ba Đình',propertyType:'Nhà nguyên căn',phone:'0912345678',rent:10,size:20,frontage:3,postedAt:'2026-10-28T04:00:00Z',collectedAt:now.toISOString(),sources:[{url:'https://www.facebook.com/groups/123/',name:'Nhóm A'},{url:'https://www.facebook.com/groups/456/',name:'Nhóm B'}],industries:['Văn phòng']};
 const owner={...JSON.parse(resultInput(raw,now).record_id),id:resultInput(raw,now).id};
@@ -32,6 +33,9 @@ try{
  race=true;await assert.rejects(updateResult({action:'scan-result-status',id:row.id,revision:result.item.revision,status:'closed'}),{status:409});race=false;
  const output=await exportResults({kind:'owner',status:'published'});assert.equal(output.count,1);const book=new ExcelJS.Workbook();await book.xlsx.load(output.buffer);assert.equal(book.worksheets[0].rowCount,2);assert.equal(book.worksheets[0].getRow(2).getCell(13).text,'0912345678');assert.equal(book.worksheets[0].getRow(2).getCell(7).value,10);
  assert.equal((await exportResults({kind:'tenant'})).count,0);
+ for(const format of ['docx','pdf','txt']){const out=await exportResults({kind:'owner',status:'published'},format);assert.equal(out.count,1);assert.equal(out.extension,format);const text=format==='txt'?out.buffer.toString('utf8'):await extractDocument(out.buffer,out.mime);assert(text.includes('0912345678'));assert(text.includes('https://example.com/a'));assert(!text.includes('undefined'));}
+ await assert.rejects(exportResults({},'exe'),{status:400});
+
  const count=calls;for(const [method,url,body] of [['GET','/api/workspace?view=scan-results',undefined],['POST','/api/workspace',{action:'scan-result-ingest',items:[input]}],['POST','/api/workspace',{action:'scan-result-export'}]]){let status;await handler({method,url,headers:{host:'local','content-type':'application/json'},body,socket:{remoteAddress:'results-test'}},{writeHead(s){status=s},end(){},setHeader(){}});assert.equal(status,401)}assert.equal(calls,count);
 }finally{global.fetch=original}
 console.log('PASS results: normalized ingestion, missing values, stable deduplication, Vietnam dates, all filters, 14-day counts, manual verification/status, CAS, XLSX filtered contents, admin-only read/ingest/export.');

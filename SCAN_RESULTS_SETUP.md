@@ -8,7 +8,7 @@ Bảng gồm ngày thu thập / ngày đăng gốc, địa chỉ/khu vực/loạ
 
 Bộ lọc có Hôm nay / 7 ngày / 30 ngày / Tất cả và khoảng ngày tùy chọn, trạng thái, xác minh, tìm không dấu theo địa chỉ/quận/điện thoại/mã/nội dung, nguồn, quận, loại tin, khoảng giá/diện tích, mặt tiền, ngành, có điện thoại, đổi giá và đăng từ ít nhất 2 nhóm Facebook. Nguồn/khu vực/ngành lấy từ dữ liệu đã thu thập, không dựng danh sách giả. Giá và diện tích chưa rõ không khớp bộ lọc số. `rent` của khách chỉ dùng khi có ngân sách tháng đã chuẩn hóa thành số; ngân sách mô tả còn ở `budget`.
 
-30 dòng/trang; **Xuất Excel** lấy toàn bộ kết quả khớp bộ lọc và tab, không chỉ trang hiện tại. Có nội dung bài, thông tin liên hệ, link đối chiếu và trạng thái trong file. File chỉ cho quản trị tải.
+30 dòng/trang; Menu thu gọn **Xuất dữ liệu** cho chọn **Word (.docx), Excel (.xlsx), PDF (.pdf), Text (.txt)**. Cả bốn lấy toàn bộ kết quả khớp bộ lọc và tab, không chỉ trang hiện tại. Có nội dung bài, thông tin liên hệ, link đối chiếu và trạng thái trong file. File chỉ cho quản trị tải. Word/PDF tối đa 200 tin/lượt; nếu nhiều hơn, lọc nhỏ lại hoặc chọn Excel/Text. Không âm thầm cắt bớt kết quả.
 
 “Đã xác minh” là do quản trị đánh dấu thủ công sau khi đối chiếu, không phải xác minh quyền sở hữu tự động. Đổi trạng thái “Đã đăng nguồn” chỉ cập nhật công việc trong kho kết quả, **không tự đăng bài công khai lên website/Facebook**, không gửi tin cho người đăng. Có thể bỏ đánh dấu xác minh. Thao tác cập nhật có kiểm tra phiên bản để tránh ghi đè chỉnh sửa đồng thời.
 
