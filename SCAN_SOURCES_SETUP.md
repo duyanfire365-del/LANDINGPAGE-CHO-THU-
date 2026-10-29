@@ -21,3 +21,7 @@ Sau khi anh up danh sách: kiểm tra cấu trúc/robots/quyền từng website,
 Dùng bảng server-only `notification_log` đã có (kind `scan-sources:v1`, id riêng), theo mẫu cấu hình `share-destinations`. Không thêm bảng hoặc thay đổi RLS. Các API `GET /api/workspace?view=scan-sources` và POST action `scan-*` chỉ cho quản trị đăng nhập; giữ kiểm tra same-origin và giới hạn request. Chỉ server giữ service role. Không thay đổi dữ liệu tin BĐS/khách hàng và không tự đăng bài công khai.
 
 Kiểm thử: `node tests/scan-sources.mjs`, `node tests/scan-sources-ui.mjs`, `npm run check`. Kiểm thử sử dụng tài liệu giả và kho dữ liệu giả, không nhập link thử vào danh sách production. Truy vấn RLS production chỉ kiểm tra quyền, không đọc nội dung nguồn của anh.
+
+## Bố cục danh sách nguồn
+
+Nguồn được chia thành hai cột Website và Group FB, số thứ tự riêng theo từng loại. Mặc định 20 nguồn/trang, phân trang độc lập cho mỗi cột, hoặc chọn Hiện tất cả danh sách. Tìm kiếm áp dụng cả hai cột, trở về trang 1 và giữ số thứ tự của nguồn trong từng loại để đối chiếu. Khi xóa hết nguồn ở trang cuối, tự lùi về trang còn dữ liệu. Trên điện thoại hai cột xếp dọc. Chuyển trang/tìm kiếm/chế độ hiển thị chỉ thay đổi giao diện, không ghi hay xóa dữ liệu nguồn.
