@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {classifyPhotoSetting,propertyPhotoContext} from '../lib/illustration-context.mjs';
+import {allocateIllustrations} from '../lib/illustration-allocation.mjs';
+import {stockIllustrations,illustrationAssetSetting} from '../lib/stock-illustrations.mjs';
+assert.equal(classifyPhotoSetting('Cho thuê nhà mặt phố Cầu Giấy'),'street');
+assert.equal(classifyPhotoSetting('MP 12 Phố Mẫu, 60m2'),'street');
+assert.equal(classifyPhotoSetting('Cho thuê văn phòng mặt đường'),'street');
+assert.equal(classifyPhotoSetting('Nhà trong ngõ, gần mặt phố, 50m2','12 ngõ 5 Phố Mẫu'),'alley');
+assert.equal(classifyPhotoSetting('Cách mặt phố 20m'),'unknown');
+assert.equal(classifyPhotoSetting('Mặt tiền 4m, nguồn MP'),'unknown');assert.equal(classifyPhotoSetting('Mặt tiền 4m, nguồn MP Land'),'unknown');
+assert.equal(classifyPhotoSetting('Không phải mặt phố, nằm trong ngách'),'alley');
+assert.equal(propertyPhotoContext({sourceText:'Nhà mặt phố',supplements:[{text:'Bổ sung: không phải mặt phố, nhà trong ngõ'}]}),'alley');
+const row={id:'street',status:'published',created_at:'2026-10-29',public_data:{slug:'live-1790000000000',type:'Mặt bằng kinh doanh',image:'/banner.png',illustrationKind:'banner',media:[],illustrationAssetId:'hanoi-space-003'}};
+const result=allocateIllustrations([row],{contexts:{street:'street'}})[0].public_data;assert.equal(illustrationAssetSetting(stockIllustrations.find(a=>a.id===result.illustrationAssetId)),'street');assert.notEqual(result.illustrationAssetId,'hanoi-space-003');
+console.log('PASS street versus alley/proximity/negation, latest corrections, no width-to-street inference, and facade priority over an existing interior photo.');

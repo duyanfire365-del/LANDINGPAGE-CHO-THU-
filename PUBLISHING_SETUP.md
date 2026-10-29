@@ -84,3 +84,5 @@ Nguồn BĐS gửi lại không cần Reply được tự nhận diện khi kh�
 ### Mặt tiền kín và giãn ảnh (29/10/2026)
 Mặt tiền xác định dưới 3,5 m lưu vào privateFrontage và ghi chú kín, loại khỏi tiêu đề, mô tả, facts và nội dung chia sẻ. Mốc 3,5 m vẫn công khai. Quản trị xem/sửa giá trị kín trong form hiện hành.
 Kho bổ sung 72 cảnh riêng biệt. Phân bổ theo thứ tự danh sách và loại BĐS, kể cả HOT; giữ ít nhất 20 bài xen giữa khi dùng lại cùng ảnh gốc. Mã/QR/watermark khác nhau không được tính là ảnh khác. Ảnh nguồn thực tế được giữ. Ảnh AI cũ được sao lưu riêng trước đợt đồng bộ; không bật gọi API AI trả phí mỗi khi đăng.
+
+Ảnh mặt phố/mặt đường được ưu tiên từ nhóm ảnh ngoại thất nhìn ra phố. Ngõ/ngách và các câu gần/cách mặt phố không bị hiểu thành mặt phố; mặt tiền 4 m tự nó không chứng minh mặt phố. Nguồn và các bản bổ sung được phân tích trên máy chủ, chỉ truyền nhãn cảnh tổng quát vào bộ phân bổ, không đưa địa chỉ riêng hay danh tính nguồn ra công khai.
