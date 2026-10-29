@@ -29,6 +29,7 @@ export default async function handler(req,res){
    if(intent==='tenant')waitUntil(import('../lib/inquiry-unification.mjs').then(m=>m.syncWebsiteCustomers(rows)).then(()=>import('../lib/customers.mjs')).then(m=>m.matchNewStock()).catch(()=>{}));
    const notice=await notify('Có đăng ký mới: '+intentLabels[intent],{...record,id:rows[0].id});
    await db('notification_log',{method:'POST',body:{kind:'inquiry',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
+   if(process.env.MATCH_BOTS_ENABLED==='1')waitUntil(import('../lib/matching-bots.mjs').then(m=>m.runMatchingBots()).catch(()=>{}));
    return send(res,200,{received:true});
   }
   const url=new URL(process.env.LEAD_WEBHOOK_URL);if(url.protocol!=='https:')throw Error('HTTPS webhook required');
