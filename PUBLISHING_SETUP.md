@@ -74,3 +74,9 @@ Production đặt `TELEGRAM_AUTO_IMAGES=false` và `TELEGRAM_SOURCE_MODE=provide
 - Ba bot mặc định: source, customer và notification. Chỉ nhận từ chủ tài khoản đã cấu hình trong cuộc trò chuyện riêng, kiểm tra bí mật webhook. Bot khách hàng giữ luồng hồ sơ khách; Reply/lệnh sửa nguồn được chuyển sang bộ xử lý bài đăng chung.
 - Thêm bot sau này bằng token riêng trong biến môi trường Vercel, một biến `TELEGRAM_*_OWNER_ID`, và cấu hình `TELEGRAM_LINKED_BOTS_JSON` (Config, không chứa token) ví dụ `[{"id":"nguon2","tokenEnv":"TELEGRAM_NGUON2_TOKEN","ownerEnv":"TELEGRAM_NGUON2_OWNER_ID"}]` với JSON dùng dấu ngoặc kép khi cấu hình. Không gửi token qua chat. Redeploy để nhận cấu hình; hệ thống đăng ký webhook cho bot chưa có webhook hoặc webhook thuộc nguonchothue.vn, không ghi đè webhook bên ngoài.
 - Ảnh minh họa dùng lại ảnh gốc đã tạo, chọn theo ngữ cảnh và hạn chế ngành hàng; mã bài + QR được dựng theo bài hiện tại, không gọi AI trả phí. Ảnh thật được giữ nguyên.
+
+### Nhận diện cập nhật Telegram không cần Reply
+
+Tin khách có cùng SĐT chuẩn hóa trong kho của cùng người quản lý sẽ cập nhật hồ sơ cũ; thông tin chưa được cung cấp giữ nguyên. Reply hồ sơ khách còn hỗ trợ sửa SĐT hoặc bổ sung một câu ngắn. Lịch sử trước khi sửa được giữ kín, kết quả trả về đúng bot nhận tin. Nhập tệp từ trang quản trị vẫn giữ cơ chế chống trùng cũ.
+
+Nguồn BĐS gửi lại không cần Reply được tự nhận diện khi khớp duy nhất nội dung gốc, hoặc khớp địa chỉ đầy đủ riêng tư, loại BĐS, diện tích và phần lớn nội dung. Không dùng riêng SĐT, tên đường hoặc giá để quyết định. Nếu có nhiều nguồn cùng khớp, cần mã tin/Reply; không tạo bài mới từ một yêu cầu sửa chưa xác định.

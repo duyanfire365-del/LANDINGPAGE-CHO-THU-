@@ -1,3 +1,4 @@
+import {queueCustomerMessage,processCustomerImport} from '../lib/customer-imports.mjs';
 import {linkedBot,linkedBotSecret,linkedTelegram,ensureLinkedBotWebhooks,linkedUpdateId,linkedWebhookURL} from '../lib/linked-telegram-bots.mjs';
 import {resolveReplyUpdate} from '../lib/telegram-reply-updates.mjs';
 import {sourceControl} from '../lib/source-command.mjs';
@@ -44,6 +45,7 @@ export default async function handler(req,res){
   const update=await readJson(req,200000);let m=update.message||update.edited_message,recovering=false;
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
+  const customer=await queueCustomerMessage(m,update.update_id,botId);if(customer.handled){if(customer.id)waitUntil(processCustomerImport(customer.id));return send(res,200,{ok:true});}
   if(/^[01]$/.test(String(m.text||'').trim())){
    const decision=await answerDuplicateConfirmation(m,text=>sourceReply(telegram,text));
    if(decision.queuedId)waitUntil(processSource(decision.queuedId));
@@ -77,7 +79,7 @@ export default async function handler(req,res){
    .slice(0,16000)
    .replace(/^\/dang(?:@\w+)?(?:\s+|$)/iu,'');
   let replySource=null;
-  if(!recovering&&(m.reply_to_message||m.external_reply||m.quote||update.edited_message)&&!sourceControl(text)){
+  if(!recovering&&!sourceControl(text)){
    const resolved=await resolveReplyUpdate(m,{bot:botId,edited:!!update.edited_message});
    if(resolved.unresolved){await sourceReply(telegram,'Chưa xác định được tin cần sửa. Anh Reply đúng bài gốc đã đăng hoặc thêm mã tin/đường dẫn. Không tạo bài mới từ nội dung Reply này.');return send(res,200,{ok:true});}
    if(resolved.active){if(!isUpdateCommand(text))text='#suatin\n'+text;if(resolved.reference)text+='\nTin cần cập nhật: '+(resolved.reference.slug||resolved.reference.code);replySource=resolved.sourceId;}
