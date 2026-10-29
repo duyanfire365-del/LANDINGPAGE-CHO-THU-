@@ -25,7 +25,8 @@ export default async function handler(req,res){
  const telegram=(method,body)=>linkedTelegram(bot,method,body?.chat_id?{...body,chat_id:owner()}:body);
  const ready=()=>{if(!bot)throw problem(503,'Bot chưa được cấu hình token và chủ tài khoản hợp lệ.');};
  try{
-  if(process.env.VERCEL_ENV==='production')await ensureLinkedBotWebhooks();
+  // Webhook maintenance must not delay or block authenticated intake.
+
   if(req.method==='GET'){
    requireAdmin(req);ready();const rows=await db('source_inbox',{query:'?order=created_at.desc&limit=50'});return send(res,200,{items:rows,automation:automationConfiguration()});
   }
@@ -45,6 +46,7 @@ export default async function handler(req,res){
   const update=await readJson(req,200000);let m=update.message||update.edited_message,recovering=false;
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
+  if(process.env.VERCEL_ENV==='production'){waitUntil(ensureLinkedBotWebhooks());waitUntil(import('../lib/source-delivery-recovery.mjs').then(m=>m.recoverSourceDeliveries()).catch(()=>{}));}
   const customer=await queueCustomerMessage(m,update.update_id,botId);if(customer.handled){if(customer.id)waitUntil(processCustomerImport(customer.id));return send(res,200,{ok:true});}
   if(/^[0-3]$/.test(String(m.text||'').trim())){
    const decision=await answerSourceChoice(m,text=>sourceReply(telegram,text),{botId});
@@ -87,7 +89,7 @@ export default async function handler(req,res){
   const control=sourceControl(text);
   if(control){
    const config=automationConfiguration();
-   await sourceReply(telegram,control==='status'?(await sourceStatusText(config))+(m.reply_to_message?'\n\n'+await sourceMessageStatus(m.reply_to_message):'\nMuốn kiểm tra đúng một bài: Trả lời bài đó bằng /status.'):'Đây là lệnh điều khiển, không phải bài đăng. Gửi /status để kiểm tra; gửi nội dung BĐS và ảnh để đăng bài.');
+   await sourceReply(telegram,control==='status'?(await sourceStatusText(config))+(m.reply_to_message?'\n\n'+await sourceMessageStatus(m.reply_to_message,{botId,ownerId:owner()}):'\nMuốn kiểm tra đúng một bài: Trả lời bài đó bằng /status.'):'Đây là lệnh điều khiển, không phải bài đăng. Gửi /status để kiểm tra; gửi nội dung BĐS và ảnh để đăng bài.');
    return send(res,200,{ok:true});
   }
   const media=[];if(replySource)media.push({kind:'source-reference',source_id:replySource,unique_id:'source-ref:'+replySource});const photo=m.photo?.at(-1);if(photo)media.push({kind:'image',file_id:photo.file_id,unique_id:photo.file_unique_id,bot:botId});
@@ -116,7 +118,7 @@ export default async function handler(req,res){
   // Complete the durable-save acknowledgement inside the webhook request; do not
   // leave this critical feedback behind an unobserved background continuation.
   stage='xác nhận đã lưu nguồn';
-  if(text||!m.media_group_id)await sourceReply(telegram,receiptText(row,enabled)+'\nMã nguồn: '+row.id);
+  if(text||!m.media_group_id)await sourceReply(telegram,receiptText(row,enabled)+'\nMã nguồn: '+row.id,{recordId:row.id,phase:'receipt',replyTo:m.message_id,botId});
   if(enabled&&!['published','updated','duplicate'].includes(row.processing_status))waitUntil(processSource(row.id));
   return send(res,200,{ok:true});
  }catch(error){if(verifiedOwner&&process.env.VERCEL)console.error(JSON.stringify({event:'source-intake-failed',stage,code:error.databaseCode||error.name||'Error',httpStatus:error.databaseStatus||error.status||0}));if(verifiedOwner)await sourceReply(telegram,'Chưa hoàn tất bước: '+stage+'. '+sourceStorageError(error)+' Mã lỗi: '+(error.databaseCode||error.name||'Error')+'. '+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.');return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}

@@ -14,3 +14,11 @@ const {sourceMessageStatus}=await import('../lib/source-bot-health.mjs');let loo
 console.log('PASS: reply /status resolves an older deduplicated source by original content and photo without creating another post');
 let sendAttempts=0;assert.equal(await sourceReply(async()=>{if(++sendAttempts===1)throw Object.assign(Error('Too many requests'),{telegramCode:429,retryAfter:0});return {}},'Kết quả đăng tin'),true);assert.equal(sendAttempts,2);
 console.log('PASS: Telegram retry_after rate limiting retries the actual notification instead of silently losing the result');
+
+const savedFetch=global.fetch;const deliveries=[];global.fetch=async(url,options)=>{deliveries.push(JSON.parse(options.body));return Response.json([])};
+try{
+ let calls=0,reply;assert.equal(await sourceReply(async(method,body)=>{reply=body;if(++calls===1)throw Object.assign(Error('temporary outage'),{telegramCode:502});return {message_id:88}},'Đã đăng',{recordId:'job-1',replyTo:266,botId:'notification'}),true);
+ assert.equal(calls,2);assert.equal(reply.reply_parameters.message_id,266);assert.equal(reply.reply_parameters.allow_sending_without_reply,true);assert.equal(deliveries.at(-1).sent,true);assert.equal(deliveries.at(-1).record_id,'job-1');
+ calls=0;assert.equal(await sourceReply(async()=>{calls++;throw Object.assign(Error('blocked'),{telegramCode:403})},'Result',{recordId:'job-2'}),false);assert.equal(calls,1);assert.equal(deliveries.at(-1).record_id,'job-2');assert.equal(deliveries.at(-1).sent,false);
+}finally{global.fetch=savedFetch}
+console.log('PASS: transient send failures retry; permanent blocks do not; final replies anchor to original and persist delivery outcome by source.');
