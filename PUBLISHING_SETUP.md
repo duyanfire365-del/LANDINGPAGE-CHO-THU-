@@ -80,3 +80,7 @@ Production đặt `TELEGRAM_AUTO_IMAGES=false` và `TELEGRAM_SOURCE_MODE=provide
 Tin khách có cùng SĐT chuẩn hóa trong kho của cùng người quản lý sẽ cập nhật hồ sơ cũ; thông tin chưa được cung cấp giữ nguyên. Reply hồ sơ khách còn hỗ trợ sửa SĐT hoặc bổ sung một câu ngắn. Lịch sử trước khi sửa được giữ kín, kết quả trả về đúng bot nhận tin. Nhập tệp từ trang quản trị vẫn giữ cơ chế chống trùng cũ.
 
 Nguồn BĐS gửi lại không cần Reply được tự nhận diện khi khớp duy nhất nội dung gốc, hoặc khớp địa chỉ đầy đủ riêng tư, loại BĐS, diện tích và phần lớn nội dung. Không dùng riêng SĐT, tên đường hoặc giá để quyết định. Nếu có nhiều nguồn cùng khớp, cần mã tin/Reply; không tạo bài mới từ một yêu cầu sửa chưa xác định.
+
+### Mặt tiền kín và giãn ảnh (29/10/2026)
+Mặt tiền xác định dưới 3,5 m lưu vào privateFrontage và ghi chú kín, loại khỏi tiêu đề, mô tả, facts và nội dung chia sẻ. Mốc 3,5 m vẫn công khai. Quản trị xem/sửa giá trị kín trong form hiện hành.
+Kho bổ sung 72 cảnh riêng biệt. Phân bổ theo thứ tự danh sách và loại BĐS, kể cả HOT; giữ ít nhất 20 bài xen giữa khi dùng lại cùng ảnh gốc. Mã/QR/watermark khác nhau không được tính là ảnh khác. Ảnh nguồn thực tế được giữ. Ảnh AI cũ được sao lưu riêng trước đợt đồng bộ; không bật gọi API AI trả phí mỗi khi đăng.

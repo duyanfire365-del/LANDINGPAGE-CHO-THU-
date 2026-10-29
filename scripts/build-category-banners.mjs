@@ -1,3 +1,4 @@
+import {execFileSync} from 'node:child_process';
 import sharp from 'sharp';
 import {watermarkImage,zaloQR,qrPlacement} from '../lib/image-branding.mjs';
 import {mkdir} from 'node:fs/promises';
@@ -20,3 +21,6 @@ for(const [key,title,color,kind] of categories){
 }
 console.log('Built '+categories.length+' category illustration banners.');
 await (await import('../lib/illustration-library-build.mjs')).buildIllustrationLibrary();
+
+// Keep static detail pages, sharing metadata and browser data in sync with reviewed public records.
+execFileSync('python3',['scripts/build-listing-pages.py'],{cwd:new URL('..',import.meta.url),stdio:'inherit'});

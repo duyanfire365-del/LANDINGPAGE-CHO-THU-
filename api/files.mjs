@@ -41,7 +41,7 @@ export default async function handler(req,res){
    if(query.get('action')==='zalo-qr'){const qr=await brandingQR();res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'no-store'});return res.end(qr.bytes)}
    if(['static-view','banner-view'].includes(query.get('action'))){
     const banner=query.get('action')==='banner-view',slug=query.get('slug');let record;
-    if(!banner){if(!/^hn-\d{3}$/.test(slug||''))throw problem(400,'Mã tin không hợp lệ.');record=JSON.parse(await readFile(new URL('../public/listings.json',import.meta.url),'utf8')).find(r=>r.slug===slug);if(!record)throw problem(404,'Không tìm thấy ảnh.');}
+    if(!banner){if(!/^hn-\d{3}$/.test(slug||''))throw problem(400,'Mã tin không hợp lệ.');record=JSON.parse(await readFile(new URL('../public/listings.json',import.meta.url),'utf8')).find(r=>r.slug===slug);if(!record)throw problem(404,'Không tìm thấy ảnh.');if(record.illustrationKind==='banner')return (await import('../lib/illustration-response.mjs')).default(req,res);}
     const bytes=await readFile(new URL(banner?'../public/banner.png':'../public/images/'+slug+'.jpg',import.meta.url)),qr=await brandingQR(),out=qr.custom?await replaceQR(bytes,qr.bytes,{code:record?.code||'',layout:banner?'banner':'photo'}):banner?await (await import('sharp')).default(bytes).jpeg({quality:90}).toBuffer():bytes;
     const labelled=!banner&&record?.code?await watermarkImage(out,{code:record.code,qr:false,phone:false,website:false,center:false}):out;
     res.writeHead(200,{'Content-Type':'image/jpeg','Cache-Control':'public, max-age=60','X-Content-Type-Options':'nosniff'});return res.end(labelled);
