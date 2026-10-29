@@ -1,0 +1,48 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createHmac} from 'node:crypto';
+import ExcelJS from 'exceljs';
+import {Document,Packer,Paragraph,ExternalHyperlink,TextRun} from 'docx';
+import {scanURL,scanSchedule,linkPreview,scanUpload,scanSources,saveScanSources,defaultScanSchedule} from '../lib/scan-sources.mjs';
+import handler from '../api/workspace.mjs';
+const file=(name,buffer)=>({name,base64:Buffer.from(buffer).toString('base64')});
+assert.equal(scanURL('https://m.facebook.com/groups/123/?ref=share').url,'https://www.facebook.com/groups/123/');
+assert.equal(scanURL('https://example.com/rent?utm_source=fb&type=shop#top').url,'https://example.com/rent?type=shop');
+for(const url of ['javascript:alert(1)','http://127.0.0.1/','http://2130706433/','http://[::1]/','http://localhost/','https://user:pass@example.com/','https://example.com:8000/','https://facebook.com/profile.php?id=123','https://facebook.com/groups/123/posts/456'])assert.throws(()=>scanURL(url),{status:400});
+const p=linkPreview('Ghi chú\nhttps://example.com/a\nhttps://example.com/a#top\nhttps://www.facebook.com/groups/123?ref=share\nhttps://facebook.com/profile.php?id=1');assert.equal(p.items.length,2);assert.equal(p.duplicates,1);assert.equal(p.errors.length,1);assert.equal(p.ignored,1);
+assert.equal(linkPreview('https://example.com/a',[{url:'https://example.com/a'}]).duplicates,1);
+assert.throws(()=>linkPreview(Array(501).fill('https://example.com').join('\n')),{status:413});
+assert.throws(()=>scanSchedule({timezone:'Bad/Zone',times:['05:30']}),{status:400});
+assert.throws(()=>scanSchedule({timezone:'Asia/Ho_Chi_Minh',times:['25:30']}),{status:400});
+assert.deepEqual(scanSchedule(defaultScanSchedule),defaultScanSchedule);
+assert.equal(await scanUpload(file('links.txt','https://example.com/')),'https://example.com/');
+assert.equal(await scanUpload(file('links.csv',Buffer.concat([Buffer.from([255,254]),Buffer.from('https://example.com/','utf16le')]))),'https://example.com/');
+await assert.rejects(scanUpload(file('links.doc','text')),{status:400});
+await assert.rejects(scanUpload({name:'links.txt',base64:'bad#'}),{status:413});
+await assert.rejects(scanUpload(file('links.txt',Buffer.alloc(2*1024*1024+1))),{status:413});
+const doc=await Packer.toBuffer(new Document({sections:[{children:[new Paragraph({children:[new ExternalHyperlink({link:'https://www.facebook.com/groups/456',children:[new TextRun('Nhóm nhà cho thuê')]})]})]}]}));
+assert.equal(linkPreview(await scanUpload(file('links.docx',doc))).items[0].platform,'facebook');
+const book=new ExcelJS.Workbook(),sheet=book.addWorksheet('Links');sheet.addRow([{text:'Website',hyperlink:'https://example.com/hidden'}]);sheet.addRow([{formula:'HYPERLINK("https://example.com/formula","Tên website")',result:'Tên website'}]);
+const xp=linkPreview(await scanUpload(file('links.xlsx',await book.xlsx.writeBuffer())));assert.equal(xp.items.length,2);
+for(const ext of ['xlsx','docx','txt'])assert.equal(linkPreview(await scanUpload(file('template.'+ext,await readFile('public/scan-template.'+ext)))).items.length,0,'templates must not import sample URLs');
+process.env.SUPABASE_URL='https://scan-db.test';process.env.SUPABASE_ANON_KEY='test';process.env.SUPABASE_SERVICE_ROLE_KEY='test';
+const original=global.fetch;let row=null,race=false,reads=0;
+global.fetch=async(raw,options={})=>{reads++;const u=new URL(raw);assert.equal(u.origin,'https://scan-db.test','importing a list must not visit uploaded links');assert.equal(u.pathname,'/rest/v1/notification_log');if(!options.method||options.method==='GET')return Response.json(row?[row]:[]);const body=JSON.parse(options.body);if(options.method==='POST'){if(row)return Response.json([]);row={...body,created_at:new Date().toISOString()};return Response.json([row])}assert.equal(options.method,'PATCH');assert.equal(u.searchParams.get('created_at'),'eq.'+row.created_at);if(race)return Response.json([]);Object.assign(row,body);return Response.json([row])};
+function req(method,body={},headers={},url='/api/workspace?scan-sources=1'){return {method,url,headers:{host:'localhost','content-type':'application/json',...headers},body,socket:{remoteAddress:'unit-test'}}}
+async function call(r){let code,payload;await handler(r,{writeHead(c){code=c},end(text){payload=JSON.parse(text)},setHeader(){}});return {code,payload}}
+try{
+ let state=await scanSources();assert.equal(state.items.length,0);assert.equal(state.runtime.ready,false);
+ const first=await saveScanSources({action:'scan-import',revision:null,text:'https://example.com/a\nhttps://www.facebook.com/groups/123'});assert.equal(first.added,2);assert(first.items[0].id);
+ assert.equal((await scanSources()).items.length,2);
+ await assert.rejects(saveScanSources({action:'scan-import',revision:null,text:'https://example.com/new'}),{status:409});
+ const timed=await saveScanSources({action:'scan-schedule',revision:first.revision,schedule:{...defaultScanSchedule,enabled:true}});assert.equal(timed.schedule.enabled,true);assert.equal(timed.schedule.times.length,7);assert.equal((await scanSources()).runtime.ready,false);
+ const toggled=await saveScanSources({action:'scan-toggle',revision:timed.revision,id:first.items[0].id});assert.equal(toggled.items[0].enabled,false);
+ race=true;await assert.rejects(saveScanSources({action:'scan-remove',revision:toggled.revision,id:first.items[0].id}),{status:409});race=false;
+ const removed=await saveScanSources({action:'scan-remove',revision:toggled.revision,id:first.items[0].id});assert.equal(removed.items.length,1);
+ const count=reads;assert.equal((await call(req('GET',{}, {},'/api/workspace?view=scan-sources'))).code,401);assert.equal((await call(req('POST',{action:'scan-preview',text:'https://example.com'}))).code,401);assert.equal(reads,count,'unauthorized requests must not read private storage');
+ assert.equal((await call(req('POST',{action:'scan-preview'},{origin:'https://other.example'}))).code,403);
+ process.env.ADMIN_SECRET='unit-test-secret-no-real-credentials-123456';const verifier=JSON.parse(await readFile('lib/admin-password.json','utf8')),value=String(Date.now()+3600000)+'.unit-test',sig=createHmac('sha256','rental-admin-session:'+process.env.ADMIN_SECRET+':'+verifier.hash).update(value).digest('base64url'),headers={cookie:'rental_admin='+value+'.'+sig};
+ const imported=await call(req('POST',{action:'scan-preview',file:file('sources.docx',doc)},headers));assert.equal(imported.code,200);assert.equal(imported.payload.preview.items.length,1);assert.equal(imported.payload.preview.items[0].platform,'facebook');
+ assert.equal((await call(req('GET',{},headers,'/api/workspace?view=scan-sources'))).payload.items.length,1);
+}finally{global.fetch=original}
+console.log('PASS scan sources: TXT/CSV UTF-16, DOCX hyperlinks, XLSX hyperlinks/formulas, safe URLs, limits, empty templates, deduplication, private auth/CSRF, persistence/CAS, seven schedule slots, honest inactive runtime.');
