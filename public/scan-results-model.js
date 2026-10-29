@@ -23,6 +23,6 @@
  function summary(items,now=new Date()){
   const today=day(now);return {ownersToday:items.filter(x=>x.kind==='owner'&&day(x.collectedAt)===today).length,tenantsToday:items.filter(x=>x.kind==='tenant'&&day(x.collectedAt)===today).length,unverified:items.filter(x=>verification(x)==='pending').length,verifiedPending:items.filter(x=>verification(x)==='verified'&&x.status!=='closed').length,published:items.filter(x=>x.status==='published').length,tenantsUncontacted:items.filter(x=>x.kind==='tenant'&&x.status==='new').length};
  }
- function chart(items,now=new Date()){const today=day(now),days=Array.from({length:14},(_,i)=>({date:before(today,13-i),owner:0,tenant:0})),byDate=new Map(days.map(d=>[d.date,d]));for(const item of items){const entry=byDate.get(day(item.collectedAt));if(entry&&(item.kind==='owner'||item.kind==='tenant'))entry[item.kind]++}return days}
+ function chart(items,now=new Date()){const today=day(now),days=Array.from({length:14},(_,i)=>({date:before(today,13-i),owner:0,tenant:0,consignment:0})),byDate=new Map(days.map(d=>[d.date,d]));for(const item of items){const entry=byDate.get(day(item.collectedAt));if(entry&&(item.kind==='owner'||item.kind==='tenant'||item.kind==='consignment'))entry[item.kind]++}return days}
  const api={labels,reviewLabels,verification,day,filter,summary,chart,industryGroups};if(typeof module==='object'&&module.exports)module.exports=api;else root.ScanResultsModel=api;
 })(globalThis);

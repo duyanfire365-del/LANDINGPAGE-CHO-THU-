@@ -12,3 +12,5 @@
 @media(max-width:520px){.scan-results .scan-kind{width:100%;box-sizing:border-box}.scan-results .scan-kind button{flex:1;min-height:48px;font-size:14px;padding:10px 8px}}
 
 .scan-results .scan-kind button[data-result-kind=consignment]{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}.scan-results .scan-kind button[data-result-kind=consignment][aria-pressed=true]{background:#1d4ed8;border-color:#1d4ed8;color:#fff}.consignment-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.consignment-actions button,.consignment-actions a{font-size:11px;padding:5px}.scan-results .scan-kind{flex-wrap:wrap}@media(max-width:520px){.scan-results .scan-kind button[data-result-kind=consignment]{flex-basis:100%}}
+
+.scan-legend-consignment{color:#1d4ed8}.scan-results .scan-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px}.scan-results .scan-legend span+span{margin-left:0}
