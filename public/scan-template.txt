@@ -1,0 +1,2 @@
+DANH SÁCH NGUỒN QUÉT WEB & FACEBOOK
+Dán đầy đủ link, mỗi link một dòng, rồi lưu tệp UTF-8.

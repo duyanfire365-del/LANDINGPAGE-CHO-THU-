@@ -1,4 +1,5 @@
 import {protectFrontage,hideNarrowFrontageText} from '../lib/frontage-privacy.mjs';
+import {scanSources,saveScanSources,scanUpload,linkPreview} from '../lib/scan-sources.mjs';
 import {splitPrivateNotes} from '../lib/source-private-notes.mjs';
 import {polishListingCopy} from '../lib/listing-copy-polish.mjs';
 import {sensitiveCopy} from '../lib/listing-privacy.mjs';
@@ -36,6 +37,7 @@ export default async function handler(req,res){
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='scan-sources'){requireAdmin(req);return send(res,200,await scanSources());}
    if(params.get('view')==='deleted-posts'){requireAdmin(req);const offset=Number(params.get('offset')||0);if(!Number.isInteger(offset)||offset<0||offset>1000000)return send(res,400,{error:'Trang không hợp lệ.'});const rows=await db('posts',{query:'?private_data->deletion->>state=in.(pending,approved)&order=created_at.desc,id.desc&limit=101&offset='+offset});return send(res,200,{posts:rows.slice(0,100),hasMore:rows.length>100});}
    if(params.get('view')==='share-destinations'){requireAdmin(req);return send(res,200,await shareDestinations());}
    if(params.get('view')==='google-commands'){requireAdmin(req);const commands=await db('google_commands',{query:'?order=created_at.desc&limit=100'}),runs=await db('google_runs',{query:'?select=id,command_id,status,config,result,error,created_at&order=created_at.desc&limit=20'});return send(res,200,{commands,runs});}
@@ -83,7 +85,8 @@ export default async function handler(req,res){
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
-  const body=await readJson(req,customerParams.has('customers')?4500000:100000);
+  const body=await readJson(req,customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
+  if(String(body.action||'').startsWith('scan-')){requireAdmin(req);if(body.action==='scan-preview'){const text=body.file?await scanUpload(body.file):body.text;const current=await scanSources();return send(res,200,{text,preview:linkPreview(text,current.items),revision:current.revision});}return send(res,200,await saveScanSources(body));}
   if(body.action?.startsWith('google-')){requireAdmin(req);if(body.action==='google-save')return send(res,200,await saveCommand(body));if(body.action==='google-preview')return send(res,200,{run:await previewCommand(body)});if(body.action==='google-execute'){const run=await executeRun(body.id);return send(res,200,{result:run});}return send(res,400,{error:'Lệnh Google không hợp lệ.'});}
   if(body.action==='customer-save'){const result=await saveCustomer(req,body),who=await actor(req);waitUntil(refreshCustomer(who,result.id).then(()=>autoCustomerSheet()).catch(()=>{}));return send(res,200,result);}
   if(body.action==='customer-refresh'){const who=await actor(req);const matches=await refreshCustomer(who,body.id);waitUntil(autoCustomerSheet());return send(res,200,{matches,warning:matches.warning||''});}
