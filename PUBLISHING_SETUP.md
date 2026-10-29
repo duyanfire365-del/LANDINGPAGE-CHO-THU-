@@ -66,3 +66,11 @@ Production đặt `TELEGRAM_AUTO_IMAGES=false` và `TELEGRAM_SOURCE_MODE=provide
 
 ### Kho minh họa tự bổ sung
 61 ảnh gốc dựng bằng mã: 16 mặt bằng, 10 văn phòng, 8 kho xưởng, 6 nhà nguyên căn, 3 ảnh cho mỗi nhóm còn lại. Chọn theo loại và nội dung công khai, không dùng ghi chú kín. Tin vượt số ảnh cơ sở của nhóm dùng biến thể ổn định theo slug, dựng khi xem qua `/api/files?action=illustration`, chỉ cho tin đã xuất bản và thiếu ảnh thật; ảnh JPEG sRGB có QR/watermark được CDN lưu đệm. Loại chưa biết dùng minh họa chung. Không gọi AI trả phí; ảnh dùng lại không bị tiêu hao.
+
+### Đồng bộ nội dung, nguồn kín và Reply sửa tin (29/10/2026)
+- Đọc nguồn/hoa hồng ngay trong câu: `nguồn Tên`, `phí 50%`, `phí 1/2`, `kh phí`, `tt3c1`; giữ nguyên thỏa thuận, không tự suy đoán cơ sở tính phí hay đơn vị thời hạn.
+- Nhận diện mô hình kinh doanh sạch để gắn mã MB; VP, NC, KX và các nhóm khác giữ tiền tố tương ứng. Tiêu đề có diện tích, số tầng, mặt tiền và giá đã xác định.
+- Reply đúng bài gốc, tin kết quả hoặc tin đã sửa; dùng `sửa tin`, `#suatin`, `#st`, `#sua`, `bổ sung`, `#bosung`, `#them` hoặc chỉ nội dung đầy đủ hơn. Mọi bản sửa lưu lịch sử và thông tin kín, giữ slug; bổ sung ảnh qua đúng token bot đã nhận ảnh. Không xác định được mục tiêu thì báo kiểm tra, không tạo bài mới.
+- Ba bot mặc định: source, customer và notification. Chỉ nhận từ chủ tài khoản đã cấu hình trong cuộc trò chuyện riêng, kiểm tra bí mật webhook. Bot khách hàng giữ luồng hồ sơ khách; Reply/lệnh sửa nguồn được chuyển sang bộ xử lý bài đăng chung.
+- Thêm bot sau này bằng token riêng trong biến môi trường Vercel, một biến `TELEGRAM_*_OWNER_ID`, và cấu hình `TELEGRAM_LINKED_BOTS_JSON` (Config, không chứa token) ví dụ `[{"id":"nguon2","tokenEnv":"TELEGRAM_NGUON2_TOKEN","ownerEnv":"TELEGRAM_NGUON2_OWNER_ID"}]` với JSON dùng dấu ngoặc kép khi cấu hình. Không gửi token qua chat. Redeploy để nhận cấu hình; hệ thống đăng ký webhook cho bot chưa có webhook hoặc webhook thuộc nguonchothue.vn, không ghi đè webhook bên ngoài.
+- Ảnh minh họa dùng lại ảnh gốc đã tạo, chọn theo ngữ cảnh và hạn chế ngành hàng; mã bài + QR được dựng theo bài hiện tại, không gọi AI trả phí. Ảnh thật được giữ nguyên.

@@ -61,5 +61,6 @@ const queued={id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',content:'#bohot KX - 008
  process.env.TELEGRAM_AUTO_PUBLISH='true';process.env.TELEGRAM_SOURCE_MODE='ai';delete process.env.OPENAI_API_KEY;
  await processSource(queued.id);assert.equal(queued.processing_status,'updated',queued.processing_error);assert.equal(row.public_data.hot,false);
  assert.equal(records.length,2);
+ const codeBefore=row.public_data.code;await applySourceUpdate(src('reply-complete-basic','#st '+codeBefore+' #kx\n12 Phố Mẫu, Thanh Xuân, 100m2 x 2t,5m, 27tr, nguồn Người Mẫu phí 1/2'));assert.equal(row.public_data.slug,slug);assert.equal(row.public_data.code,codeBefore);assert.equal(row.public_data.price,27);assert.equal(row.public_data.floors,2);assert.equal(row.public_data.frontage,5);assert.equal(row.private_data.sourceInfo.sourceName,'Người Mẫu');assert(row.private_data.sourceInfo.commission.includes('1/2'));assert(!JSON.stringify(row.public_data).includes('Người Mẫu'));
  console.log('PASS: edit/status hashtags update existing posts, prices/full copy change privately, latest-post targeting, ambiguous matches rejected, replay-safe state events, and deleted codes reusable.');
 }finally{global.fetch=native}

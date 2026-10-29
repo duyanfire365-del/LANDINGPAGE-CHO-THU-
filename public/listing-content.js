@@ -13,7 +13,7 @@
   const text=fold(value).replace(/#[^\s]+/g,'');
   const dual=houseBusinessCategories(value);if(dual)return dual[0];
   // Explicit building types win over incidental suggested business uses.
-  const types=[['Kho xưởng',/\b(?:kho xuong|nha xuong|xuong san xuat|cho thue kho|kho hang)\b/],['Căn hộ dịch vụ',/\b(?:can ho dich vu|chdv)\b/],['Căn hộ chung cư',/\b(?:chung cu|can ho|chcc)\b/],['Phòng trọ',/\bphong tro\b/],['Biệt thự, nhà liền kề',/\b(?:biet thu|lien ke)\b/],['Nhà nguyên căn',/\b(?:nha nguyen can|nha rieng|nnc)\b/],['Đất cho thuê',/\b(?:dat cho thue|cho thue dat)\b/],['Ki-ốt',/\bki.?ot\b/],['Văn phòng',/\b(?:cho thue van phong|toa van phong|vp cho thue)\b/],['Mặt bằng kinh doanh',/\b(?:mat bang|mat bag|mbkd|cua hang|sang nhuong quan|chuyen nhuong quan|quan an|nha hang|ca phe|cafe|coffee|tra sua|spa|nail|salon|shop|showroom)\b/]];
+  const types=[['Kho xưởng',/\b(?:kho xuong|nha xuong|xuong san xuat|cho thue kho|kho hang)\b/],['Căn hộ dịch vụ',/\b(?:can ho dich vu|chdv)\b/],['Căn hộ chung cư',/\b(?:chung cu|can ho|chcc)\b/],['Phòng trọ',/\bphong tro\b/],['Biệt thự, nhà liền kề',/\b(?:biet thu|lien ke)\b/],['Nhà nguyên căn',/\b(?:nha nguyen can|nha rieng|nguyen can|nguyen nha|nnc|\bnc\b)\b/],['Đất cho thuê',/\b(?:dat cho thue|cho thue dat)\b/],['Ki-ốt',/\bki.?ot\b/],['Văn phòng',/\b(?:cho thue van phong|toa van phong|vp cho thue)\b/],['Mặt bằng kinh doanh',/\b(?:mat bang|mat bag|mbkd|mo hinh sach|kinh doanh sach|kh hang an|khong nhan hang an|khong o qua dem|cua hang|sang nhuong quan|chuyen nhuong quan|nhuong quan|quan bia|quan nhau|bia hoi|moi mo hinh|quan an|nha hang|ca phe|cafe|coffee|tra sua|spa|nail|salon|shop|showroom)\b/]];
   return types.find(([,pattern])=>pattern.test(text))?.[0]||null;
  }
  function formatDescription(value){
