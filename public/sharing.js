@@ -8,7 +8,26 @@
   const url = listing => new URL(listing.href||'/bds/'+listing.slug,'https://nguonchothue.vn').href;
   function publicLines(value){let internal=false;return String(value||'').split(/\r?\n/).filter(line=>{const folded=line.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();if(/(?:luu y|ghi chu|thong tin)\s+noi bo|(?:phan|muc)\s+(?:rieng tu|noi bo)|danh rieng cho.*moi gioi/.test(folded))internal=true;return !internal&&!/\bdu kien\b.*\bchot\b|\bchot\b.*\b(?:khoang|tam|tu)\b|\b(?:muc|chu|thuong luong|co the)\b.*\bchot\b|(?:gia|thong tin)\s+bao khach|\bbao khach\b|phi chenh|gia chu(?:\s+chao)?\b/.test(folded)}).join('\n')}
   const publicCaption = value => publicLines(value).replace(/(^|[^\p{L}\p{N}_])(?:(?:hoa\s*hồng|hoa\s*hong|phí\s*môi\s*giới|phi\s*moi\s*gioi)\s*[:：=]\s*[^\n]*|(?:hoa\s*hồng|hoa\s*hong|hh)\s*[:：=]?\s*(?=\d|thỏa\s*thuận|thoa\s*thuan|thương\s*lượng|thuong\s*luong)[^\n]*|h\s*\d+(?:[.,]\d+)?\s*%[^\n]*)/gimu,'$1').replace(/\s+#\s*(?=\n|$)/g,'').replace(/\n{3,}/g,'\n\n').trim();
-  const text = listing => `${publicCaption(listing.shareText||[listing.title,listing.description,priceText(listing.price)].filter(Boolean).join('\n'))}\n\nXem BĐS này: ${url(listing)}\n\n🌐 Nguonchothue.vn — https://nguonchothue.vn/\nAnh/chị quan tâm hãy theo dõi và lưu lại website để dễ tìm BĐS cho thuê phù hợp khi cần.\nCần thuê gấp? Đăng ký hỗ trợ tìm kiếm nhanh tại https://nguonchothue.vn/#tu-van`;
+  const captionFold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  function compactCaption(listing){
+    const address=String(listing.address||listing.area||'').trim();
+    const heading=listing.type?(listing.isTransfer?'Sang nhượng ':'Cho thuê ')+String(listing.type).toLocaleLowerCase('vi')+(address?' — '+address:''):publicCaption(listing.title)||'Bất động sản cho thuê';
+    const dimensions=[Number(listing.size)>0?sizeText(listing.size)+(listing.areaPerFloor?'/sàn':''):'',Number(listing.floors)>0?listing.floors+' tầng':'',listing.bedrooms!=null?'Phòng ngủ: '+listing.bedrooms+'.':'',listing.bathrooms!=null?'Phòng WC: '+listing.bathrooms+'.':'',Number(listing.frontage)>=3.5?'MT '+String(listing.frontage).replace('.',',')+' m':'',priceText(listing.price)].filter(Boolean).join(' · ');
+    const selected=[],seen=new Set();
+    const candidates=publicCaption(listing.description||'').split(/\n+/).concat(listing.facts||[]);
+    for(const raw of candidates){
+      const line=publicCaption(raw).replace(/^[•●▪✓✅📍📐💰\s]+/u,'').trim(),folded=captionFold(line);
+      if(!line||line.length>200||selected.length>=4)continue;
+      if(/^(?:cho thue|sang nhuong|chuyen nhuong|dien tich|gia thue|gia lien he|mat tien|so tang|phong ngu|phong wc|ket cau su dung|vi tri|dia chi|khu vuc|lien he|hotline|ma tin|anh minh hoa|banner minh hoa|thong tin theo nguon|voi quy mo|khach co the|anh chi quan tam|hen xem|mo hinh cu the|so nguoi su dung)/.test(folded))continue;
+      if(/(?:hoa hong|phi moi gioi|nguon|chu nha|doi tac|gia chot|gia chu|thuong luong|dang kinh doanh|gia sang nhuong)/.test(folded))continue;
+      if(!folded||seen.has(folded)||selected.some(s=>captionFold(s).includes(folded)||folded.includes(captionFold(s))))continue;
+      seen.add(folded);selected.push(line.replace(/[;；]+$/u,''));
+    }
+    return [heading,listing.code?'Mã tin: '+listing.code:'',dimensions,...selected.map(s=>'• '+s),listing.isIllustration?'Ảnh minh họa tham khảo.':'','Liên hệ: 0906 215 365 (Call/Zalo)'].filter(Boolean).join('\n');
+  }
+  const text = listing => compactCaption(listing)+'\nXem chi tiết: '+url(listing);
+  if(typeof module!=='undefined'&&module.exports){module.exports={compactCaption,text,publicCaption};return;}
+
   function status(element, message) {
     const target = element?.closest('.sharing-tools')?.querySelector('.share-status') || document.querySelector('#share-status');
     if (target) target.textContent = message;
@@ -43,7 +62,7 @@
   function canShareFiles(prepared){try{return !!prepared.length&&!!navigator.canShare?.({files:prepared})}catch{return false}}
   async function nativeShare(listing,element,prepared){
     const payload={title:publicCaption(listing.title),text:text(listing)};
-    if(canShareFiles(prepared))payload.files=prepared;else payload.url=url(listing);
+    if(canShareFiles(prepared))payload.files=prepared;else {payload.text=compactCaption(listing);payload.url=url(listing);}
     try{await navigator.share(payload);status(element,'Đã gửi yêu cầu chia sẻ. Chọn Facebook/Zalo, nơi đăng và xác nhận trong ứng dụng. Nếu ứng dụng không nhận phần chữ, dán bài đã sao chép.');return true}
     catch(error){if(error.name!=='AbortError')status(element,'Chưa chia sẻ được trực tiếp. Anh/chị dùng bảng sao chép bài và ảnh.');return false}
   }
@@ -98,7 +117,7 @@
       if(button.hasAttribute('data-target-select-all')){visible().forEach(t=>progress.selected.add(t.id));previousSelection=new Set(progress.selected);render()}
       else if(button.hasAttribute('data-target-clear')){visible().forEach(t=>progress.selected.delete(t.id));previousSelection=new Set(progress.selected);render()}
       else if(button.hasAttribute('data-target-native')){const native=dialog.querySelector('[data-native-prepared]');if(native.disabled)say('Chờ chuẩn bị ảnh xong, rồi dùng Chia sẻ bài & ảnh bên dưới.');else native.click()}
-      else if(button.hasAttribute('data-target-copy'))say(await copy(listing,element)?'Đã sao chép bài, link BĐS và lời mời theo dõi website.':'Anh chọn nội dung trong ô bài đăng bên dưới để sao chép.')
+      else if(button.hasAttribute('data-target-copy'))say(await copy(listing,element)?'Đã sao chép nội dung gọn và link BĐS.':'Anh chọn nội dung trong ô bài đăng bên dưới để sao chép.')
       else if(button.hasAttribute('data-target-bundle')){const download=dialog.querySelector('[data-download-bundle]');if(download.disabled)say('Ảnh chưa chuẩn bị xong hoặc chưa được chọn. Chọn ảnh ở phần bên dưới rồi tải.');else download.click()}
       else if(button.hasAttribute('data-target-open-all')||button.hasAttribute('data-target-next')){const pending=chosen().filter(t=>!progress.opened.has(t.id)&&!progress.done.has(t.id)),batch=pending.slice(0,button.hasAttribute('data-target-next')?1:10);let opened=0;for(const t of batch)if(openTarget(t))opened++;render();say('Đã yêu cầu mở '+opened+' nơi; anh dán bài, thêm ảnh và xác nhận đăng ở từng nơi.'+(opened<batch.length?' Trình duyệt đã chặn một số tab. Dùng link Mở nhóm ở từng dòng, hoặc cho phép cửa sổ bật lên của website.':'')+(pending.length>batch.length?' Mỗi lượt mở tối đa 10 nơi.':''));}
       else if(button.hasAttribute('data-target-reload'))await load();
@@ -111,7 +130,7 @@
       else if(button.dataset.queueOpen)openPost(button.dataset.queueOpen);
       else if(button.dataset.queueRemove){shareQueue.delete(button.dataset.queueRemove);pendingPostIDs.delete(button.dataset.queueRemove);queueRender();picker()}
       else if(button.hasAttribute('data-queue-next')){const entries=[...shareQueue.keys()],index=entries.indexOf(key),next=index<0?entries[0]:entries[index+1];if(next)openPost(next);else say('Đã đến cuối hàng chờ. Anh có thể chọn lại một bài trong danh sách; website chưa tự xác nhận bài đã đăng.')}
-      else if(button.hasAttribute('data-queue-text')){if(!shareQueue.size){say('Hàng chờ chưa có bài.');return}const blob=new Blob([[...shareQueue.values()].map(p=>text(p)).join('\n\n====================\n\n')],{type:'text/plain;charset=utf-8'}),objectURL=URL.createObjectURL(blob),a=document.createElement('a');a.href=objectURL;a.download='HANG-CHO-CHIA-SE.txt';dialog.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(objectURL),1000);say('Đã chuẩn bị nội dung từng bài trong hàng chờ; mỗi bài có link và lời mời theo dõi website.')}
+      else if(button.hasAttribute('data-queue-text')){if(!shareQueue.size){say('Hàng chờ chưa có bài.');return}const blob=new Blob([[...shareQueue.values()].map(p=>text(p)).join('\n\n====================\n\n')],{type:'text/plain;charset=utf-8'}),objectURL=URL.createObjectURL(blob),a=document.createElement('a');a.href=objectURL;a.download='HANG-CHO-CHIA-SE.txt';dialog.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(objectURL),1000);say('Đã chuẩn bị nội dung từng bài trong hàng chờ; mỗi bài có mô tả gọn và link riêng.')}
     });
     root.querySelector('[data-queue-search]').oninput=picker;queueRender();
     load().then(async()=>{if(!alive()||root.hidden||!root.isConnected)return;try{const responses=await Promise.all([fetch('/api/catalog',{cache:'no-store'}),fetch('/listings.json',{cache:'no-store'})]);if(responses.some(r=>!r.ok))throw Error();const [catalog,base]=await Promise.all(responses.map(r=>r.json()));if(!alive())return;publicPosts=[...new Map([...base,...catalog.posts].map(p=>[String(p.id),p])).values()];picker()}catch{if(alive())root.querySelector('[data-queue-picker]').textContent='Chưa tải được danh sách bài. Anh vẫn có thể thêm bài đang xem.'}});
