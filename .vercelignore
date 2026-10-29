@@ -3,6 +3,7 @@
 tests
 scripts/*
 !scripts/build-category-banners.mjs
+!scripts/build-listing-pages.py
 output
 design-system
 dist
