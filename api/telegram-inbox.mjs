@@ -2,7 +2,7 @@ import {queueCustomerMessage,processCustomerImport} from '../lib/customer-import
 import {linkedBot,linkedBotSecret,linkedTelegram,ensureLinkedBotWebhooks,linkedUpdateId,linkedWebhookURL} from '../lib/linked-telegram-bots.mjs';
 import {resolveReplyUpdate} from '../lib/telegram-reply-updates.mjs';
 import {sourceControl} from '../lib/source-command.mjs';
-import {answerDuplicateConfirmation} from '../lib/source-duplicate-confirmation.mjs';
+import {answerSourceChoice} from '../lib/source-review-choices.mjs';
 import {recoveryReply} from '../lib/source-reply.mjs';
 import {SOURCE_WEBHOOK,webhookHealth,sourceReply,receiptText,sourceStorageHealth,sourceStorageError,sourceStatusText,sourceMessageStatus,sourceWriteHealth} from '../lib/source-bot-health.mjs';
 import {isUpdateCommand,updateReference} from '../lib/source-updates.mjs';
@@ -46,8 +46,8 @@ export default async function handler(req,res){
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
   const customer=await queueCustomerMessage(m,update.update_id,botId);if(customer.handled){if(customer.id)waitUntil(processCustomerImport(customer.id));return send(res,200,{ok:true});}
-  if(/^[01]$/.test(String(m.text||'').trim())){
-   const decision=await answerDuplicateConfirmation(m,text=>sourceReply(telegram,text));
+  if(/^[0-3]$/.test(String(m.text||'').trim())){
+   const decision=await answerSourceChoice(m,text=>sourceReply(telegram,text),{botId});
    if(decision.queuedId)waitUntil(processSource(decision.queuedId));
    return send(res,200,{ok:true});
   }
