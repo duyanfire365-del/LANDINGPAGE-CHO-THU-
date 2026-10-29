@@ -16,7 +16,7 @@
     const selected=[],seen=new Set();
     const candidates=publicCaption(listing.description||'').split(/\n+/).concat(listing.facts||[]);
     for(const raw of candidates){
-      const line=publicCaption(raw).replace(/^[•●▪✓✅📍📐💰\s]+/u,'').trim(),folded=captionFold(line);
+      const line=publicCaption(raw).replace(/^[•●▪✓✅📍📐💰\s]+/u,'').replace(/(?:theo thông tin nguồn cung cấp|theo nguồn cung cấp)\s*[:：]?/giu,'').replace(/\s+([.,])/g,'$1').trim(),folded=captionFold(line);
       if(!line||line.length>200||selected.length>=4)continue;
       if(/^(?:cho thue|sang nhuong|chuyen nhuong|dien tich|gia thue|gia lien he|mat tien|so tang|phong ngu|phong wc|ket cau su dung|vi tri|dia chi|khu vuc|lien he|hotline|ma tin|anh minh hoa|banner minh hoa|thong tin theo nguon|voi quy mo|khach co the|anh chi quan tam|hen xem|mo hinh cu the|so nguoi su dung)/.test(folded))continue;
       if(/(?:hoa hong|phi moi gioi|nguon|chu nha|doi tac|gia chot|gia chu|thuong luong|dang kinh doanh|gia sang nhuong)/.test(folded))continue;
