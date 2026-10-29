@@ -24,7 +24,7 @@ export default async function handler(req,res){
   if(body.action==='generate-illustration')return send(res,200,{asset:await createSourceIllustration({requestId:body.requestId,type:body.type,concept:body.concept||'generic',namespace:'publishing'})});
   if(body.action==='upload-image')return send(res,200,await uploadPublishingImage(body));
   if(body.action==='preview'){const {record,match}=await preparePublishing(body,actor);return send(res,200,{publicData:record.public_data,duplicate:!!match,existing:match?{code:match.public_data.code,href:match.public_data.href||'/bds/'+match.public_data.slug}:null})}
-  if(body.action==='publish'){waitUntil(retryPendingPublishingNotices().catch(()=>{}));const result=await publishContinuously(body,actor);return send(res,result.status==='importing'?202:200,result)}
+  if(body.action==='publish'){waitUntil(retryPendingPublishingNotices().catch(()=>{}));const result=await publishContinuously(body,actor);if(result.status==='published')waitUntil(import('../lib/customers.mjs').then(m=>m.matchNewStock()).catch(()=>{}));return send(res,result.status==='importing'?202:200,result)}
   if(body.action==='status')return send(res,200,await publishingStatus(body.requestId));
   if(body.action==='retry-notification')return send(res,200,await retryPublishingNotice(body.requestId));
   return send(res,400,{error:'Thao tác không được hỗ trợ.'});

@@ -1,3 +1,4 @@
+import {waitUntil} from '@vercel/functions';
 import {intentLabels,isConsignment} from '../lib/inquiries.mjs';
 import {configured,db,member,notify} from '../lib/platform.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
@@ -25,6 +26,7 @@ export default async function handler(req,res){
   if(configured()){
    const profile=await member(req);
    const rows=await db('inquiries',{method:'POST',body:{member_id:profile?.id||null,intent,name,phone,area:record.area,type:record.type,budget:record.budget,property:record.property,date:record.date,owner_address:record.ownerAddress||null,owner_size:record.ownerSize||null,owner_rent:record.ownerRent??null,owner_price:record.ownerPrice??null,transfer_monthly_rent:record.transferMonthlyRent??null,owner_notes:record.ownerNotes||null,contact_consent:true}});
+   if(intent==='tenant')waitUntil(import('../lib/inquiry-unification.mjs').then(m=>m.syncWebsiteCustomers(rows)).then(()=>import('../lib/customers.mjs')).then(m=>m.matchNewStock()).catch(()=>{}));
    const notice=await notify('Có đăng ký mới: '+intentLabels[intent],{...record,id:rows[0].id});
    await db('notification_log',{method:'POST',body:{kind:'inquiry',record_id:rows[0].id,sent:notice.sent}}).catch(()=>{});
    return send(res,200,{received:true});
