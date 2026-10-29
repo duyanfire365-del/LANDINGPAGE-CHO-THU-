@@ -55,3 +55,14 @@ Khóa chống trùng là nhóm kết quả + URL bài chuẩn hóa, bỏ fragmen
 Lưu mỗi kết quả và lượt quét trong `notification_log`, hai kind riêng `scan-result:v1`, `scan-run:v1`. Dùng quyền server hiện hữu, không thêm schema/grant/RLS. Không có dữ liệu này trong API public/thành viên. Giới hạn đầu tiên 10.000 kết quả; vượt giới hạn báo rõ cần phân trang máy chủ, không âm thầm xuất thiếu.
 
 Kiểm thử: `node tests/scan-results.mjs`, `node tests/scan-results-ui.mjs`, `node tests/scan-sources.mjs`, `npm run check`. Browser test chạy giao diện admin thật → handler thật → kho dữ liệu giả, gồm xuất file và kiểm tra nội dung Excel, lọc/phân trang, cập nhật trạng thái, chặn nội dung HTML, điện thoại và xóa dữ liệu giao diện khi đăng xuất. Chưa xác minh quét website/Facebook hoặc gửi Telegram thật.
+
+## Danh mục bộ lọc bổ sung
+
+- Nguồn: Tất cả nguồn; Group FB; Các Website; và từng nguồn cụ thể. Phân nhóm dựa trên tên miền của link nguồn thực tế, không dựa vào tên hiển thị.
+- Quận/huyện/khu vực: đủ 30 quận, huyện, thị xã cũ Hà Nội từ `areas` trong `lib/posts.mjs`, gồm Sơn Tây. Có sẵn kể cả kho kết quả trống; các khu vực phát sinh vẫn được giữ thêm.
+- Loại tin: toàn bộ 11 loại hình chuẩn từ website, nhóm sang nhượng/chuyển nhượng chung và sang nhượng theo từng loại hình. Bộ lọc sang nhượng dựa vào trường `isTransfer: true` hoặc loại tin ghi rõ sang nhượng/chuyển nhượng; không tự đoán từ câu chữ chưa kiểm chứng.
+- Ngành: toàn bộ nhóm ngành hiện có của website, thêm các lựa chọn riêng theo yêu cầu (cà phê, trà sữa, nhà hàng, quán ăn, Bi-a, spa, thời trang, thẩm mỹ...), và ngành khác phát sinh trong kết quả. Lọc trên ngành đã được trích, không tự khẳng định cơ sở được cấp phép kinh doanh ngành đó.
+- Sắp xếp: thêm diện tích tăng dần/giảm dần; diện tích chưa rõ luôn ở cuối, cùng diện tích thì ưu tiên tin mới.
+- Xác minh: Đã xác minh, Chờ xác minh, Bỏ qua, Đã Up lên Web. Có bộ lọc và lựa chọn xử lý từng tin. API `scan-result-verification` nhận `id`, `revision`, `verification` tương ứng `verified`, `pending`, `skipped`, `published`. Giữ hỗ trợ API đánh dấu boolean cũ.
+
+“Đã Up lên Web” đồng bộ dấu trạng thái theo dõi `published`; **không tạo bài đăng, không cập nhật kho tin công khai**. Chuyển trạng thái này trở lại ba lựa chọn khác bỏ dấu đã up trong kho quét; không tự gỡ bài đã đăng thật. “Bỏ qua” được tách khỏi số đếm chờ xác minh. Xuất cả bốn định dạng giữ trạng thái theo dõi mới.
