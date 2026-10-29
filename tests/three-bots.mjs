@@ -3,6 +3,7 @@ import {fixture} from './three-bot-fixture.mjs';
 import {publicBotConfiguration,botConfiguration,enqueueBot,drainBotQueue} from '../lib/three-bot-queue.mjs';
 import {matchingSnapshot,matchingBotView,saveMatchingProfile,saveStockMatchingCriteria,runMatchingBots} from '../lib/matching-bots.mjs';
 import {matchUnified} from '../lib/unified-match-rules.mjs';
+import {inquiryCustomer} from '../lib/inquiry-unification.mjs';
 import handler from '../api/workspace.mjs';
 const f=await fixture(),original=global.fetch;global.fetch=f.fetch;
 try{
@@ -11,6 +12,7 @@ try{
  const keep=process.env.TELEGRAM_MATCH_BOT_TOKEN;process.env.TELEGRAM_MATCH_BOT_TOKEN=process.env.TELEGRAM_SCANNED_PROPERTY_BOT_TOKEN;assert(!botConfiguration('matching').ready);process.env.TELEGRAM_MATCH_BOT_TOKEN=keep;
  const live='live-1793300000000001',stamp=new Date().toISOString();f.tables.posts.push({id:crypto.randomUUID(),status:'published',created_at:stamp,reviewed_at:stamp,public_data:{...f.stock,slug:live,code:'MB - 0099',isTransfer:true,transferPrice:null,publishedDate:stamp.slice(0,10)},private_data:{privateTransferPrice:300}},{id:crypto.randomUUID(),status:'pending',created_at:stamp,public_data:{...f.stock,slug:'live-1793300000000002'},private_data:{}});f.tables.notification_log.push({id:crypto.randomUUID(),kind:'inventory:available',record_id:live,sent:true,created_at:stamp});
  let s=await matchingSnapshot();assert.equal(s.customers.length,3);assert(s.stock.some(p=>p.slug===live&&p.transferPrice===300));assert(!s.stock.some(p=>p.slug==='live-1793300000000002'));assert(s.customers.some(c=>c.origins[0].kind==='scan'));assert(s.customers.some(c=>c.origins[0].kind==='inquiry'));assert(s.customers.some(c=>c.origins[0].kind==='watch'));assert(!s.customers.some(c=>c.name==='Khách đóng'));
+ const inquiry=f.tables.inquiries.find(r=>r.intent==='tenant'&&r.management_status!=='closed'),mirror={id:crypto.randomUUID(),owner_id:null,status:'active',data:{...inquiryCustomer(inquiry),websiteInquiryId:inquiry.id}};f.tables.customer_watch.push(mirror);let mirrored=await matchingSnapshot();assert.equal(mirrored.customers.length,3);assert(mirrored.customers.some(c=>c.origins.some(o=>o.recordId===mirror.id)));mirror.status='closed';assert(!(await matchingSnapshot()).customers.some(c=>c.origins.some(o=>o.recordId===inquiry.id)));f.tables.customer_watch.pop();
  await saveStockMatchingCriteria({slug:f.stock.slug,revision:null,allowedIndustries:'Cà phê',deniedIndustries:'Nhà hàng',features:'Thang máy'});
  s=await matchingSnapshot();const website=s.customers.find(c=>c.origins[0].kind==='inquiry');assert(matchUnified(website,s.stock).some(m=>m.slug===f.stock.slug&&m.level==='criteria'));
  const scanned=s.customers.find(c=>c.origins[0].kind==='scan');assert(!matchUnified(scanned,s.stock).some(m=>m.level==='criteria'));
