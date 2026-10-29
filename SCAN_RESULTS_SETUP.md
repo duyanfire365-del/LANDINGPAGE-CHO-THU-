@@ -2,7 +2,7 @@
 
 Vào **Quản trị → Khách hàng / Công cụ → Tin quét Web & FB**.
 
-Màn hình theo mẫu: 6 ô thống kê (tin mặt bằng và khách mới hôm nay, chờ xác minh, xác minh chưa đăng, đã đăng nguồn, khách chưa liên hệ), biểu đồ 14 ngày, hai tab mặt bằng/khách tìm mặt bằng, thời điểm và số tin thêm mới ở lượt quét gần nhất. Thống kê và biểu đồ tính trên toàn bộ kho đã tải, không đổi theo bộ lọc bảng; tính ngày theo `Asia/Ho_Chi_Minh`.
+Màn hình theo mẫu: 6 ô thống kê (tin mặt bằng và khách mới hôm nay, chờ xác minh, xác minh chưa đăng, đã đăng nguồn, khách chưa liên hệ), biểu đồ 14 ngày, hai tab Nguồn BĐS Được Quét / Nguồn KH Được Quét, thời điểm và số tin thêm mới ở lượt quét gần nhất. Thống kê và biểu đồ tính trên toàn bộ kho đã tải, không đổi theo bộ lọc bảng; tính ngày theo `Asia/Ho_Chi_Minh`.
 
 Bảng gồm ngày thu thập / ngày đăng gốc, địa chỉ/khu vực/loại tin, giá/diện tích/mặt tiền, liên hệ/Zalo/tài khoản FB, tên nguồn, bài gốc, nội dung gốc và thao tác xử lý. Giá dùng triệu đồng/tháng, diện tích m² và mặt tiền mét. Không suy đoán thông tin bị thiếu; ngày đăng không biết ghi chưa rõ, tách biệt ngày quét.
 
