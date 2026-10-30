@@ -5,7 +5,7 @@ assert.equal(publicIP('8.8.8.8'),true);assert.equal(publicIP('2606:4700::1111'),
 assert.equal(robotsAllowed('User-agent: *\nDisallow: /private\nAllow: /private/open','/private/a'),false);
 assert.equal(robotsAllowed('User-agent: *\nDisallow: /private\nAllow: /private/open','/private/open'),true);
 assert.equal(robotsAllowed('User-agent: *\nDisallow: /\nUser-agent: NguonChoThueScanner\nAllow: /','/rent'),true);
-const url='https://example.org/rent/123',listing={'@type':'RealEstateListing',name:'Cho thuê mặt bằng Hà Đông',description:'Diện tích: 60m2. Mặt tiền 4m. Giá thuê: 15 triệu/tháng. Không nhận hàng ăn.',url};
+const url='https://example.org/rent/123',listing={'@type':'RealEstateListing',name:'Cho thuê mặt bằng Hà Đông',description:'Chính chủ cho thuê mặt bằng Hà Đông, LH 0912345678. Diện tích: 60m2. Mặt tiền 4m. Giá thuê: 15 triệu/tháng. Không nhận hàng ăn.',url};
 const html='<script type="application/ld+json">'+JSON.stringify(listing)+'</script>';
 assert.equal(pageListings(html,url)[0].rent,15);assert.equal(pageListings(html,url)[0].size,60);assert.equal(pageListings(html,url)[0].district,'Hà Đông');
 assert.equal(pageListings(html.replace('Cho thuê','Bán'),url).length,0);
