@@ -7,6 +7,7 @@ assert.equal(previewApify([{...post,text:'',sharedPostText:post.text}]).items.le
 assert.equal(previewApify([{...post,text:'Cho thuê kho 200m² giá 70k/m²'}]).items[0].rent,null);
 assert.equal(previewApify([{...post,text:'Kho xưởng 333m² chỉ 18 triệu/tháng'}]).items.length,1);
 assert.equal(previewApify([{...post,text:'Cần thuê kho 200m², ngân sách 12 triệu/tháng'}]).items[0].kind,'tenant');
+assert.equal(previewApify([{...post,text:'SẮP RA MẮT KHO 300m² GIÁ 27 TRIỆU/THÁNG. '+ 'Kho phù hợp sử dụng. '.repeat(20)+'Anh chị cần tìm kho liên hệ'}]).items[0].kind,'owner');
 assert.throws(()=>previewApify('{}'),{status:400});
 process.env.SUPABASE_URL='https://fake.test';process.env.SUPABASE_ANON_KEY='test';process.env.SUPABASE_SERVICE_ROLE_KEY='test';const original=fetch,seen=new Set();global.fetch=async(url,o)=>{const records=JSON.parse(o.body);let out=[];for(const r of [].concat(records)){if(!r.id||!seen.has(r.id)){out.push(r);if(r.id)seen.add(r.id)}}return Response.json(out)};
 try{assert.equal((await importApify([post])).added,1);assert.equal((await importApify([post])).added,0)}finally{global.fetch=original}
