@@ -31,18 +31,18 @@ global.fetch=async(raw,options={})=>{reads++;const u=new URL(raw);assert.equal(u
 function req(method,body={},headers={},url='/api/workspace?scan-sources=1'){return {method,url,headers:{host:'localhost','content-type':'application/json',...headers},body,socket:{remoteAddress:'unit-test'}}}
 async function call(r){let code,payload;await handler(r,{writeHead(c){code=c},end(text){payload=JSON.parse(text)},setHeader(){}});return {code,payload}}
 try{
- let state=await scanSources();assert.equal(state.items.length,0);assert.equal(state.runtime.ready,false);
+ let state=await scanSources();assert.equal(state.items.length,0);assert.equal(state.runtime.ready,true);assert.equal(state.runtime.scheduled,false);
  const first=await saveScanSources({action:'scan-import',revision:null,text:'https://example.com/a\nhttps://www.facebook.com/groups/123'});assert.equal(first.added,2);assert(first.items[0].id);
  assert.equal((await scanSources()).items.length,2);
  await assert.rejects(saveScanSources({action:'scan-import',revision:null,text:'https://example.com/new'}),{status:409});
- const timed=await saveScanSources({action:'scan-schedule',revision:first.revision,schedule:{...defaultScanSchedule,enabled:true}});assert.equal(timed.schedule.enabled,true);assert.equal(timed.schedule.times.length,7);assert.equal((await scanSources()).runtime.ready,false);
+ const timed=await saveScanSources({action:'scan-schedule',revision:first.revision,schedule:{...defaultScanSchedule,enabled:true}});assert.equal(timed.schedule.enabled,true);assert.equal(timed.schedule.times.length,7);assert.equal((await scanSources()).runtime.scheduled,false);
  const toggled=await saveScanSources({action:'scan-toggle',revision:timed.revision,id:first.items[0].id});assert.equal(toggled.items[0].enabled,false);
  race=true;await assert.rejects(saveScanSources({action:'scan-remove',revision:toggled.revision,id:first.items[0].id}),{status:409});race=false;
  const removed=await saveScanSources({action:'scan-remove',revision:toggled.revision,id:first.items[0].id});assert.equal(removed.items.length,1);
- const count=reads;assert.equal((await call(req('GET',{}, {},'/api/workspace?view=scan-sources'))).code,401);assert.equal((await call(req('POST',{action:'scan-preview',text:'https://example.com'}))).code,401);assert.equal(reads,count,'unauthorized requests must not read private storage');
+ const count=reads;assert.equal((await call(req('GET',{}, {},'/api/workspace?view=scan-sources'))).code,401);assert.equal((await call(req('POST',{action:'scan-preview',text:'https://example.com'}))).code,401);assert.equal((await call(req('POST',{action:'scan-now'}))).code,401);assert.equal(reads,count,'unauthorized requests must not read private storage');
  assert.equal((await call(req('POST',{action:'scan-preview'},{origin:'https://other.example'}))).code,403);
  process.env.ADMIN_SECRET='unit-test-secret-no-real-credentials-123456';const verifier=JSON.parse(await readFile('lib/admin-password.json','utf8')),value=String(Date.now()+3600000)+'.unit-test',sig=createHmac('sha256','rental-admin-session:'+process.env.ADMIN_SECRET+':'+verifier.hash).update(value).digest('base64url'),headers={cookie:'rental_admin='+value+'.'+sig};
  const imported=await call(req('POST',{action:'scan-preview',file:file('sources.docx',doc)},headers));assert.equal(imported.code,200);assert.equal(imported.payload.preview.items.length,1);assert.equal(imported.payload.preview.items[0].platform,'facebook');
  assert.equal((await call(req('GET',{},headers,'/api/workspace?view=scan-sources'))).payload.items.length,1);
 }finally{global.fetch=original}
-console.log('PASS scan sources: TXT/CSV UTF-16, DOCX hyperlinks, XLSX hyperlinks/formulas, safe URLs, limits, empty templates, deduplication, private auth/CSRF, persistence/CAS, seven schedule slots, honest inactive runtime.');
+console.log('PASS scan sources: TXT/CSV UTF-16, DOCX hyperlinks, XLSX hyperlinks/formulas, safe URLs, limits, empty templates, deduplication, private auth/CSRF, persistence/CAS, seven schedule slots, manual scanner ready with schedule explicitly inactive.');
