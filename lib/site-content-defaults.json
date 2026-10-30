@@ -1,0 +1,113 @@
+{
+  "faqEyebrow": "GIẢI ĐÁP TRƯỚC KHI THUÊ",
+  "faqTitle": "Câu hỏi thường gặp.",
+  "faqIntro": "Chọn câu hỏi để xem giải đáp về chi phí, lịch xem, hợp đồng và những điều cần kiểm tra.",
+  "faqGroups": [
+    "Thông tin và lịch xem",
+    "Hợp đồng và hỗ trợ"
+  ],
+  "faqs": [
+    {
+      "question": "Giá thuê niêm yết đã bao gồm các chi phí khác chưa?",
+      "answer": "Giá thuê hiển thị trên website là mức giá tham khảo tại thời điểm đăng tin. Các khoản chi phí như điện, nước, phí dịch vụ, phí quản lý, thuế hoặc chi phí phát sinh khác (nếu có) sẽ được tư vấn và làm rõ trước khi khách hàng quyết định thuê.",
+      "group": 0
+    },
+    {
+      "question": "Tôi có phải trả phí khi được tư vấn và xem nhà không?",
+      "answer": "Quý khách có thể liên hệ để được cung cấp thông tin, tư vấn và xác nhận các khoản phí liên quan trước khi đi xem nhà. Nếu có phí dịch vụ hoặc môi giới, chúng tôi sẽ thông báo rõ ràng trước khi khách hàng sử dụng dịch vụ.",
+      "group": 0
+    },
+    {
+      "question": "Làm thế nào để đặt lịch xem nhà hoặc mặt bằng?",
+      "answer": "Quý khách có thể liên hệ hotline 0906215365 để đề nghị đặt lịch xem nhà hoặc mặt bằng. Vui lòng cung cấp mã bất động sản (nếu có), thời gian mong muốn và số điện thoại liên hệ. Chúng tôi sẽ kiểm tra tình trạng bất động sản và phối hợp xác nhận lịch xem phù hợp.\n\nQuý khách có thể chuẩn bị yêu cầu qua biểu mẫu rồi gửi qua Zalo, hoặc gọi hotline để xác nhận lịch xem. Chỉ coi là đã gửi khi có xác nhận gửi thành công hoặc tin nhắn đã được gửi trên Zalo.",
+      "group": 0
+    },
+    {
+      "question": "Thông tin và hình ảnh bất động sản trên website có chính xác không?",
+      "answer": "Chúng tôi hướng tới việc cung cấp thông tin rõ ràng, hình ảnh thực tế và cập nhật thường xuyên. Tuy nhiên, tình trạng cho thuê, giá và hiện trạng bất động sản có thể thay đổi. Khách hàng nên xác nhận lại thông tin và trực tiếp khảo sát trước khi ký hợp đồng.",
+      "group": 0
+    },
+    {
+      "question": "Tôi có thể tìm thuê nhà, văn phòng, mặt bằng kinh doanh và nhà xưởng không?",
+      "answer": "Có. Website giới thiệu nhiều loại hình bất động sản cho thuê tại Hà Nội, bao gồm nhà ở, nhà nguyên căn, mặt bằng kinh doanh, cửa hàng, văn phòng, kho bãi và nhà xưởng. Quý khách có thể trao đổi nhu cầu về vị trí, diện tích và ngân sách để được hỗ trợ tìm kiếm.",
+      "group": 0
+    },
+    {
+      "question": "Thời hạn hợp đồng thuê và tiền đặt cọc được quy định như thế nào?",
+      "answer": "Thời hạn thuê, số tiền đặt cọc, kỳ thanh toán và điều kiện hoàn trả cọc phụ thuộc vào từng bất động sản và thỏa thuận giữa các bên. Những nội dung này cần được thể hiện rõ trong hợp đồng thuê để bảo đảm quyền lợi và hạn chế tranh chấp.",
+      "group": 1
+    },
+    {
+      "question": "Tôi có thể thương lượng giá thuê với chủ nhà không?",
+      "answer": "Có thể. Tùy từng bất động sản, khách hàng có thể đề xuất thương lượng giá thuê, thời gian thuê, phương thức thanh toán hoặc thời gian sửa chữa, hoàn thiện mặt bằng. Chúng tôi sẽ hỗ trợ chuyển đề xuất và trao đổi với bên cho thuê, nhưng kết quả phụ thuộc vào sự thống nhất giữa các bên.",
+      "group": 1
+    },
+    {
+      "question": "Tôi có thể đặt cọc giữ nhà trực tiếp trên website không?",
+      "answer": "Quý khách không nên chuyển tiền đặt cọc chỉ dựa trên thông tin đăng tải trên website. Trước khi thanh toán, cần xác minh chủ thể có quyền cho thuê, kiểm tra hiện trạng bất động sản và thống nhất các điều khoản đặt cọc bằng văn bản. Phương thức thanh toán sẽ được các bên xác nhận cụ thể.",
+      "group": 1
+    },
+    {
+      "question": "Nếu không tìm được bất động sản phù hợp, tôi có được hỗ trợ tìm kiếm không?",
+      "answer": "Có. Quý khách có thể gửi yêu cầu về khu vực, loại hình bất động sản, diện tích, ngân sách và thời gian dự kiến thuê. Chúng tôi sẽ hỗ trợ đối chiếu nhu cầu với các bất động sản đang có thông tin và liên hệ khi tìm được lựa chọn phù hợp.",
+      "group": 1
+    },
+    {
+      "question": "Cần kiểm tra những gì trước khi ký hợp đồng thuê bất động sản?",
+      "answer": "Quý khách nên kiểm tra quyền cho thuê, hiện trạng tài sản, mục đích sử dụng được phép, giá thuê, tiền cọc, thời hạn hợp đồng, điều kiện tăng giá, trách nhiệm sửa chữa, chi phí phát sinh và điều kiện chấm dứt hợp đồng. Đối với mặt bằng kinh doanh, văn phòng hoặc nhà xưởng, cần đặc biệt lưu ý điều kiện pháp lý, phòng cháy chữa cháy và các yêu cầu phù hợp với hoạt động dự kiến.",
+      "group": 1
+    }
+  ],
+  "faqNote": "Tin đăng theo tài liệu nguồn cung cấp; ảnh là minh họa bằng AI. Quý khách vui lòng xác nhận lại giá, diện tích, tình trạng còn trống và các khoản phí trước khi giao dịch.",
+  "brandName": "Nguồn cho thuê BĐS Hà Nội",
+  "description": "Kết nối nhu cầu cần thuê và nguồn BĐS chính chủ cho thuê tại Hà Nội.",
+  "browseLabel": "Xem BĐS cho thuê",
+  "officeTitle": "Văn phòng & liên hệ",
+  "address": "17 Vũ Phạm Hàm, Cầu Giấy, Hà Nội",
+  "mapUrl": "https://www.google.com/maps/search/?api=1&query=17%20V%C5%A9%20Ph%E1%BA%A1m%20H%C3%A0m%2C%20C%E1%BA%A7u%20Gi%E1%BA%A5y%2C%20H%C3%A0%20N%E1%BB%99i",
+  "phone": "0906215365",
+  "phoneLabel": "0906 215 365",
+  "phoneNote": "Liên hệ để trao đổi nhu cầu và xác nhận lịch xem.",
+  "socialTitle": "Kết nối với chúng tôi",
+  "socials": [
+    {
+      "label": "Facebook",
+      "url": ""
+    },
+    {
+      "label": "TikTok",
+      "url": ""
+    },
+    {
+      "label": "YouTube",
+      "url": ""
+    },
+    {
+      "label": "Zalo",
+      "url": "https://zalo.me/0906215365"
+    },
+    {
+      "label": "Instagram",
+      "url": ""
+    },
+    {
+      "label": "Viber",
+      "url": ""
+    }
+  ],
+  "copyright": "© 2026 Nguồn cho thuê BĐS Hà Nội. Ảnh minh họa bằng AI; thông tin cần được xác nhận.",
+  "links": [
+    {
+      "label": "Câu hỏi thường gặp",
+      "url": "#cau-hoi-thuong-gap"
+    },
+    {
+      "label": "Cần thuê / Ký gửi",
+      "url": "#tu-van"
+    },
+    {
+      "label": "Về đầu trang ↑",
+      "url": "#"
+    }
+  ]
+}

@@ -4,7 +4,9 @@
   const form = q('#lead-form');
   const state = {ai:false, lead:false, busy:false, draft:{}, flow:false, history:[], opened:false};
   const norm = text => String(text).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
-  const faqs = [...document.querySelectorAll('.faq details')].map(el => ({question:el.querySelector('summary span:last-child')?.textContent || el.querySelector('summary').textContent, answer:[...el.querySelectorAll('.faq-answer p')].map(p=>p.textContent).join('\n\n')}));
+  let customFaqs=false;
+  window.addEventListener('site-faq-updated',e=>{faqs=e.detail.faqs;customFaqs=e.detail.custom});
+  let faqs = [...document.querySelectorAll('.faq details')].map(el => ({question:el.querySelector('summary span:last-child')?.textContent || el.querySelector('summary').textContent, answer:[...el.querySelectorAll('.faq-answer p')].map(p=>p.textContent).join('\n\n')}));
   const propertyOptions = [...q('#type').options].filter(o=>o.value!=='all');
   const areaOptions = [...q('#area').options].filter(o=>o.value!=='all');
   const budgetOptions = [...q('#budget').options].filter(o=>o.value!=='all');
@@ -111,8 +113,9 @@
   }
   function faqAnswer(text) {
     const normalized=norm(text);const exact=faqs.find(f=>norm(f.question)===normalized);if(exact)return exact.answer;
+    if(customFaqs)return null;
     const patterns=[[/phi tu van|phi moi gioi|mat phi|mien phi|phi xem/,1],[/thuong luong|giam gia|dam phan/,6],[/hop dong|thoi han|hoan.*coc/,5],[/truoc khi ky|kiem tra.*gi|phap ly|phong chay/,9],[/dat coc.*(?:web|giu|online)|chuyen tien/,7],[/dat coc|tien coc/,5],[/gia thue|chi phi|dien nuoc|phi dich vu|phi quan ly/,0],[/lich xem|hen xem|di xem|xem nha|xem mat bang/,2],[/anh.*thuc|chinh xac|hinh anh|tin that|con trong/,3],[/loai hinh|co nhung loai|thue.*(?:xuong|van phong|kho)/,4],[/khong tim|ho tro tim|tim kiem/,8]];
-    const found=patterns.find(([regex])=>regex.test(normalized));return found?faqs[found[1]].answer:null;
+    const found=patterns.find(([regex])=>regex.test(normalized));return found?faqs[found[1]]?.answer||null:null;
   }
   function transportHistory() {
     const result=[];let bytes=0;

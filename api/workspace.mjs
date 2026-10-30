@@ -1,3 +1,4 @@
+import {siteContent,saveSiteContent} from '../lib/site-content.mjs';
 import {startScan,executeScan,latestScanRun} from '../lib/website-scanner.mjs';
 import {syncWebsiteCustomers,sendInquirySummary} from '../lib/inquiry-unification.mjs';
 import {updateConsignmentStatus,matchConsignment,consignmentPublishSource} from '../lib/consignment-results.mjs';
@@ -45,6 +46,7 @@ export default async function handler(req,res){
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='site-content'){requireAdmin(req);return send(res,200,await siteContent());}
    if(params.get('view')==='website-logo'){requireAdmin(req);return send(res,200,await websiteLogoMetadata());}
    if(params.get('view')==='matching-bots'){requireAdmin(req);return send(res,200,await matchingBotView(params.get('customer')||'',params.get('q')||''));}
    if(params.get('view')==='scan-results'){requireAdmin(req);return send(res,200,await scanResults());}
@@ -96,8 +98,9 @@ export default async function handler(req,res){
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
-  if(customerParams.has('website-logo'))requireAdmin(req);
-  const body=await readJson(req,customerParams.has('website-logo')||customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
+  if(customerParams.has('site-content')||customerParams.has('website-logo'))requireAdmin(req);
+  const body=await readJson(req,customerParams.has('site-content')||customerParams.has('website-logo')||customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
+  if(String(body.action||'').startsWith('site-content-')){requireAdmin(req);return send(res,200,await saveSiteContent(body));}
   if(String(body.action||'').startsWith('website-logo-')){requireAdmin(req);return send(res,200,await saveWebsiteLogo(body));}
   if(String(body.action||'').startsWith('matching-bots-')){requireAdmin(req);if(body.action==='matching-bots-run')return send(res,200,await runMatchingBots());if(body.action==='matching-bots-stock'){const result=await saveStockMatchingCriteria(body);laterMatchingBots();return send(res,200,result)}if(body.action==='matching-bots-profile'){const result=await saveMatchingProfile(body);laterMatchingBots();return send(res,200,result)}if(body.action==='matching-bots-test'){if(!Object.hasOwn(botChannels,body.channel))throw Object.assign(Error('Kênh bot không hợp lệ.'),{status:400});return send(res,200,await sendBot(body.channel,'Kiểm tra kết nối: '+botChannels[body.channel].label+'\nhttps://nguonchothue.vn/admin'))}return send(res,400,{error:'Thao tác không hợp lệ.'})}
   if(String(body.action||'').startsWith('scan-result-')){requireAdmin(req);if(body.action==='scan-result-ingest'){const result=await ingestResults(body);laterMatchingBots();return send(res,200,result)}if(body.action==='scan-result-export'){const result=await exportResults(body.filters||{},body.format||'xlsx');res.writeHead(200,{'Content-Type':result.mime,'Content-Disposition':'attachment; filename=ket-qua-quet.'+result.extension,'Cache-Control':'no-store, private'});return res.end(result.buffer);}return send(res,200,await updateResult(body));}

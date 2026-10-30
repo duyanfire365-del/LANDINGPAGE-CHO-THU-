@@ -1,3 +1,4 @@
+import {footerLogoImage} from '../lib/site-content.mjs';
 import {websiteLogoImage} from '../lib/website-logo.mjs';
 import illustrationResponse from '../lib/illustration-response.mjs';
 import {extractSourceInfo} from '../lib/property-source.mjs';
@@ -38,7 +39,7 @@ export default async function handler(req,res){
  try{
   const query=new URL(req.url,'http://localhost').searchParams;
   if(req.method==='GET'){
-   if(query.get('action')==='website-logo'){const logo=await websiteLogoImage(),headers={'Content-Type':'image/webp','Cache-Control':'public, max-age=0, must-revalidate','X-Content-Type-Options':'nosniff',ETag:'\"'+logo.revision+'\"'};if(req.headers['if-none-match']===headers.ETag){res.writeHead(304,headers);return res.end()}res.writeHead(200,headers);return res.end(logo.bytes)}
+   if(['website-logo','footer-logo'].includes(query.get('action'))){const logo=await (query.get('action')==='footer-logo'?footerLogoImage():websiteLogoImage()),headers={'Content-Type':'image/webp','Cache-Control':'public, max-age=0, must-revalidate','X-Content-Type-Options':'nosniff',ETag:'\"'+logo.revision+'\"'};if(req.headers['if-none-match']===headers.ETag){res.writeHead(304,headers);return res.end()}res.writeHead(200,headers);return res.end(logo.bytes)}
    if(query.get('action')==='illustration')return illustrationResponse(req,res);
    if(query.get('action')==='zalo-qr'){const qr=await brandingQR();res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'no-store'});return res.end(qr.bytes)}
    if(['static-view','banner-view'].includes(query.get('action'))){
