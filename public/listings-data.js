@@ -13,7 +13,7 @@ window.RENTAL_LISTINGS = [
     "size": 60,
     "areaText": "60 m²",
     "facts": [],
-    "description": "Cho thuê mặt bằng kinh doanh tại Đỗ Quang, Cầu Giấy.\n\nDiện tích: 60 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nVới quy mô 60 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Đỗ Quang, Cầu Giấy.\n\nDiện tích: 60 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -24,7 +24,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 60 m² — Đỗ Quang, Cầu Giấy · 40 triệu/tháng",
     "address": "Đỗ Quang, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Đỗ Quang, Cầu Giấy, Hà Nội\nMã tin: MB - 0001\n60 m² · 40 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Đỗ Quang, Cầu Giấy · 40 triệu/tháng\nMã tin: MB - 0001\nKhu vực: Đỗ Quang, Cầu Giấy, Hà Nội\nCho thuê mặt bằng kinh doanh tại Đỗ Quang, Cầu Giấy.\n\nDiện tích: 60 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-001"
     ],
@@ -42,7 +42,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-026",
     "illustrationOriginalId": "hanoi-space-026",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-2-auto-2082819737"
+    "illustrationLibraryId": "mb-shop-2-auto-2082819737",
+    "descriptionVersion": 2
   },
   {
     "id": 1002,
@@ -57,7 +58,7 @@ window.RENTAL_LISTINGS = [
     "size": 45,
     "areaText": "45 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Ao Sen, Hà Đông.\n\nDiện tích: 45 m².\n\nGiá thuê: 13 triệu đồng/tháng.\n\nVới quy mô 45 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Ao Sen, Hà Đông.\n\nDiện tích: 45 m².\n\nGiá thuê: 13 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -69,7 +70,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 45 m² — Ao Sen, Hà Đông · 13 triệu/tháng",
     "address": "Ao Sen, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Ao Sen, Hà Đông, Hà Nội\nMã tin: MB - 0002\n45 m² · 13 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 45 m² — Ao Sen, Hà Đông · 13 triệu/tháng\nMã tin: MB - 0002\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Ao Sen, Hà Đông.\n\nDiện tích: 45 m².\n\nGiá thuê: 13 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-002"
     ],
@@ -87,7 +88,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-027",
     "illustrationOriginalId": "hanoi-space-027",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-restaurant-1-auto-2032486880"
+    "illustrationLibraryId": "mb-restaurant-1-auto-2032486880",
+    "descriptionVersion": 2
   },
   {
     "id": 1003,
@@ -102,7 +104,7 @@ window.RENTAL_LISTINGS = [
     "size": 60,
     "areaText": "60 m²",
     "facts": [],
-    "description": "Cho thuê mặt bằng kinh doanh tại Lê Văn Thiêm, Thanh Xuân.\n\nDiện tích: 60 m².\n\nGiá thuê: 33 triệu đồng/tháng.\n\nVới quy mô 60 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Lê Văn Thiêm, Thanh Xuân.\n\nDiện tích: 60 m².\n\nGiá thuê: 33 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -113,7 +115,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 60 m² — Lê Văn Thiêm, Thanh Xuân · 33 triệu/tháng",
     "address": "Lê Văn Thiêm, Thanh Xuân, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Lê Văn Thiêm, Thanh Xuân, Hà Nội\nMã tin: MB - 0003\n60 m² · 33 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Lê Văn Thiêm, Thanh Xuân · 33 triệu/tháng\nMã tin: MB - 0003\nKhu vực: Lê Văn Thiêm, Thanh Xuân, Hà Nội\nCho thuê mặt bằng kinh doanh tại Lê Văn Thiêm, Thanh Xuân.\n\nDiện tích: 60 m².\n\nGiá thuê: 33 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-003"
     ],
@@ -131,7 +133,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-028",
     "illustrationOriginalId": "hanoi-space-028",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-4-auto-2049264499"
+    "illustrationLibraryId": "mb-shop-4-auto-2049264499",
+    "descriptionVersion": 2
   },
   {
     "id": 1004,
@@ -147,7 +150,7 @@ window.RENTAL_LISTINGS = [
     "size": 83,
     "areaText": "83 m²",
     "facts": [],
-    "description": "Cho thuê nhà nguyên căn tại Vũ Phạm Hàm, Cầu Giấy.\n\nDiện tích: 83 m².\n\nGiá thuê: 100 triệu đồng/tháng.\n\nKhách có thể lên phương án bố trí sinh hoạt theo nhu cầu ở;\nsố người sử dụng và thời điểm nhận nên được trao đổi trước khi hẹn xem.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê nhà nguyên căn tại Vũ Phạm Hàm, Cầu Giấy.\n\nDiện tích: 83 m².\n\nGiá thuê: 100 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -158,7 +161,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê nhà nguyên căn 83 m² — Vũ Phạm Hàm, Cầu Giấy · 100 triệu/tháng",
     "address": "Vũ Phạm Hàm, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Nhà nguyên căn — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê nhà nguyên căn — Vũ Phạm Hàm, Cầu Giấy, Hà Nội\nMã tin: NC - 0001\n83 m² · 100 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê nhà nguyên căn 83 m² — Vũ Phạm Hàm, Cầu Giấy · 100 triệu/tháng\nMã tin: NC - 0001\nKhu vực: Vũ Phạm Hàm, Cầu Giấy, Hà Nội\nCho thuê nhà nguyên căn tại Vũ Phạm Hàm, Cầu Giấy.\n\nDiện tích: 83 m².\n\nGiá thuê: 100 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-004"
     ],
@@ -176,7 +179,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-029",
     "illustrationOriginalId": "hanoi-space-029",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "nc-house-3-auto-2133152594"
+    "illustrationLibraryId": "nc-house-3-auto-2133152594",
+    "descriptionVersion": 2
   },
   {
     "id": 1005,
@@ -191,7 +195,7 @@ window.RENTAL_LISTINGS = [
     "size": 40,
     "areaText": "40 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Nghĩa Tân, Cầu Giấy.\n\nDiện tích: 40 m².\n\nGiá thuê: 21 triệu đồng/tháng.\n\nVới quy mô 40 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Nghĩa Tân, Cầu Giấy.\n\nDiện tích: 40 m².\n\nGiá thuê: 21 triệu đồng/tháng.\n\nĐang tìm một điểm kinh doanh gọn? Hãy xem thực tế để đánh giá diện tích trưng bày và nhu cầu sử dụng của mô hình dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -203,7 +207,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 40 m² — Nghĩa Tân, Cầu Giấy · 21 triệu/tháng",
     "address": "Nghĩa Tân, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Nghĩa Tân, Cầu Giấy, Hà Nội\nMã tin: MB - 0004\n40 m² · 21 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 40 m² — Nghĩa Tân, Cầu Giấy · 21 triệu/tháng\nMã tin: MB - 0004\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Nghĩa Tân, Cầu Giấy.\n\nDiện tích: 40 m².\n\nGiá thuê: 21 triệu đồng/tháng.\n\nĐang tìm một điểm kinh doanh gọn? Hãy xem thực tế để đánh giá diện tích trưng bày và nhu cầu sử dụng của mô hình dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-005"
     ],
@@ -221,7 +225,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-030",
     "illustrationOriginalId": "hanoi-space-030",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-restaurant-2-auto-2149930213"
+    "illustrationLibraryId": "mb-restaurant-2-auto-2149930213",
+    "descriptionVersion": 2
   },
   {
     "id": 1006,
@@ -236,7 +241,7 @@ window.RENTAL_LISTINGS = [
     "size": 80,
     "areaText": "80 m²/sàn",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Phạm Huy Thông, Ba Đình.\n\nDiện tích mỗi sàn: 80 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nVới quy mô 80 m² mỗi sàn, khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Phạm Huy Thông, Ba Đình.\n\nDiện tích mỗi sàn: 80 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Thông tin diện tích cần được xác nhận lại trước khi giao dịch.",
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
@@ -249,7 +254,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 80 m²/sàn — Phạm Huy Thông, Ba Đình · 40 triệu/tháng",
     "address": "Phạm Huy Thông, Ba Đình, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Phạm Huy Thông, Ba Đình, Hà Nội\nMã tin: MB - 0005\n80 m²/sàn · 40 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 80 m²/sàn — Phạm Huy Thông, Ba Đình · 40 triệu/tháng\nMã tin: MB - 0005\nKhu vực: Phạm Huy Thông, Ba Đình, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Phạm Huy Thông, Ba Đình.\n\nDiện tích mỗi sàn: 80 m².\n\nGiá thuê: 40 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-006"
     ],
@@ -267,7 +272,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-031",
     "illustrationOriginalId": "hanoi-space-031",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-cafe-1-auto-2099597356"
+    "illustrationLibraryId": "mb-cafe-1-auto-2099597356",
+    "descriptionVersion": 2
   },
   {
     "id": 1007,
@@ -282,7 +288,7 @@ window.RENTAL_LISTINGS = [
     "size": 40,
     "areaText": "40 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Ao Sen, Hà Đông.\n\nDiện tích: 40 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nVới quy mô 40 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Ao Sen, Hà Đông.\n\nDiện tích: 40 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nĐang tìm một điểm kinh doanh gọn? Hãy xem thực tế để đánh giá diện tích trưng bày và nhu cầu sử dụng của mô hình dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -294,7 +300,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 40 m² — Ao Sen, Hà Đông · 28 triệu/tháng",
     "address": "Ao Sen, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Ao Sen, Hà Đông, Hà Nội\nMã tin: MB - 0006\n40 m² · 28 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 40 m² — Ao Sen, Hà Đông · 28 triệu/tháng\nMã tin: MB - 0006\nKhu vực: Ao Sen, Hà Đông, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Ao Sen, Hà Đông.\n\nDiện tích: 40 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nĐang tìm một điểm kinh doanh gọn? Hãy xem thực tế để đánh giá diện tích trưng bày và nhu cầu sử dụng của mô hình dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-007"
     ],
@@ -312,7 +318,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-032",
     "illustrationOriginalId": "hanoi-space-032",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-cafe-4-auto-2116374975"
+    "illustrationLibraryId": "mb-cafe-4-auto-2116374975",
+    "descriptionVersion": 2
   },
   {
     "id": 1008,
@@ -331,7 +338,7 @@ window.RENTAL_LISTINGS = [
       "Có không gian sử dụng chung.",
       "Có lối đi chung."
     ],
-    "description": "Cho thuê mặt bằng kinh doanh tại Hồ Đắc Di, Đống Đa.\n\nDiện tích: 60 m².\n\nGiá thuê: 20 triệu đồng/tháng.\n\nCó không gian sử dụng chung.\n\nCó lối đi chung.\n\nVới quy mô 60 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Hồ Đắc Di, Đống Đa.\n\nDiện tích: 60 m².\n\nGiá thuê: 20 triệu đồng/tháng.\n\nCó không gian sử dụng chung.\n\nCó lối đi chung.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -342,7 +349,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 60 m² — Hồ Đắc Di, Đống Đa · 20 triệu/tháng",
     "address": "Hồ Đắc Di, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Hồ Đắc Di, Đống Đa, Hà Nội\nMã tin: MB - 0007\n60 m² · 20 triệu đồng/tháng\n• Có không gian sử dụng chung.\n• Có lối đi chung.\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 60 m² — Hồ Đắc Di, Đống Đa · 20 triệu/tháng\nMã tin: MB - 0007\nKhu vực: Hồ Đắc Di, Đống Đa, Hà Nội\nCho thuê mặt bằng kinh doanh tại Hồ Đắc Di, Đống Đa.\n\nDiện tích: 60 m².\n\nGiá thuê: 20 triệu đồng/tháng.\n\nCó không gian sử dụng chung.\n\nCó lối đi chung.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-008"
     ],
@@ -360,7 +367,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-033",
     "illustrationOriginalId": "hanoi-space-033",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-3-auto-2200263070"
+    "illustrationLibraryId": "mb-shop-3-auto-2200263070",
+    "descriptionVersion": 2
   },
   {
     "id": 1009,
@@ -375,7 +383,7 @@ window.RENTAL_LISTINGS = [
     "size": 250,
     "areaText": "250 m²",
     "facts": [],
-    "description": "Cho thuê mặt bằng kinh doanh tại Nguyễn Chí Thanh, Đống Đa.\n\nDiện tích: 250 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nVới quy mô 250 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Nguyễn Chí Thanh, Đống Đa.\n\nDiện tích: 250 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nCần xem thực tế không gian kinh doanh quy mô lớn? Mang theo phương án sử dụng để đối chiếu luồng di chuyển, diện tích vận hành và điều kiện cho phép của địa điểm.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -386,7 +394,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 250 m² — Nguyễn Chí Thanh, Đống Đa · 55 triệu/tháng",
     "address": "Nguyễn Chí Thanh, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Nguyễn Chí Thanh, Đống Đa, Hà Nội\nMã tin: MB - 0008\n250 m² · 55 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 250 m² — Nguyễn Chí Thanh, Đống Đa · 55 triệu/tháng\nMã tin: MB - 0008\nKhu vực: Nguyễn Chí Thanh, Đống Đa, Hà Nội\nCho thuê mặt bằng kinh doanh tại Nguyễn Chí Thanh, Đống Đa.\n\nDiện tích: 250 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nCần xem thực tế không gian kinh doanh quy mô lớn? Mang theo phương án sử dụng để đối chiếu luồng di chuyển, diện tích vận hành và điều kiện cho phép của địa điểm.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-009"
     ],
@@ -404,7 +412,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-034",
     "illustrationOriginalId": "hanoi-space-034",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-2-auto-2217040689"
+    "illustrationLibraryId": "mb-shop-2-auto-2217040689",
+    "descriptionVersion": 2
   },
   {
     "id": 1010,
@@ -421,7 +430,7 @@ window.RENTAL_LISTINGS = [
     "size": 70,
     "areaText": "70 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Đỗ Quang, Cầu Giấy.\n\nDiện tích: 70 m².\n\nGiá thuê: 25 triệu đồng/tháng.\n\nVới quy mô 70 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Đỗ Quang, Cầu Giấy.\n\nDiện tích: 70 m².\n\nGiá thuê: 25 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -443,7 +452,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 70 m² — Đỗ Quang, Cầu Giấy · 25 triệu/tháng",
     "address": "Đỗ Quang, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Đỗ Quang, Cầu Giấy, Hà Nội\nMã tin: MB - 0009\n70 m² · 25 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 70 m² — Đỗ Quang, Cầu Giấy · 25 triệu/tháng\nMã tin: MB - 0009\nKhu vực: Đỗ Quang, Cầu Giấy, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Đỗ Quang, Cầu Giấy.\n\nDiện tích: 70 m².\n\nGiá thuê: 25 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-010"
     ],
@@ -461,7 +470,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-035",
     "illustrationOriginalId": "hanoi-space-035",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-cafe-4-auto-2166854927"
+    "illustrationLibraryId": "mb-cafe-4-auto-2166854927",
+    "descriptionVersion": 2
   },
   {
     "id": 1011,
@@ -479,7 +489,7 @@ window.RENTAL_LISTINGS = [
     "facts": [
       "Không phù hợp kinh doanh ăn uống."
     ],
-    "description": "Cho thuê mặt bằng kinh doanh tại Nguyễn Chánh, Cầu Giấy.\n\nDiện tích: 45 m².\n\nGiá thuê: 14 triệu đồng/tháng.\n\nKhông phù hợp kinh doanh ăn uống.\n\nVới quy mô 45 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Nguyễn Chánh, Cầu Giấy.\n\nDiện tích: 45 m².\n\nGiá thuê: 14 triệu đồng/tháng.\n\nKhông phù hợp kinh doanh ăn uống.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -490,7 +500,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 45 m² — Nguyễn Chánh, Cầu Giấy · 14 triệu/tháng",
     "address": "Nguyễn Chánh, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Nguyễn Chánh, Cầu Giấy, Hà Nội\nMã tin: MB - 0010\n45 m² · 14 triệu đồng/tháng\n• Không phù hợp kinh doanh ăn uống.\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 45 m² — Nguyễn Chánh, Cầu Giấy · 14 triệu/tháng\nMã tin: MB - 0010\nKhu vực: Nguyễn Chánh, Cầu Giấy, Hà Nội\nCho thuê mặt bằng kinh doanh tại Nguyễn Chánh, Cầu Giấy.\n\nDiện tích: 45 m².\n\nGiá thuê: 14 triệu đồng/tháng.\n\nKhông phù hợp kinh doanh ăn uống.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-011"
     ],
@@ -508,7 +518,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-036",
     "illustrationOriginalId": "hanoi-space-036",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-1-auto-2150077308"
+    "illustrationLibraryId": "mb-shop-1-auto-2150077308",
+    "descriptionVersion": 2
   },
   {
     "id": 1012,
@@ -524,7 +535,7 @@ window.RENTAL_LISTINGS = [
     "size": 21,
     "areaText": "21 m²",
     "facts": [],
-    "description": "Cho thuê nhà nguyên căn tại Đường Láng, Đống Đa.\n\nDiện tích: 21 m².\n\nGiá thuê: 22 triệu đồng/tháng.\n\nKhách có thể lên phương án bố trí sinh hoạt theo nhu cầu ở;\nsố người sử dụng và thời điểm nhận nên được trao đổi trước khi hẹn xem.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê nhà nguyên căn tại Đường Láng, Đống Đa.\n\nDiện tích: 21 m².\n\nGiá thuê: 22 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -535,7 +546,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê nhà nguyên căn 21 m² — Đường Láng, Đống Đa · 22 triệu/tháng",
     "address": "Đường Láng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa Nhà nguyên căn — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê nhà nguyên căn — Đường Láng, Đống Đa, Hà Nội\nMã tin: NC - 0002\n21 m² · 22 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê nhà nguyên căn 21 m² — Đường Láng, Đống Đa · 22 triệu/tháng\nMã tin: NC - 0002\nKhu vực: Đường Láng, Đống Đa, Hà Nội\nCho thuê nhà nguyên căn tại Đường Láng, Đống Đa.\n\nDiện tích: 21 m².\n\nGiá thuê: 22 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-012"
     ],
@@ -553,7 +564,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-037",
     "illustrationOriginalId": "hanoi-space-037",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "nc-house-1-auto-2200410165"
+    "illustrationLibraryId": "nc-house-1-auto-2200410165",
+    "descriptionVersion": 2
   },
   {
     "id": 1013,
@@ -569,7 +581,7 @@ window.RENTAL_LISTINGS = [
     "size": 45,
     "areaText": "45 m²",
     "facts": [],
-    "description": "Cho thuê mặt bằng kinh doanh tại Huỳnh Thúc Kháng, Đống Đa.\n\nDiện tích: 45 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nVới quy mô 45 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Huỳnh Thúc Kháng, Đống Đa.\n\nDiện tích: 45 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -580,7 +592,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 45 m² — Huỳnh Thúc Kháng, Đống Đa · 55 triệu/tháng",
     "address": "Huỳnh Thúc Kháng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nMã tin: MB - 0011\n45 m² · 55 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 45 m² — Huỳnh Thúc Kháng, Đống Đa · 55 triệu/tháng\nMã tin: MB - 0011\nKhu vực: Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nCho thuê mặt bằng kinh doanh tại Huỳnh Thúc Kháng, Đống Đa.\n\nDiện tích: 45 m².\n\nGiá thuê: 55 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-013"
     ],
@@ -598,7 +610,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-038",
     "illustrationOriginalId": "hanoi-space-038",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-3-auto-2183632546"
+    "illustrationLibraryId": "mb-shop-3-auto-2183632546",
+    "descriptionVersion": 2
   },
   {
     "id": 1014,
@@ -613,7 +626,7 @@ window.RENTAL_LISTINGS = [
     "size": 60,
     "areaText": "60 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Nguyễn Viết Xuân, Hà Đông.\n\nDiện tích: 60 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nVới quy mô 60 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Nguyễn Viết Xuân, Hà Đông.\n\nDiện tích: 60 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -625,7 +638,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 60 m² — Nguyễn Viết Xuân, Hà Đông · 15 triệu/tháng",
     "address": "Nguyễn Viết Xuân, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Nguyễn Viết Xuân, Hà Đông, Hà Nội\nMã tin: MB - 0012\n60 m² · 15 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Nguyễn Viết Xuân, Hà Đông · 15 triệu/tháng\nMã tin: MB - 0012\nKhu vực: Nguyễn Viết Xuân, Hà Đông, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Nguyễn Viết Xuân, Hà Đông.\n\nDiện tích: 60 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-014"
     ],
@@ -643,7 +656,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-039",
     "illustrationOriginalId": "hanoi-space-039",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-restaurant-4-auto-2099744451"
+    "illustrationLibraryId": "mb-restaurant-4-auto-2099744451",
+    "descriptionVersion": 2
   },
   {
     "id": 1015,
@@ -660,7 +674,7 @@ window.RENTAL_LISTINGS = [
     "facts": [
       "Có chỗ để xe."
     ],
-    "description": "Cho thuê mặt bằng kinh doanh tại Triều Khúc, Thanh Trì.\n\nDiện tích: 70 m².\n\nGiá thuê: 12 triệu đồng/tháng.\n\nCó chỗ để xe.\n\nVới quy mô 70 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Triều Khúc, Thanh Trì.\n\nDiện tích: 70 m².\n\nGiá thuê: 12 triệu đồng/tháng.\n\nCó chỗ để xe.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -671,7 +685,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 70 m² — Triều Khúc, Thanh Trì · 12 triệu/tháng",
     "address": "Triều Khúc, Thanh Trì, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Triều Khúc, Thanh Trì, Hà Nội\nMã tin: MB - 0013\n70 m² · 12 triệu đồng/tháng\n• Có chỗ để xe.\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 70 m² — Triều Khúc, Thanh Trì · 12 triệu/tháng\nMã tin: MB - 0013\nKhu vực: Triều Khúc, Thanh Trì, Hà Nội\nCho thuê mặt bằng kinh doanh tại Triều Khúc, Thanh Trì.\n\nDiện tích: 70 m².\n\nGiá thuê: 12 triệu đồng/tháng.\n\nCó chỗ để xe.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-015"
     ],
@@ -689,7 +703,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-040",
     "illustrationOriginalId": "hanoi-space-040",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-restaurant-1-auto-2082966832"
+    "illustrationLibraryId": "mb-restaurant-1-auto-2082966832",
+    "descriptionVersion": 2
   },
   {
     "id": 1016,
@@ -704,7 +719,7 @@ window.RENTAL_LISTINGS = [
     "size": 110,
     "areaText": "110 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Nghĩa Tân, Cầu Giấy.\n\nDiện tích: 110 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nVới quy mô 110 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Nghĩa Tân, Cầu Giấy.\n\nDiện tích: 110 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -716,7 +731,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 110 m² — Nghĩa Tân, Cầu Giấy · 15 triệu/tháng",
     "address": "Nghĩa Tân, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Nghĩa Tân, Cầu Giấy, Hà Nội\nMã tin: MB - 0014\n110 m² · 15 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 110 m² — Nghĩa Tân, Cầu Giấy · 15 triệu/tháng\nMã tin: MB - 0014\nKhu vực: Nghĩa Tân, Cầu Giấy, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Nghĩa Tân, Cầu Giấy.\n\nDiện tích: 110 m².\n\nGiá thuê: 15 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-016"
     ],
@@ -734,7 +749,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-041",
     "illustrationOriginalId": "hanoi-space-041",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-2-auto-2133299689"
+    "illustrationLibraryId": "mb-shop-2-auto-2133299689",
+    "descriptionVersion": 2
   },
   {
     "id": 1017,
@@ -749,7 +765,7 @@ window.RENTAL_LISTINGS = [
     "size": 70,
     "areaText": "70 m²/sàn",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Chùa Láng, Đống Đa.\n\nDiện tích mỗi sàn: 70 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nVới quy mô 70 m² mỗi sàn, khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Chùa Láng, Đống Đa.\n\nDiện tích mỗi sàn: 70 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -761,7 +777,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 70 m²/sàn — Chùa Láng, Đống Đa · 28 triệu/tháng",
     "address": "Chùa Láng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Chùa Láng, Đống Đa, Hà Nội\nMã tin: MB - 0015\n70 m²/sàn · 28 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 70 m²/sàn — Chùa Láng, Đống Đa · 28 triệu/tháng\nMã tin: MB - 0015\nKhu vực: Chùa Láng, Đống Đa, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Chùa Láng, Đống Đa.\n\nDiện tích mỗi sàn: 70 m².\n\nGiá thuê: 28 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-017"
     ],
@@ -779,7 +795,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-042",
     "illustrationOriginalId": "hanoi-space-042",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-cafe-3-auto-2116522070"
+    "illustrationLibraryId": "mb-cafe-3-auto-2116522070",
+    "descriptionVersion": 2
   },
   {
     "id": 1018,
@@ -794,7 +811,7 @@ window.RENTAL_LISTINGS = [
     "size": 50,
     "areaText": "50 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Trần Duy Hưng, Cầu Giấy.\n\nDiện tích: 50 m².\n\nGiá thuê: 24 triệu đồng/tháng.\n\nVới quy mô 50 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Trần Duy Hưng, Cầu Giấy.\n\nDiện tích: 50 m².\n\nGiá thuê: 24 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -806,7 +823,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 50 m² — Trần Duy Hưng, Cầu Giấy · 24 triệu/tháng",
     "address": "Trần Duy Hưng, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Trần Duy Hưng, Cầu Giấy, Hà Nội\nMã tin: MB - 0016\n50 m² · 24 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 50 m² — Trần Duy Hưng, Cầu Giấy · 24 triệu/tháng\nMã tin: MB - 0016\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Trần Duy Hưng, Cầu Giấy.\n\nDiện tích: 50 m².\n\nGiá thuê: 24 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-018"
     ],
@@ -824,7 +841,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-043",
     "illustrationOriginalId": "hanoi-space-043",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-4-auto-2301075879"
+    "illustrationLibraryId": "mb-shop-4-auto-2301075879",
+    "descriptionVersion": 2
   },
   {
     "id": 1019,
@@ -839,7 +857,7 @@ window.RENTAL_LISTINGS = [
     "size": 200,
     "areaText": "200 m²",
     "facts": [],
-    "description": "Cho thuê kho xưởng tại Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm.\n\nDiện tích: 200 m².\n\nGiá thuê: 16 triệu đồng/tháng.\n\nPhù hợp tham khảo nhu cầu lưu trữ hoặc vận hành kho xưởng. Cần đối chiếu loại hàng, tải trọng, đường vận chuyển và yêu cầu phòng cháy trước khi lựa chọn.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê kho xưởng tại Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm.\n\nDiện tích: 200 m².\n\nGiá thuê: 16 triệu đồng/tháng.\n\nBạn đang tìm nơi lưu trữ hoặc làm việc sản xuất? Hãy kiểm tra lối tiếp cận, chiều cao sử dụng và điều kiện vận hành trước khi chọn.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -850,7 +868,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê kho xưởng 200 m² — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm · 16 triệu/tháng",
     "address": "Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội",
     "imageAlt": "Ảnh minh họa Kho xưởng — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê kho xưởng — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội\nMã tin: KX - 0001\n200 m² · 16 triệu đồng/tháng\n• Phù hợp tham khảo nhu cầu lưu trữ hoặc vận hành kho xưởng. Cần đối chiếu loại hàng, tải trọng, đường vận chuyển và yêu cầu phòng cháy trước khi lựa chọn.\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê kho xưởng 200 m² — Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm · 16 triệu/tháng\nMã tin: KX - 0001\nKhu vực: Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm, Hà Nội\nCho thuê kho xưởng tại Đỗ Xuân Hợp, Mỹ Đình, Nam Từ Liêm.\n\nDiện tích: 200 m².\n\nGiá thuê: 16 triệu đồng/tháng.\n\nBạn đang tìm nơi lưu trữ hoặc làm việc sản xuất? Hãy kiểm tra lối tiếp cận, chiều cao sử dụng và điều kiện vận hành trước khi chọn.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-019"
     ],
@@ -868,7 +886,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-warehouse-002",
     "illustrationOriginalId": "hanoi-warehouse-002",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "kx-warehouse-1-auto-2284298260"
+    "illustrationLibraryId": "kx-warehouse-1-auto-2284298260",
+    "descriptionVersion": 2
   },
   {
     "id": 1020,
@@ -884,7 +903,7 @@ window.RENTAL_LISTINGS = [
     "size": 85,
     "areaText": "85 m²",
     "facts": [],
-    "description": "Cho thuê nhà nguyên căn tại Trần Duy Hưng, Cầu Giấy.\n\nDiện tích: 85 m².\n\nGiá thuê: 70 triệu đồng/tháng.\n\nKhách có thể lên phương án bố trí sinh hoạt theo nhu cầu ở;\nsố người sử dụng và thời điểm nhận nên được trao đổi trước khi hẹn xem.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê nhà nguyên căn tại Trần Duy Hưng, Cầu Giấy.\n\nDiện tích: 85 m².\n\nGiá thuê: 70 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -895,7 +914,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê nhà nguyên căn 85 m² — Trần Duy Hưng, Cầu Giấy · 70 triệu/tháng",
     "address": "Trần Duy Hưng, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Nhà nguyên căn — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê nhà nguyên căn — Trần Duy Hưng, Cầu Giấy, Hà Nội\nMã tin: NC - 0003\n85 m² · 70 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê nhà nguyên căn 85 m² — Trần Duy Hưng, Cầu Giấy · 70 triệu/tháng\nMã tin: NC - 0003\nKhu vực: Trần Duy Hưng, Cầu Giấy, Hà Nội\nCho thuê nhà nguyên căn tại Trần Duy Hưng, Cầu Giấy.\n\nDiện tích: 85 m².\n\nGiá thuê: 70 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-020"
     ],
@@ -913,7 +932,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-044",
     "illustrationOriginalId": "hanoi-space-044",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "nc-house-3-auto-253765076"
+    "illustrationLibraryId": "nc-house-3-auto-253765076",
+    "descriptionVersion": 2
   },
   {
     "id": 1021,
@@ -931,7 +951,7 @@ window.RENTAL_LISTINGS = [
     "facts": [
       "Không phù hợp kinh doanh ăn uống."
     ],
-    "description": "Cho thuê mặt bằng kinh doanh tại Khu đô thị Xa La, Hà Đông.\n\nDiện tích: 56 m².\n\nGiá thuê: 18 triệu đồng/tháng.\n\nKhông phù hợp kinh doanh ăn uống.\n\nVới quy mô 56 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Khu đô thị Xa La, Hà Đông.\n\nDiện tích: 56 m².\n\nGiá thuê: 18 triệu đồng/tháng.\n\nKhông phù hợp kinh doanh ăn uống.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -942,7 +962,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 56 m² — Khu đô thị Xa La, Hà Đông · 18 triệu/tháng",
     "address": "Khu đô thị Xa La, Hà Đông, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Khu đô thị Xa La, Hà Đông, Hà Nội\nMã tin: MB - 0060\n56 m² · 18 triệu đồng/tháng\n• Không phù hợp kinh doanh ăn uống.\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 56 m² — Khu đô thị Xa La, Hà Đông · 18 triệu/tháng\nMã tin: MB - 0060\nKhu vực: Khu đô thị Xa La, Hà Đông, Hà Nội\nCho thuê mặt bằng kinh doanh tại Khu đô thị Xa La, Hà Đông.\n\nDiện tích: 56 m².\n\nGiá thuê: 18 triệu đồng/tháng.\n\nKhông phù hợp kinh doanh ăn uống.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-021",
       "NC - 0004"
@@ -961,7 +981,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-045",
     "illustrationOriginalId": "hanoi-space-045",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-4-auto-270542695"
+    "illustrationLibraryId": "mb-shop-4-auto-270542695",
+    "descriptionVersion": 2
   },
   {
     "id": 1022,
@@ -977,7 +998,7 @@ window.RENTAL_LISTINGS = [
     "size": 115,
     "areaText": "115 m²/tầng; 6 tầng + 1 tum + 1 hầm",
     "facts": [],
-    "description": "Cho thuê nhà nguyên căn tại Huỳnh Thúc Kháng, Đống Đa.\n\nDiện tích: 115 m².\n\nQuy mô theo thông tin cung cấp: 115 m²/tầng;\n6 tầng + 1 tum + 1 hầm.\n\nGiá thuê: 160 triệu đồng/tháng.\n\nKhách có thể lên phương án bố trí sinh hoạt theo nhu cầu ở;\nsố người sử dụng và thời điểm nhận nên được trao đổi trước khi hẹn xem.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê nhà nguyên căn tại Huỳnh Thúc Kháng, Đống Đa.\n\nDiện tích: 115 m².\n\nQuy mô theo thông tin cung cấp: 115 m²/tầng\n\n6 tầng + 1 tum + 1 hầm.\n\nGiá thuê: 160 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -988,7 +1009,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê nhà nguyên căn 115 m² — Huỳnh Thúc Kháng, Đống Đa · 160 triệu/tháng",
     "address": "Huỳnh Thúc Kháng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa Nhà nguyên căn — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê nhà nguyên căn — Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nMã tin: NC - 0005\n115 m² · 160 triệu đồng/tháng\n• Quy mô theo thông tin cung cấp: 115 m²/tầng\n• 6 tầng + 1 tum + 1 hầm.\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê nhà nguyên căn 115 m² — Huỳnh Thúc Kháng, Đống Đa · 160 triệu/tháng\nMã tin: NC - 0005\nKhu vực: Huỳnh Thúc Kháng, Đống Đa, Hà Nội\nCho thuê nhà nguyên căn tại Huỳnh Thúc Kháng, Đống Đa.\n\nDiện tích: 115 m².\n\nQuy mô theo thông tin cung cấp: 115 m²/tầng\n\n6 tầng + 1 tum + 1 hầm.\n\nGiá thuê: 160 triệu đồng/tháng.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-022"
     ],
@@ -1006,7 +1027,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-046",
     "illustrationOriginalId": "hanoi-space-046",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "nc-house-1-auto-287320314"
+    "illustrationLibraryId": "nc-house-1-auto-287320314",
+    "descriptionVersion": 2
   },
   {
     "id": 1023,
@@ -1021,7 +1043,7 @@ window.RENTAL_LISTINGS = [
     "size": 100,
     "areaText": "100 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Trung Kính, Cầu Giấy.\n\nDiện tích: 100 m².\n\nGiá thuê: 33 triệu đồng/tháng.\n\nVới quy mô 100 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Trung Kính, Cầu Giấy.\n\nDiện tích: 100 m².\n\nGiá thuê: 33 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1034,7 +1056,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 100 m² — Trung Kính, Cầu Giấy · 33 triệu/tháng",
     "address": "Trung Kính, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Trung Kính, Cầu Giấy, Hà Nội\nMã tin: MB - 0017\n100 m² · 33 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 100 m² — Trung Kính, Cầu Giấy · 33 triệu/tháng\nMã tin: MB - 0017\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Trung Kính, Cầu Giấy.\n\nDiện tích: 100 m².\n\nGiá thuê: 33 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-023"
     ],
@@ -1052,7 +1074,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-047",
     "illustrationOriginalId": "hanoi-space-047",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-2-auto-304097933"
+    "illustrationLibraryId": "mb-shop-2-auto-304097933",
+    "descriptionVersion": 2
   },
   {
     "id": 1024,
@@ -1067,7 +1090,7 @@ window.RENTAL_LISTINGS = [
     "size": 150,
     "areaText": "150 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Cầu Giấy.\n\nDiện tích: 150 m².\n\nGiá thuê: 23 triệu đồng/tháng.\n\nVới quy mô 150 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Cầu Giấy.\n\nDiện tích: 150 m².\n\nGiá thuê: 23 triệu đồng/tháng.\n\nCần xem thực tế không gian kinh doanh quy mô lớn? Mang theo phương án sử dụng để đối chiếu luồng di chuyển, diện tích vận hành và điều kiện cho phép của địa điểm.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1080,7 +1103,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 150 m² — Cầu Giấy · 23 triệu/tháng",
     "address": "Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Cầu Giấy, Hà Nội\nMã tin: MB - 0018\n150 m² · 23 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 150 m² — Cầu Giấy · 23 triệu/tháng\nMã tin: MB - 0018\nKhu vực: Cầu Giấy, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Cầu Giấy.\n\nDiện tích: 150 m².\n\nGiá thuê: 23 triệu đồng/tháng.\n\nCần xem thực tế không gian kinh doanh quy mô lớn? Mang theo phương án sử dụng để đối chiếu luồng di chuyển, diện tích vận hành và điều kiện cho phép của địa điểm.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-024"
     ],
@@ -1098,7 +1121,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-space-048",
     "illustrationOriginalId": "hanoi-space-048",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-1-auto-186654600"
+    "illustrationLibraryId": "mb-shop-1-auto-186654600",
+    "descriptionVersion": 2
   },
   {
     "id": 1025,
@@ -1113,7 +1137,7 @@ window.RENTAL_LISTINGS = [
     "size": 200,
     "areaText": "200 m²",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Trần Điền, Hoàng Mai.\n\nDiện tích: 200 m².\n\nGiá thuê: 50 triệu đồng/tháng.\n\nVới quy mô 200 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Trần Điền, Hoàng Mai.\n\nDiện tích: 200 m².\n\nGiá thuê: 50 triệu đồng/tháng.\n\nCần xem thực tế không gian kinh doanh quy mô lớn? Mang theo phương án sử dụng để đối chiếu luồng di chuyển, diện tích vận hành và điều kiện cho phép của địa điểm.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1126,7 +1150,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 200 m² — Trần Điền, Hoàng Mai · 50 triệu/tháng",
     "address": "Trần Điền, Hoàng Mai, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Trần Điền, Hoàng Mai, Hà Nội\nMã tin: MB - 0019\n200 m² · 50 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 200 m² — Trần Điền, Hoàng Mai · 50 triệu/tháng\nMã tin: MB - 0019\nKhu vực: Trần Điền, Hoàng Mai, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Trần Điền, Hoàng Mai.\n\nDiện tích: 200 m².\n\nGiá thuê: 50 triệu đồng/tháng.\n\nCần xem thực tế không gian kinh doanh quy mô lớn? Mang theo phương án sử dụng để đối chiếu luồng di chuyển, diện tích vận hành và điều kiện cho phép của địa điểm.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-025"
     ],
@@ -1144,7 +1168,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "coffee-daylight",
     "illustrationOriginalId": "coffee-daylight",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-4-auto-203432219"
+    "illustrationLibraryId": "mb-shop-4-auto-203432219",
+    "descriptionVersion": 2
   },
   {
     "id": 1026,
@@ -1160,7 +1185,7 @@ window.RENTAL_LISTINGS = [
     "size": 70,
     "areaText": "70 m²",
     "facts": [],
-    "description": "Cho thuê mặt bằng kinh doanh tại Doãn Kế Thiện, Cầu Giấy.\n\nDiện tích: 70 m².\n\nGiá thuê: 25 triệu đồng/tháng.\n\nVới quy mô 70 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Doãn Kế Thiện, Cầu Giấy.\n\nDiện tích: 70 m².\n\nGiá thuê: 25 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1172,7 +1197,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 70 m² — Doãn Kế Thiện, Cầu Giấy · 25 triệu/tháng",
     "address": "Doãn Kế Thiện, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Doãn Kế Thiện, Cầu Giấy, Hà Nội\nMã tin: MB - 0020\n70 m² · 25 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 70 m² — Doãn Kế Thiện, Cầu Giấy · 25 triệu/tháng\nMã tin: MB - 0020\nKhu vực: Doãn Kế Thiện, Cầu Giấy, Hà Nội\nCho thuê mặt bằng kinh doanh tại Doãn Kế Thiện, Cầu Giấy.\n\nDiện tích: 70 m².\n\nGiá thuê: 25 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-026"
     ],
@@ -1190,7 +1215,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "coffee-windows",
     "illustrationOriginalId": "coffee-windows",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-3-auto-220209838"
+    "illustrationLibraryId": "mb-shop-3-auto-220209838",
+    "descriptionVersion": 2
   },
   {
     "id": 1027,
@@ -1207,7 +1233,7 @@ window.RENTAL_LISTINGS = [
     "size": 76,
     "areaText": "76 m²",
     "facts": [],
-    "description": "Cho thuê nhà nguyên căn tại Trung Kính, Cầu Giấy.\n\nDiện tích: 76 m².\n\nGiá thuê: 35 triệu đồng/tháng.\n\nKhách có thể lên phương án bố trí sinh hoạt theo nhu cầu ở;\nsố người sử dụng và thời điểm nhận nên được trao đổi trước khi hẹn xem.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê nhà nguyên căn tại Trung Kính, Cầu Giấy.\n\nDiện tích: 76 m².\n\nGiá thuê: 35 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1219,7 +1245,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê nhà nguyên căn 76 m² — Trung Kính, Cầu Giấy · 35 triệu/tháng",
     "address": "Trung Kính, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Nhà nguyên căn — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê nhà nguyên căn — Trung Kính, Cầu Giấy, Hà Nội\nMã tin: NC - 0006\n76 m² · 35 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê nhà nguyên căn 76 m² — Trung Kính, Cầu Giấy · 35 triệu/tháng\nMã tin: NC - 0006\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nCho thuê nhà nguyên căn tại Trung Kính, Cầu Giấy.\n\nDiện tích: 76 m².\n\nGiá thuê: 35 triệu đồng/tháng.\n\nCần thuê trọn một ngôi nhà? Hãy đối chiếu bố trí các tầng, số phòng và nhu cầu sinh hoạt thực tế khi xem.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem không gian ở.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-027"
     ],
@@ -1237,7 +1263,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-townhouse",
     "illustrationOriginalId": "hanoi-townhouse",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "nc-house-1-auto-236987457"
+    "illustrationLibraryId": "nc-house-1-auto-236987457",
+    "descriptionVersion": 2
   },
   {
     "id": 1028,
@@ -1254,7 +1281,7 @@ window.RENTAL_LISTINGS = [
     "facts": [
       "Có lối đi riêng."
     ],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Hoàng Ngân, Thanh Xuân.\n\nDiện tích: 60 m².\n\nGiá thuê: 27 triệu đồng/tháng.\n\nCó lối đi riêng.\n\nVới quy mô 60 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Hoàng Ngân, Thanh Xuân.\n\nDiện tích: 60 m².\n\nGiá thuê: 27 triệu đồng/tháng.\n\nCó lối đi riêng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1267,7 +1294,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 60 m² — Hoàng Ngân, Thanh Xuân · 27 triệu/tháng",
     "address": "Hoàng Ngân, Thanh Xuân, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Hoàng Ngân, Thanh Xuân, Hà Nội\nMã tin: MB - 0021\n60 m² · 27 triệu đồng/tháng\n• Có lối đi riêng.\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 60 m² — Hoàng Ngân, Thanh Xuân · 27 triệu/tháng\nMã tin: MB - 0021\nKhu vực: Hoàng Ngân, Thanh Xuân, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Hoàng Ngân, Thanh Xuân.\n\nDiện tích: 60 m².\n\nGiá thuê: 27 triệu đồng/tháng.\n\nCó lối đi riêng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-028"
     ],
@@ -1285,7 +1312,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-cafe",
     "illustrationOriginalId": "hanoi-cafe",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-cafe-1-auto-119544124"
+    "illustrationLibraryId": "mb-cafe-1-auto-119544124",
+    "descriptionVersion": 2
   },
   {
     "id": 1029,
@@ -1301,7 +1329,7 @@ window.RENTAL_LISTINGS = [
     "size": 80,
     "areaText": "80 m²",
     "facts": [],
-    "description": "Cho thuê mặt bằng kinh doanh tại Trung Kính, Cầu Giấy.\n\nDiện tích: 80 m².\n\nGiá thuê: 35 triệu đồng/tháng.\n\nVới quy mô 80 m², khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Cho thuê mặt bằng kinh doanh tại Trung Kính, Cầu Giấy.\n\nDiện tích: 80 m².\n\nGiá thuê: 35 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1313,7 +1341,7 @@ window.RENTAL_LISTINGS = [
     "title": "Cho thuê mặt bằng kinh doanh 80 m² — Trung Kính, Cầu Giấy · 35 triệu/tháng",
     "address": "Trung Kính, Cầu Giấy, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Cho thuê mặt bằng kinh doanh — Trung Kính, Cầu Giấy, Hà Nội\nMã tin: MB - 0022\n80 m² · 35 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Cho thuê mặt bằng kinh doanh 80 m² — Trung Kính, Cầu Giấy · 35 triệu/tháng\nMã tin: MB - 0022\nKhu vực: Trung Kính, Cầu Giấy, Hà Nội\nCho thuê mặt bằng kinh doanh tại Trung Kính, Cầu Giấy.\n\nDiện tích: 80 m².\n\nGiá thuê: 35 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-029"
     ],
@@ -1331,7 +1359,8 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-eatery",
     "illustrationOriginalId": "hanoi-eatery",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-shop-4-auto-136321743"
+    "illustrationLibraryId": "mb-shop-4-auto-136321743",
+    "descriptionVersion": 2
   },
   {
     "id": 1030,
@@ -1347,7 +1376,7 @@ window.RENTAL_LISTINGS = [
     "size": 50,
     "areaText": "50 m²/sàn",
     "facts": [],
-    "description": "Sang nhượng mặt bằng kinh doanh tại Yên Lãng, Đống Đa.\n\nDiện tích mỗi sàn: 50 m².\n\nGiá thuê: 10 triệu đồng/tháng.\n\nVới quy mô 50 m² mỗi sàn, khách có thể lên phương án phân chia khu tiếp đón, trưng bày và vận hành sau khi xem bố cục thực tế.\n\nKhách có thể cân nhắc các mô hình phù hợp như cửa hàng, showroom hoặc không gian dịch vụ;\nmô hình cụ thể cần phù hợp hiện trạng và quy định sử dụng.\n\nLiên hệ để xác nhận hiện trạng, điều kiện thuê và hẹn xem.",
+    "description": "Sang nhượng mặt bằng kinh doanh tại Yên Lãng, Đống Đa.\n\nDiện tích mỗi sàn: 50 m².\n\nGiá thuê: 10 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.",
     "notes": [
       "Ảnh minh họa bằng AI, không phải ảnh hiện trạng BĐS."
     ],
@@ -1360,7 +1389,7 @@ window.RENTAL_LISTINGS = [
     "title": "Sang nhượng mặt bằng kinh doanh 50 m²/sàn — Yên Lãng, Đống Đa · 10 triệu/tháng",
     "address": "Yên Lãng, Đống Đa, Hà Nội",
     "imageAlt": "Ảnh minh họa Mặt bằng kinh doanh — không phải ảnh chụp thực tế, không xác nhận hiện trạng.",
-    "shareText": "Sang nhượng mặt bằng kinh doanh — Yên Lãng, Đống Đa, Hà Nội\nMã tin: MB - 0023\n50 m²/sàn · 10 triệu đồng/tháng\nẢnh minh họa tham khảo.\nLiên hệ: 0906 215 365 (Call/Zalo)",
+    "shareText": "Sang nhượng mặt bằng kinh doanh 50 m²/sàn — Yên Lãng, Đống Đa · 10 triệu/tháng\nMã tin: MB - 0023\nKhu vực: Yên Lãng, Đống Đa, Hà Nội\nSang nhượng mặt bằng kinh doanh tại Yên Lãng, Đống Đa.\n\nDiện tích mỗi sàn: 50 m².\n\nGiá thuê: 10 triệu đồng/tháng.\n\nKhi xem thực tế địa điểm kinh doanh, hãy đối chiếu diện tích sử dụng với cách bố trí sản phẩm và dịch vụ dự kiến.\n\nLiên hệ để xác nhận hiện trạng, nhận thông tin chi tiết và hẹn xem thực tế.\nLiên hệ: 0906215365",
     "legacyCodes": [
       "HN-030"
     ],
@@ -1378,6 +1407,7 @@ window.RENTAL_LISTINGS = [
     "illustrationAssetId": "hanoi-empty-shop",
     "illustrationOriginalId": "hanoi-empty-shop",
     "illustrationAllocationVersion": "spacing20-v1",
-    "illustrationLibraryId": "mb-cafe-2-auto-354577885"
+    "illustrationLibraryId": "mb-cafe-2-auto-354577885",
+    "descriptionVersion": 2
   }
 ];
