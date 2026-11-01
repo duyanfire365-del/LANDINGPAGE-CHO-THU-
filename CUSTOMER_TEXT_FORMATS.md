@@ -17,3 +17,11 @@ Bản sửa chụp văn bản đầu vào trước khi định tuyến, giữ `o
 Bản ghi cũ bị mất text không thể tự khôi phục từ Telegram khi trước đó chưa lưu bản gốc. Có thể phục hồi từ văn bản/ảnh người quản lý cung cấp vào đúng lần nhập, giữ bản payload trước phục hồi. Marker `recoveryEvidence.source=user-screenshot` được bộ phục hồi có xác thực xử lý theo đợt sau khi triển khai. Không giả lập webhook hoặc mở endpoint xử lý khách công khai.
 
 Không thêm API AI, dịch vụ đọc ảnh hay chi phí mới. Kiểm thử: customer-presentation-formats, telegram-flexible-customers (đi qua webhook thật + DB/Telegram giả), customers, customer-filters, customer-compare, three-bots, npm run check. Không gửi Telegram thật khi kiểm thử.
+
+## Nguyên nhân đã xác định từ lần gửi 23:27
+
+Diagnostic update 517188936/message 119 ghi nhận keys `message_id,from,chat,date,rich_message`; `text` và `caption` đều undefined. Đây là RichMessage của Telegram Bot API, không phải người gửi thiếu thông tin. Bản trước bỏ qua trường này. Bản sửa đọc RichText chuỗi/mảng/inline (bao gồm SĐT có link), paragraph/heading/list/quotation/details/table/caption; giữ rich_message gốc trong kho kín, chuẩn hóa bản sao trước các nhánh Reply/command và các bot liên kết. Không lấy metadata/ID/URL đích thay cho nội dung nhìn thấy. Giới hạn độ sâu; khối chưa hỗ trợ được lưu review và phản hồi rõ thay vì im lặng.
+
+Sau khi ghi vào kho thành công gửi biên nhận đang xử lý, rồi gửi kết quả lưu/trùng/cần kiểm tra. Reply `/trangthai` vào tin gốc hoặc biên nhận để xem trạng thái đúng bot/chat; kết quả thành công ghi rõ lưu trong quản trị, không công khai dữ liệu khách. Bảo trì webhook chạy nền, không chặn nhận tin. Nguồn định dạng: https://core.telegram.org/bots/api#richmessage.
+
+Kiểm thử thêm: telegram-rich-message và luồng webhook rich không có text/caption, trùng SĐT định dạng, lưu khách mới, Reply sửa bản gốc rich, tra trạng thái, khối chưa hỗ trợ có phản hồi và không tạo khách giả.
