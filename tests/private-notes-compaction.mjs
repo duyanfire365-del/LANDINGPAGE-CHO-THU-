@@ -3,6 +3,7 @@ const notes=['Tầng 3, tòa 447 Lạc Long Quân, 210m2, 17m, 40tr, dưới 50 
 const block=notes.join('\n'),raw=[block,block,block+'\nKhách quan tâm có thể trao đổi nhu cầu sử dụng để được tư vấn và hẹn xem thực tế.',block].join('\n');const result=compact(raw);
 for(const note of notes)assert.equal(result.split(note).length-1,1,note);assert(result.includes('Khách quan tâm'));assert.equal(compact(result),result);
 assert.equal(compact('Thanh toán: 3 tháng.','  • thanh toán : 3 tháng '),'Thanh toán: 3 tháng.');
+assert.equal(compact('- 50 triệu','50 triệu').split('\n').length,2,'negative amounts cannot be treated as bullet formatting');
 const distinct=['Cọc: 1 tháng.','Cọc: 2 tháng.','Không nhận hàng ăn.','Có nhận hàng ăn.','Giá ngày 01/11: 15 triệu.','Giá ngày 02/11: 18 triệu.','Chưa xác nhận thời hạn dưới 50.'];for(const line of distinct)assert(compact(distinct).includes(line));
 const headed='Cho thuê:\nGiá: 10 triệu.\n\nSang nhượng:\nGiá: 10 triệu.';assert.equal(compact(headed,headed),headed);assert.equal(compact(headed).split('Giá: 10 triệu.').length-1,2,'same value in different sections must stay');
 const long=Array.from({length:400},(_,i)=>'Điều kiện riêng số '+i+': vẫn giữ nguyên đầy đủ nội dung và số liệu.').join('\n');assert(long.length>8000);assert.equal(sourceInfo({privateNotes:long}).privateNotes,long);assert.equal(mergePriceNotes(long),long);
