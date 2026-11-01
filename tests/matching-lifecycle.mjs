@@ -1,0 +1,19 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {fixture} from './three-bot-fixture.mjs';
+import {matchingSnapshot,runMatchingBots} from '../lib/matching-bots.mjs';
+import {evaluateMatch,matchUnified} from '../lib/unified-match-rules.mjs';
+import {enqueueBot} from '../lib/three-bot-queue.mjs';
+const f=await fixture(),native=global.fetch;global.fetch=f.fetch;process.env.MATCH_BOTS_ENABLED='1';
+try{
+ f.tables.inquiries=[];f.tables.customer_watch=[];f.tables.notification_log=f.tables.notification_log.filter(r=>r.kind.startsWith('inventory:'));
+ const stamp=new Date().toISOString(),clean={...f.stock,slug:'live-1793300000000101',code:'MB - 9101',price:30,size:100,description:'Ưu tiên mô hình sạch'},all={...clean,slug:'live-1793300000000102',code:'MB - 9102',price:33,description:'Kinh doanh mọi loại hình, ngành nghề'};
+ for(const p of [clean,all]){f.tables.posts.push({id:randomUUID(),status:'published',created_at:stamp,public_data:p,private_data:{}});f.tables.notification_log.push({id:randomUUID(),kind:'inventory:available',record_id:p.slug,sent:true,created_at:stamp})}
+ const spa={id:randomUUID(),owner_id:null,status:'active',data:{name:'Khách Spa thiếu tài chính',area:f.stock.area,type:f.stock.type,industry:'Spa',maxBudget:null},created_at:stamp},food={id:randomUUID(),owner_id:null,status:'active',data:{name:'Khách hàng ăn 30 triệu',area:f.stock.area,type:f.stock.type,industry:'Nhà hàng / Quán ăn',maxBudget:30},created_at:stamp};f.tables.customer_watch.push(spa,food);
+ let snapshot=await matchingSnapshot(),foodCustomer=snapshot.customers.find(c=>c.name===food.data.name),spaCustomer=snapshot.customers.find(c=>c.name===spa.data.name),allStock=snapshot.stock.find(p=>p.slug===all.slug);
+ assert.equal(evaluateMatch(foodCustomer,snapshot.stock.find(p=>p.slug===clean.slug)).level,'rejected');assert.equal(evaluateMatch(foodCustomer,allStock).level,'criteria');assert(matchUnified(spaCustomer,snapshot.stock).filter(m=>m.level==='criteria').some(m=>m.slug===clean.slug));
+ await runMatchingBots();const notices=f.messages.filter(m=>m.body.text.startsWith('KHỚP NGUỒN'));assert(notices.some(m=>m.body.text.includes(spa.data.name)&&m.body.text.includes('Chưa rõ')));assert(notices.some(m=>m.body.text.includes(food.data.name)&&m.body.text.includes('10%')));assert(!notices.some(m=>m.body.text.includes(food.data.name)&&m.body.text.includes(clean.slug)));const before=f.messages.length;await runMatchingBots();assert.equal(f.messages.length,before);
+ const match=evaluateMatch(foodCustomer,allStock);await enqueueBot('matching','stale-budget-case','Không gửi ca ngân sách đã đổi',{kind:'match',customerKey:foodCustomer.key,slug:allStock.slug,signature:match.signature});food.data.maxBudget=20;await runMatchingBots();const job=f.tables.notification_log.find(r=>r.kind==='three-bot-outbox:v1'&&JSON.parse(r.record_id).text==='Không gửi ca ngân sách đã đổi');assert(JSON.parse(job.record_id).canceled);assert(!f.messages.some(m=>m.body.text==='Không gửi ca ngân sách đã đổi'));
+ food.data.maxBudget=30;f.tables.posts.find(r=>r.public_data.slug===clean.slug).public_data.description='Kinh doanh mọi loại hình, ngành nghề';snapshot=await matchingSnapshot();foodCustomer=snapshot.customers.find(c=>c.name===food.data.name);assert.equal(evaluateMatch(foodCustomer,snapshot.stock.find(p=>p.slug===clean.slug)).level,'criteria');await runMatchingBots();assert(f.messages.some(m=>m.body.text.startsWith('KHỚP NGUỒN')&&m.body.text.includes(food.data.name)&&m.body.text.includes(clean.slug)));
+ console.log('PASS matching lifecycle: new source/customer in either order, missing-finance clean use, food open-use +10%, repeat suppression, budget-edit cancels stale queue, source edit re-evaluates suitability; fake Telegram only.');
+}finally{global.fetch=native;delete process.env.MATCH_BOTS_ENABLED}

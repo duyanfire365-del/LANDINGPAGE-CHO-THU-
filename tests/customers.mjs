@@ -5,16 +5,15 @@ assert.equal(customerScope({admin:false,id:'member-1'}),'&owner_id=eq.member-1')
 assert.throws(()=>customerData({name:'A',phone:'bad'}),{status:400});assert.throws(()=>customerData({name:'A',maxBudget:-10}),{status:400});
 const parsed=parseCustomers('Tên: Anh Nam\nSĐT: 0912345678\nKhu vực: Cầu Giấy hoặc Mỹ Đình\nNgân sách tối đa: 30 triệu\nDiện tích tối thiểu: 80m²\nNhu cầu: Thuê văn phòng\n---\nTên: Chị Lan\nSĐT: 0987654321\nKhu vực: Hà Đông');assert.equal(parsed.items.length,2);assert.equal(parsed.items[0].maxBudget,30);assert.equal(parsed.items[0].minSize,80);assert.equal(parsed.items[0].industry,'Văn phòng / Showroom');
 assert.equal(parseCustomers('Tên: A\nSĐT: 0912345678 hoặc 0987654321').unresolved.length,1);
-const stock=[{slug:'hn-001',area:'Nam Từ Liêm',type:'Văn phòng',description:'Văn phòng tại Mỹ Đình',size:100,price:25},{slug:'hn-002',area:'Cầu Giấy',type:'Văn phòng',size:100,price:40,description:'Văn phòng'},{slug:'hn-003',area:'Cầu Giấy',type:'Văn phòng',size:100,price:20,availability:'rented',description:'Văn phòng'}];assert.deepEqual(customerMatches(parsed.items[0],stock).map(m=>m.slug),['hn-001']);
+const stock=[{slug:'hn-001',area:'Nam Từ Liêm',type:'Văn phòng',description:'Văn phòng tại Mỹ Đình',size:100,price:26,availability:'available'},{slug:'hn-002',area:'Cầu Giấy',type:'Văn phòng',size:100,price:40,availability:'available',description:'Văn phòng'},{slug:'hn-003',area:'Cầu Giấy',type:'Văn phòng',size:100,price:20,availability:'rented',description:'Văn phòng'}];assert.deepEqual(customerMatches(parsed.items[0],stock).map(m=>m.slug),['hn-001']);
 assert.equal(customerData({name:'Anh Nam',type:'VP',industry:'văn phòng'}).type,'Văn phòng');
 console.log('PASS: private owner scopes, customer parsing, multi-customer boundaries, ambiguous phones retained, budget/size validation, matching expanded locations, exclusion of over-budget and unavailable stock');
 
 const many=Array.from({length:12},(_,i)=>({...stock[0],slug:'live-'+(1791999999999000+i)}));assert.equal(customerMatches(parsed.items[0],many).length,12,'new matching sources beyond the first six remain eligible for alerts');
 
-const local=JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../public/listings.json',import.meta.url),'utf8'));
 const screenshot={area:'Hà Đông',type:'Mặt bằng kinh doanh',maxBudget:30,minSize:40,industry:'Nhà hàng / Quán ăn',requirements:'Cần mở quán ăn'};
-const suggested=customerMatches(screenshot,local);for(const code of ['MB - 0002','MB - 0006','MB - 0012'])assert(suggested.some(p=>p.code===code),code+' must not be hidden because industry is unconfirmed');assert(suggested.some(p=>p.checks.length));assert(!suggested.some(p=>p.code==='NC - 0004'));
-assert.equal(customerMatches({...screenshot,type:'  mbkd  '},[{slug:'hn-010',area:'hà đông',type:'MẶT BẰNG KINH DOANH',categories:[],size:40,price:30}]).length,1);
-assert.equal(customerMatches(screenshot,[{slug:'hn-010',area:'Hà Đông',type:'Mặt bằng kinh doanh',size:39,price:30},{slug:'hn-011',area:'Hà Đông',type:'Mặt bằng kinh doanh',size:40,price:31}]).length,0,'budget/area/type/size remain required');
-
-assert.equal(customerMatches(screenshot,[{slug:'hn-012',area:'Hà Đông',type:'Mặt bằng kinh doanh',size:50,price:20,description:'Không kinh doanh ăn uống'}]).length,0,'explicit business prohibitions remain excluded');
+const source={slug:'hn-010',area:'Hà Đông',type:'Mặt bằng kinh doanh',size:50,price:30,availability:'available',description:'Kinh doanh mọi loại hình, ngành nghề'};
+assert.equal(customerMatches(screenshot,[source]).length,1);
+assert.equal(customerMatches({...screenshot,type:'  mbkd  '},[{...source,type:'MẶT BẰNG KINH DOANH'}]).length,1);
+for(const change of [{size:39},{price:35},{price:25},{area:'Cầu Giấy'},{availability:'rented'},{description:'Không kinh doanh ăn uống'},{description:'Chỉ nhận mô hình sạch'},{description:'Gần quán ăn'}])assert.equal(customerMatches(screenshot,[{...source,...change}]).length,0,JSON.stringify(change));
+assert.equal(customerMatches(screenshot,[{...source,price:34.5}]).length,1);
