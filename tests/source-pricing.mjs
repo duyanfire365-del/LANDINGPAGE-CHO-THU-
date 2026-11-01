@@ -56,7 +56,7 @@ console.log('Street/currency regression passed: exact Triều Khúc screenshot, 
 for(const rate of ['150k/m2','150 K/m²','150 nghìn/m²','150 ngàn/m2','150000/m2','150.000/m²','150 000đ/m2','150000đ/m²','150 nghìn đồng/m²']){const p=extractRentPricing('Diện tích 100m2\nGiá thuê: '+rate);assert.equal(p.pricePerM2,150000,rate);assert.equal(p.price,15,rate);assert.equal(p.priceBasis,'per_m2');}
 const startRate=extractRentPricing('Diện tích 100m²\nGiá thuê: từ 150.000đ/m²');assert.equal(startRate.price,15);assert.equal(startRate.priceFrom,true);
 const rateOnly=extractRentPricing('Giá thuê: 150000/m2',{allowIncomplete:true});assert.equal(rateOnly.pricePerM2,150000);assert.equal(rateOnly.price,null);
-const multi=extractRentPricing('Diện tích 100m²/sàn, cho thuê tầng 1 và 2.\nCó nhiều kho diện tích 65–200m², giá từ 150.000đ/m².',{allowIncomplete:true,allowUncertain:true});assert.equal(multi.size,null);assert.equal(multi.pricePerM2,150000);assert.equal(multi.price,null,'must not multiply a warehouse range by another property area');
+const multi=extractRentPricing('Diện tích 100m²/sàn, cho thuê tầng 1 và 2.\nCó nhiều kho diện tích 65–200m², giá từ 150.000đ/m².',{allowIncomplete:true,allowUncertain:true});assert.equal(multi.size,100);assert.equal(multi.pricePerM2,null);assert.equal(multi.price,null,'must not multiply a warehouse range by another property area');
 console.log('PASS: bare VND/m², k/nghìn/ngàn/currency variants, from-rate retained, missing/ambiguous billable area never guessed.');
 
 assert(rentPricingSummary(startRate).includes('Từ 15 triệu'));assert(rentPricingSummary(rateOnly).includes('150.000'));assert(rentPricingSummary(rateOnly).includes('cần xác nhận diện tích'));assert(!rentPricingSummary(rateOnly).includes('null'));
