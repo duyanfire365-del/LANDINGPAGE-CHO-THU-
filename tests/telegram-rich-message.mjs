@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {telegramRichText,telegramRichBlocks,telegramMessageText,readableTelegramMessage} from '../lib/telegram-message-text.mjs';
+const rich={blocks:[{type:'paragraph',text:['KH: ',{type:'bold',text:'Anh A'},' - Sdt: ',{type:'phone_number',text:'096.112.9229',phone_number:'0999999999'}]},{type:'list',items:[{blocks:[{type:'paragraph',text:'Diện tích: 100-250m2'}]},{blocks:[{type:'paragraph',text:'Mặt tiền tối thiểu 5 mét.'}]}]}]};
+assert.equal(telegramMessageText({rich_message:rich}),'KH: Anh A - Sdt: 096.112.9229\n• Diện tích: 100-250m2\n• Mặt tiền tối thiểu 5 mét.');
+assert.equal(telegramRichText({type:'url',text:'Bài gốc',url:'https://hidden-target.invalid'}),'Bài gốc');
+assert.equal(telegramRichBlocks([{type:'details',summary:'Nhu cầu',blocks:[{type:'table',cells:[[{text:'Khu vực'},{text:'Hà Đông'}]],caption:'Ghi chú'}]}]),'Nhu cầu\nKhu vực\tHà Đông\nGhi chú');
+assert.equal(telegramMessageText({text:'văn bản',rich_message:rich}),'văn bản');assert.equal(telegramMessageText({caption:'chú thích'}),'chú thích');
+const original={rich_message:rich,reply_to_message:{rich_message:rich}},copy=readableTelegramMessage(original);assert.equal(original.text,undefined);assert.equal(copy.text,copy.reply_to_message.text);assert.deepEqual(copy.rich_message,rich);
+assert.equal(telegramMessageText({rich_message:{blocks:[{type:'new',id:'12345'}]}}),'');
+let nested='stop';for(let i=0;i<100;i++)nested={type:'bold',text:nested};assert.equal(telegramRichText(nested),'');
+console.log('PASS Telegram RichMessage visible text, nested inline formatting/phone, list/table/details, reply copies, ordinary text/caption, unsupported metadata and depth limits.');

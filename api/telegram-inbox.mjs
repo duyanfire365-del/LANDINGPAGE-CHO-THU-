@@ -1,3 +1,4 @@
+import {readableTelegramMessage} from '../lib/telegram-message-text.mjs';
 import {queueCustomerMessage,processCustomerImport} from '../lib/customer-imports.mjs';
 import {linkedBot,linkedBotSecret,linkedTelegram,ensureLinkedBotWebhooks,linkedUpdateId,linkedWebhookURL} from '../lib/linked-telegram-bots.mjs';
 import {resolveReplyUpdate} from '../lib/telegram-reply-updates.mjs';
@@ -43,7 +44,7 @@ export default async function handler(req,res){
   }
   ready();const supplied=String(req.headers['x-telegram-bot-api-secret-token']||'');
   if(! /^[a-f0-9]{64}$/.test(supplied)||!timingSafeEqual(Buffer.from(supplied),Buffer.from(secret())))return send(res,403,{error:'Forbidden'});
-  const update=await readJson(req,200000);let m=update.message||update.edited_message,recovering=false;
+  const update=await readJson(req,200000);let m=readableTelegramMessage(update.message||update.edited_message),recovering=false;
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
   if(process.env.VERCEL_ENV==='production'){waitUntil(ensureLinkedBotWebhooks());waitUntil(import('../lib/source-delivery-recovery.mjs').then(m=>m.recoverSourceDeliveries()).catch(()=>{}));}
