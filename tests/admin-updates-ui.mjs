@@ -28,7 +28,7 @@ try{
  assert.equal(await form.locator('[name=password]').inputValue(),'');
  await page.locator('[data-admin-view=posts]').click();await page.locator('#management-posts .source-row>summary').click();await page.locator('[data-edit-post]').click();
  const edit=page.locator('#post-edit-dialog');await edit.locator('[name=code]').fill('KX - 0077');await edit.locator('button[type=submit]').click();
- await page.waitForFunction(()=>!document.querySelector('#post-edit-dialog'));
+ await page.locator('#post-edit-dialog [data-edit-done]').click();await page.waitForFunction(()=>!document.querySelector('#post-edit-dialog'));
  assert(submitted.some(b=>b.action==='edit-post'&&b.code==='KX - 0077'));
 if(!await page.locator('#management-posts .source-row').evaluate(el=>el.open))await page.locator('#management-posts .source-row>summary').click();await page.locator('#management-posts [data-source-open]').click();
  await page.locator('dialog[open] .source-info-fields [name=privateNotes]').waitFor();assert.equal(await page.locator('dialog[open] .source-info-fields [name=privateNotes]').inputValue(),'Hẹn chủ trước 30 phút');
