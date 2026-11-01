@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');
+const S=require('../public/admin-source-search.js');
+const row={slug:'one',code:'MB - 0070',legacyCodes:['NC - 0009'],type:'Mặt bằng kinh doanh',categories:['Văn phòng'],area:'Hà Đông',title:'Cho thuê Nguyễn Khuyến',address:'Nguyễn Khuyến, Văn Quán',size:60,price:15,frontage:null,floors:4,post:{private_data:{address:'Số 18 Nguyễn Khuyến',sourceInfo:{sourceName:'Duy Trần',ownerPhones:['0906215365']},privateFrontage:3.2,privateTransferPrice:180,priceTrackingNotes:'Hoa hồng 50%'}}};
+const match=(q,r=row)=>S.matches(r,S.parse(q));
+for(const q of ['mặt bằng Hà Đông 50–100m² dưới 20 triệu','van phong ha dong 60m2 15tr','MB0070','NC0009','Nguyen Khuyen Van Quan','nguồn Duy Tran','0906 215 365','mặt tiền 3,2m','4 tầng','giá sang nhượng dưới 200 triệu','hoa hồng 50%','số 18','15.000.000đ'])assert(match(q),q);
+for(const q of ['Hà Đông dưới 15 triệu','trên 60m2','Long Biên','MB0071','200m2','kho xưởng','giá sang nhượng dưới 180 triệu'])assert(!match(q),q);
+assert(!match('dưới 20 triệu',{...row,price:null}));assert(!match('dưới 100m2',{...row,size:null}));
+assert.deepEqual(S.parse('ha dong 20 den 30 trieu').price,{min:20,max:30});
+assert.deepEqual(S.parse('ngân sách 20.000.000đ').price,{min:20,max:20});
+assert.equal(S.parse('mặt tiền 4,7m').frontage.min,4.7);
+console.log('Admin search: intent, numeric bounds, private fields, legacy codes and secondary categories passed');
