@@ -12,3 +12,9 @@ assert.deepEqual(locations({area:'Cầu Giấy',requirements:'quanh Mỹ Đình,
 assert.deepEqual(locations({area:'Cầu Giấy',requirements:'chỉ tìm Hà Đông'}).areas,['Hà Đông']);
 assert(!locations({area:'Cầu Giấy',requirements:'không ở Hà Đông'}).areas.includes('Hà Đông'));
 const expanded=match([{slug:'hd',area:'Hà Đông',type:'Văn phòng',price:20,size:100},{slug:'cg',area:'Cầu Giấy',type:'Văn phòng',price:20,size:100}],{area:'Cầu Giấy',requirements:'Hà Đông cũng được'});assert.equal(expanded.length,2);assert(expanded.find(r=>r.post.slug==='hd').reasons.some(r=>r.includes('bổ sung')));
+const publicRows=[{slug:'xom',code:'MB - 0025',title:'Sang nhượng mặt bằng kinh doanh — Xốm, Hà Đông',area:'Hà Đông',price:16,size:100,availability:'available'},{slug:'other',code:'MB - 0026',title:'Mặt bằng Cầu Giấy',area:'Cầu Giấy',price:16,size:100},{slug:'gone',title:'Xốm',availability:'rented'},{slug:'paused',title:'Xốm',availability:'paused'}];
+for(const query of ['133 xốm','133 Xom','anh muốn tìm 133 Xốm','đường Xốm']){const results=match(publicRows,{requirements:query,textSearch:true});assert.equal(results[0].post.slug,'xom');assert.equal(results.length,1);assert(!results[0].reasons.some(r=>r.includes('133')))}
+assert.equal(match(publicRows,{requirements:'MB0025',textSearch:true})[0].post.slug,'xom');
+assert.equal(match(publicRows,{requirements:'đường Không Tồn Tại ABCXYZ',textSearch:true}).length,0);
+assert.equal(match(publicRows,{requirements:'133 Xốm'}).length,0,'private automated customer matching remains opt-in for free text');
+console.log('PASS: public street/diacritic/code/free-text search without contact fields, no fabricated house-number match, rented/paused excluded, private matching unchanged.');
