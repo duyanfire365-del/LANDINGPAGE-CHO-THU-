@@ -19,3 +19,5 @@ assert.equal(match(publicRows,{requirements:'MB0025',textSearch:true})[0].post.s
 assert.equal(match(publicRows,{requirements:'đường Không Tồn Tại ABCXYZ',textSearch:true}).length,0);
 assert.equal(match(publicRows,{requirements:'133 Xốm'}).length,0,'private automated customer matching remains opt-in for free text');
 console.log('PASS: guest address queries disabled, public district/code search without contact fields, rented/paused excluded, private matching unchanged.');
+
+const lowerBound=match([{slug:'from',price:15,priceFrom:true,size:100}],{maxBudget:20});assert(lowerBound[0].gaps.includes('Cần xác nhận giá thuê chính xác từ mức khởi điểm'));

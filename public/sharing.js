@@ -1,5 +1,5 @@
 (() => {
-  const priceText=value=>Number(value)>0?new Intl.NumberFormat('vi-VN').format(value)+' triệu đồng/tháng':'Giá liên hệ';
+  const priceText=(value,from=false)=>Number(value)>0?(from?'Từ ':'')+new Intl.NumberFormat('vi-VN').format(value)+' triệu đồng/tháng':'Giá liên hệ';
   const sizeText=value=>Number(value)>0?new Intl.NumberFormat('vi-VN').format(value)+' m²':'Diện tích đang cập nhật';
   const transferText=post=>'Giá chuyển nhượng: '+(Number(post.transferPrice)>0?new Intl.NumberFormat('vi-VN').format(post.transferPrice)+' triệu đồng':'Liên hệ')+(post.transferNegotiable?' — Có thể thương lượng':'');
   const files = new Map(), albums = new Map();
@@ -12,7 +12,7 @@
   function compactCaption(listing){
     const address=String(listing.address||listing.area||'').trim();
     const heading=listing.type?(listing.isTransfer?'Sang nhượng ':'Cho thuê ')+String(listing.type).toLocaleLowerCase('vi')+(address?' — '+address:''):publicCaption(listing.title)||'Bất động sản cho thuê';
-    const dimensions=[Number(listing.size)>0?sizeText(listing.size)+(listing.areaPerFloor?'/sàn':''):'',Number(listing.floors)>0?listing.floors+' tầng':'',listing.bedrooms!=null?'Phòng ngủ: '+listing.bedrooms+'.':'',listing.bathrooms!=null?'Phòng WC: '+listing.bathrooms+'.':'',Number(listing.frontage)>=3.5?'MT '+String(listing.frontage).replace('.',',')+' m':'',priceText(listing.price)].filter(Boolean).join(' · ');
+    const dimensions=[Number(listing.size)>0?sizeText(listing.size)+(listing.areaPerFloor?'/sàn':''):'',Number(listing.floors)>0?listing.floors+' tầng':'',listing.bedrooms!=null?'Phòng ngủ: '+listing.bedrooms+'.':'',listing.bathrooms!=null?'Phòng WC: '+listing.bathrooms+'.':'',Number(listing.frontage)>=3.5?'MT '+String(listing.frontage).replace('.',',')+' m':'',priceText(listing.price,listing.priceFrom)].filter(Boolean).join(' · ');
     const selected=[],seen=new Set();
     const candidates=publicCaption(listing.description||'').split(/\n+/).concat(listing.facts||[]);
     for(const raw of candidates){
