@@ -42,3 +42,8 @@ assert.equal(run({industry:'Nhà hàng'},{description:'Dự kiến nhận kinh d
 assert.equal(customerData({area:'Hà Đông',industry:'Spa'}).name,'Khách chưa rõ tên');assert.throws(()=>customerData({}),{status:400});assert(customerData({industry:'Cà phê / Nhà hàng'}).industry.includes('Nhà hàng'));
 
 assert.equal(run({area:'',requirements:'Không yêu cầu khu vực'}).level,'criteria');assert.equal(run({area:'',requirements:'Không yêu cầu khu vực; không Hà Đông'}).level,'rejected');
+
+for(const industry of ['Spa','Văn phòng','Cà phê'])assert.equal(run({industry},{description:'Phù hợp spa, văn phòng, cà phê'}).level,'criteria',industry+' in an affirmative list');
+assert.equal(run({industry:'Cà phê'},{description:'Không nhận hàng ăn, cà phê, quán ốc'}).level,'rejected');assert.equal(run({industry:'Cà phê'},{description:'Không hàng ăn, ưu tiên cà phê, spa'}).level,'criteria');assert.equal(run({industry:'Nhà hàng'},{description:'Kinh doanh mọi loại hình, trừ hàng ăn'}).level,'rejected');
+
+assert.equal(run({industry:'Cà phê'},{description:'Phù hợp spa, gần quán cà phê'}).level,'review');assert.equal(run({industry:'Spa'},{description:'Gần quán cà phê, phù hợp spa'}).level,'criteria');
