@@ -1,4 +1,5 @@
 import {listNews,getNews,saveNews} from '../lib/news.mjs';
+import {trafficReport} from '../lib/website-traffic.mjs';
 import {apifyHook,apifyConnectionView,checkApifyConnection,apifyWebhookSetup,syncLatestApify,syncApifyRun} from '../lib/apify-connection.mjs';
 import {qualifiedScanIngest,scanReview} from '../lib/qualified-scan-ingest.mjs';
 import {previewApify,importApify,savedCommentTargets} from '../lib/apify-import.mjs';
@@ -52,6 +53,7 @@ export default async function handler(req,res){
   if(req.method==='GET'){
    if(customerParams.get('view')==='news'){requireAdmin(req);return send(res,200,customerParams.get('id')?{article:await getNews(customerParams.get('id'),{admin:true})}:await listNews({admin:true,offset:Number(customerParams.get('offset')||0)}));}
    const params=new URL(req.url,'http://localhost').searchParams;
+   if(params.get('view')==='traffic'){requireAdmin(req);return send(res,200,await trafficReport(params));}
    if(params.get('view')==='apify-connection'){requireAdmin(req);return send(res,200,await apifyConnectionView());}
    if(params.get('view')==='site-content'){requireAdmin(req);return send(res,200,await siteContent());}
    if(params.get('view')==='website-logo'){requireAdmin(req);return send(res,200,await websiteLogoMetadata());}
