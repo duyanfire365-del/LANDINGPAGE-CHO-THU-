@@ -1,3 +1,4 @@
+import {handleNewsTelegram} from '../lib/news-telegram.mjs';
 import {readableTelegramMessage} from '../lib/telegram-message-text.mjs';
 import {queueCustomerMessage,processCustomerImport} from '../lib/customer-imports.mjs';
 import {linkedBot,linkedBotSecret,linkedTelegram,ensureLinkedBotWebhooks,linkedUpdateId,linkedWebhookURL} from '../lib/linked-telegram-bots.mjs';
@@ -48,6 +49,7 @@ export default async function handler(req,res){
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
   if(process.env.VERCEL_ENV==='production'){waitUntil(ensureLinkedBotWebhooks());waitUntil(import('../lib/source-delivery-recovery.mjs').then(m=>m.recoverSourceDeliveries()).catch(()=>{}));}
+  if(await handleNewsTelegram(m,update.update_id,botId))return send(res,200,{ok:true});
   const customer=await queueCustomerMessage(m,update.update_id,botId,{edited:!!update.edited_message});if(customer.handled){if(customer.id)waitUntil(processCustomerImport(customer.id));return send(res,200,{ok:true});}
   if(/^[0-3]$/.test(String(m.text||'').trim())){
    const decision=await answerSourceChoice(m,text=>sourceReply(telegram,text),{botId});
@@ -122,5 +124,5 @@ export default async function handler(req,res){
   if(text||!m.media_group_id)await sourceReply(telegram,receiptText(row,enabled)+'\nMã nguồn: '+row.id,{recordId:row.id,phase:'receipt',replyTo:m.message_id,botId});
   if(enabled&&!['published','updated','duplicate'].includes(row.processing_status))waitUntil(processSource(row.id));
   return send(res,200,{ok:true});
- }catch(error){if(verifiedOwner&&process.env.VERCEL)console.error(JSON.stringify({event:'source-intake-failed',stage,code:error.databaseCode||error.name||'Error',httpStatus:error.databaseStatus||error.status||0}));if(verifiedOwner)await sourceReply(telegram,'Chưa hoàn tất bước: '+stage+'. '+sourceStorageError(error)+' Mã lỗi: '+(error.databaseCode||error.name||'Error')+'. '+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.');return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
+ }catch(error){if(verifiedOwner&&process.env.VERCEL)console.error(JSON.stringify({event:'source-intake-failed',stage,code:error.databaseCode||error.name||'Error',httpStatus:error.databaseStatus||error.status||0}));if(verifiedOwner&&!error.newsRequest)await sourceReply(telegram,'Chưa hoàn tất bước: '+stage+'. '+sourceStorageError(error)+' Mã lỗi: '+(error.databaseCode||error.name||'Error')+'. '+' Anh gửi /status hoặc mở Quản trị → Nguồn từ bot Telegram → Kiểm tra bot / webhook. Tin này chưa được xác nhận đăng.');return send(res,error.status||502,{error:error.message||'Chưa lưu được nguồn Telegram.'});}
 }

@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import {randomUUID,createHmac} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
+import sharp from 'sharp';
+import {newsFixture} from './news-fixture.mjs';
+import {saveNews,listNews,getNews,prepareNewsCover} from '../lib/news.mjs';
+import {handleNewsTelegram,parseNewsMessage} from '../lib/news-telegram.mjs';
+import workspace from '../api/workspace.mjs';
+import catalog from '../api/catalog.mjs';
+import property from '../api/property.mjs';
+import files from '../api/files.mjs';
+import inbox from '../api/telegram-inbox.mjs';
+import {customerHook} from '../lib/customer-imports.mjs';
+import {linkedBotSecret,linkedBot} from '../lib/linked-telegram-bots.mjs';
+const f=await newsFixture(),original=global.fetch;global.fetch=f.fetch;
+async function call(handler,method,url,body,headers={}){let status,replyHeaders,payload;await handler({method,url,body,headers:{host:'localhost','content-type':'application/json',...headers},socket:{remoteAddress:'news-test'}},{writeHead(s,h){status=s;replyHeaders=h},end(p){payload=p},setHeader(){}});return {status,headers:replyHeaders,payload};}
+try{
+ process.env.ADMIN_SECRET='news-fake-test-only-secret-1234567890';const verifier=JSON.parse(await readFile('lib/admin-password.json','utf8')),value=String(Date.now()+3600000)+'.news',sig=createHmac('sha256','rental-admin-session:'+process.env.ADMIN_SECRET+':'+verifier.hash).update(value).digest('base64url'),cookie={cookie:'rental_admin='+value+'.'+sig};
+ const base={id:randomUUID(),title:'Tin thị trường <script>alert(1)</script>',content:'Nội dung chi tiết\n\n<script>alert(2)</script>',source_url:'https://example.com/news',status:'draft'},png=(await sharp({create:{width:600,height:400,channels:3,background:'red'}}).png().toBuffer()).toString('base64');
+ let saved=await saveNews({...base,coverBase64:png});assert.equal((await listNews()).articles.length,0);assert.equal((await listNews({admin:true})).articles.length,1);assert(!JSON.stringify(saved).includes('base64'));assert.equal((await call(files,'GET','/api/files?action=news-cover&id='+base.id)).status,404);assert.equal((await call(files,'GET','/api/files?action=news-cover-preview&id='+base.id)).status,401);assert.equal((await call(files,'GET','/api/files?action=news-cover-preview&id='+base.id,null,cookie)).status,200);
+ assert.equal((await call(workspace,'GET','/api/workspace?view=news')).status,401);assert.equal((await call(workspace,'POST','/api/workspace?news=1',{action:'news-save',...base})).status,401);assert.equal((await call(workspace,'POST','/api/workspace?news=1',{action:'news-save',...base},{...cookie,origin:'https://evil.example'})).status,403);
+ assert.equal((await call(workspace,'GET','/api/workspace?view=news&id='+base.id,null,cookie)).status,200);
+ await assert.rejects(saveNews({...base,revision:null}),{status:409});await assert.rejects(saveNews({...base,id:randomUUID(),source_url:'javascript:alert(1)'}),{status:400});await assert.rejects(saveNews({...base,id:randomUUID(),title:''}),{status:400});await assert.rejects(prepareNewsCover(Buffer.from('<svg/>').toString('base64')),{status:400});await assert.rejects(prepareNewsCover('%%%'),{status:400});
+ let res=await call(workspace,'POST','/api/workspace?news=1',{action:'news-save',...base,revision:saved.article.revision,status:'published',featured:true},cookie);assert.equal(res.status,200);saved=JSON.parse(res.payload);assert(saved.article.published_at);const pub=await call(catalog,'GET','/api/catalog?view=news');assert.equal(pub.status,200);for(const secret of ['source_key','revision','base64','content','source_update'])assert(!String(pub.payload).includes('"'+secret+'"'));
+ const html=await call(property,'GET','/api/property?news='+saved.article.slug);assert.equal(html.status,200);assert(!html.payload.includes('<script>alert'));assert(html.payload.includes('&lt;script&gt;alert(2)'));assert(html.payload.includes('og:title'));assert((await call(files,'GET','/api/files?action=news-cover&id='+base.id)).payload.length>0);
+ f.setNewsRace(true);await assert.rejects(saveNews({...base,revision:saved.article.revision}),{status:409});f.setNewsRace(false);
+ saved=await saveNews({...base,revision:saved.article.revision,status:'archived'});assert.equal((await listNews()).articles.length,0);assert.equal((await call(property,'GET','/api/property?news='+saved.article.slug)).status,404);assert.equal((await call(files,'GET','/api/files?action=news-cover&id='+base.id)).status,404);
+ process.env.TELEGRAM_SOURCE_BOT_TOKEN='123456:'+'a'.repeat(35);process.env.TELEGRAM_SOURCE_OWNER_ID='777';process.env.TELEGRAM_CUSTOMER_BOT_TOKEN='234567:'+'b'.repeat(35);process.env.TELEGRAM_CUSTOMER_OWNER_ID='777';
+ const m={message_id:100,from:{id:777},chat:{id:777,type:'private'},text:'/tintuc Tin mới\nNội dung tin tức\nNguồn: https://example.com/source'};
+ assert.equal(parseNewsMessage('Cho thuê nhà'),null);assert.equal(await handleNewsTelegram({...m,text:'Khách cần thuê nhà'},1,'source'),false);assert.equal(await handleNewsTelegram({...m,text:'/tintuc'},2,'source'),true);assert(f.messages.at(-1).body.text.includes('/nhaptintuc'));await assert.rejects(handleNewsTelegram({...m,from:{id:999}},3,'source'),{status:403});
+ assert.equal((await call(inbox,'POST','/api/telegram-inbox?webhook=1',{update_id:20,message:m},{'x-telegram-bot-api-secret-token':'f'.repeat(64)})).status,403);
+ const headers={'x-telegram-bot-api-secret-token':linkedBotSecret(linkedBot('source'))};assert.equal((await call(inbox,'POST','/api/telegram-inbox?webhook=1',{update_id:20,message:m},headers)).status,200);assert.equal(f.rows.length,2);assert(f.messages.at(-1).body.text.includes('Đã đăng Tin tức Hot thành công'));const originalArticle=f.rows[1];
+ await handleNewsTelegram(m,20,'source');assert.equal(f.rows.length,2);await handleNewsTelegram({...m,text:'/tintuc Tiêu đề mới\nNội dung sửa'},21,'source');assert.equal(originalArticle.title,'Tiêu đề mới');await handleNewsTelegram(m,20,'source');assert.equal(originalArticle.title,'Tiêu đề mới');
+ const receipt=f.messages.at(-1).body.text;await handleNewsTelegram({...m,message_id:101,text:'/gotintuc',reply_to_message:{text:receipt}},22,'source');assert.equal(originalArticle.status,'archived');
+ const cHeaders={'x-telegram-bot-api-secret-token':linkedBotSecret(linkedBot('customer'))};assert.equal((await call((req,res)=>customerHook(req,res,()=>{}),'POST','/api/workspace?customer-hook=1',{update_id:23,message:{...m,message_id:102,text:'/nhaptintuc Nháp khách\nNội dung chưa công khai'}},cHeaders)).status,200);assert.equal(f.rows[2].status,'draft');assert.equal(f.tables.posts.length,0);assert.equal(f.tables.inquiries.length,2);
+ await handleNewsTelegram({...m,message_id:103,text:'/tintuc Không hợp lệ\nNội dung\nNguồn: javascript:alert(1)'},24,'source');assert(f.messages.at(-1).body.text.startsWith('Chưa đăng/cập nhật tin tức:'));assert.equal(f.rows.length,3);
+ const manual=await saveNews({...await getNews(originalArticle.id,{admin:true}),content:'Admin sửa',status:'draft'});await handleNewsTelegram({...m,text:'/tintuc Ghi đè\nKhông được ghi đè'},25,'source');assert.equal(originalArticle.content,'Admin sửa');assert(f.messages.at(-1).body.text.includes('đã được chỉnh trong quản trị'));
+ global.fetch=async(raw,options={})=>{const u=new URL(raw);if(u.hostname==='api.telegram.org'&&u.pathname.endsWith('/getFile'))return Response.json({ok:true,result:{file_path:'photos/news.jpg'}});if(u.hostname==='api.telegram.org'&&u.pathname.startsWith('/file/'))return new Response(Buffer.from(png,'base64'));return f.fetch(raw,options)};
+ await handleNewsTelegram({...m,message_id:200,text:undefined,caption:'/nhaptintuc Tin kèm ảnh\nNội dung ảnh',photo:[{file_id:'fake-photo',file_size:1000}]},30,'source');assert.equal(f.rows.at(-1).has_cover,true);assert.equal(f.rows.at(-1).status,'draft');
+ const count=f.rows.length;await handleNewsTelegram({...m,message_id:201,photo:[{file_id:'fake-photo',file_size:3000000}]},31,'source');assert.equal(f.rows.length,count);assert(f.messages.at(-1).body.text.includes('tối đa 2 MB'));
+ global.fetch=f.fetch;
+ for(let i=0;i<22;i++)await saveNews({...base,id:randomUUID(),title:'Bài '+i,status:'published'});assert.equal((await listNews()).articles.length,20);assert((await listNews()).hasMore);assert.equal((await listNews({offset:20})).articles.length,2);await assert.rejects(listNews({offset:-1}),{status:400});
+ console.log('PASS news: admin CRUD/CAS/CSRF, draft/archive privacy, bounded image conversion, SSR escaping, public projection/pagination, owner-only Telegram routes in both bots, retries/edited updates, no duplicate or BĐS/customer writes.');
+}finally{global.fetch=original;}

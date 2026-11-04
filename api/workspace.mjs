@@ -1,3 +1,4 @@
+import {listNews,getNews,saveNews} from '../lib/news.mjs';
 import {apifyHook,apifyConnectionView,checkApifyConnection,apifyWebhookSetup,syncLatestApify,syncApifyRun} from '../lib/apify-connection.mjs';
 import {qualifiedScanIngest,scanReview} from '../lib/qualified-scan-ingest.mjs';
 import {previewApify,importApify,savedCommentTargets} from '../lib/apify-import.mjs';
@@ -49,6 +50,7 @@ export default async function handler(req,res){
   if(customerParams.has('google-docs-hook'))return await (await import('../lib/google-doc-automation.mjs')).googleDocsHook(req,res,p=>waitUntil(p));
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
+   if(customerParams.get('view')==='news'){requireAdmin(req);return send(res,200,customerParams.get('id')?{article:await getNews(customerParams.get('id'),{admin:true})}:await listNews({admin:true,offset:Number(customerParams.get('offset')||0)}));}
    const params=new URL(req.url,'http://localhost').searchParams;
    if(params.get('view')==='apify-connection'){requireAdmin(req);return send(res,200,await apifyConnectionView());}
    if(params.get('view')==='site-content'){requireAdmin(req);return send(res,200,await siteContent());}
@@ -105,8 +107,9 @@ export default async function handler(req,res){
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
-  if(customerParams.has('site-content')||customerParams.has('website-logo'))requireAdmin(req);
-  const body=await readJson(req,customerParams.has('site-content')||customerParams.has('website-logo')||customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
+  if(customerParams.has('news')||customerParams.has('site-content')||customerParams.has('website-logo'))requireAdmin(req);
+  const body=await readJson(req,customerParams.has('news')||customerParams.has('site-content')||customerParams.has('website-logo')||customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
+  if(String(body.action||'').startsWith('news-')){requireAdmin(req);if(body.action!=='news-save')return send(res,400,{error:'Thao tác tin tức không hợp lệ.'});return send(res,200,await saveNews(body));}
   if(String(body.action||'').startsWith('site-content-')){requireAdmin(req);return send(res,200,await saveSiteContent(body));}
   if(String(body.action||'').startsWith('website-logo-')){requireAdmin(req);return send(res,200,await saveWebsiteLogo(body));}
   if(String(body.action||'').startsWith('matching-bots-')){requireAdmin(req);if(body.action==='matching-bots-run')return send(res,200,await runMatchingBots());if(body.action==='matching-bots-stock'){const result=await saveStockMatchingCriteria(body);laterMatchingBots();return send(res,200,result)}if(body.action==='matching-bots-profile'){const result=await saveMatchingProfile(body);laterMatchingBots();return send(res,200,result)}if(body.action==='matching-bots-test'){if(!Object.hasOwn(botChannels,body.channel))throw Object.assign(Error('Kênh bot không hợp lệ.'),{status:400});return send(res,200,await sendBot(body.channel,'Kiểm tra kết nối: '+botChannels[body.channel].label+'\nhttps://nguonchothue.vn/admin'))}return send(res,400,{error:'Thao tác không hợp lệ.'})}
