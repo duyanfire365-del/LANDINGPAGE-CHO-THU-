@@ -1,0 +1,261 @@
+{
+  "sections": [
+    {
+      "id": "search",
+      "label": "Thanh tìm kiếm",
+      "selector": "main > .search-wrap"
+    },
+    {
+      "id": "hero",
+      "label": "Banner giới thiệu",
+      "selector": "main > .hero"
+    },
+    {
+      "id": "listings",
+      "label": "Danh mục và danh sách BĐS",
+      "selector": "main > .listings"
+    },
+    {
+      "id": "process",
+      "label": "Quy trình tìm thuê",
+      "selector": "main > .process"
+    },
+    {
+      "id": "contact",
+      "label": "Biểu mẫu liên hệ / ký gửi",
+      "selector": "main > .contact"
+    },
+    {
+      "id": "faq",
+      "label": "Câu hỏi thường gặp",
+      "selector": "main > .faq"
+    }
+  ],
+  "fields": [
+    {
+      "id": "heroEyebrow",
+      "label": "Banner: dòng giới thiệu",
+      "selector": ".hero .eyebrow",
+      "value": "NGUỒN CHO THUÊ HÀ NỘI · 0906 215 365"
+    },
+    {
+      "id": "heroTitle",
+      "label": "Banner: tiêu đề chính",
+      "selector": ".hero h1",
+      "value": "Tìm Nguồn BĐS Cho Thuê tại Hà Nội"
+    },
+    {
+      "id": "heroSlogan",
+      "label": "Banner: khẩu hiệu",
+      "selector": ".hero-slogan",
+      "value": "TÌM NHANH – CHỌN CHUẨN – THUÊ AN TÂM"
+    },
+    {
+      "id": "heroDescription",
+      "label": "Banner: nội dung giới thiệu",
+      "selector": ".hero-desc",
+      "value": "Chọn khu vực, loại bất động sản và mức giá mong muốn. Cần hỗ trợ? Gọi 0906 215 365 hoặc Chat Zalo để trao đổi trực tiếp."
+    },
+    {
+      "id": "heroButton",
+      "label": "Banner: tên nút xem BĐS",
+      "selector": ".hero .button",
+      "value": "Xem BĐS cho thuê"
+    },
+    {
+      "id": "heroSecondary",
+      "label": "Banner: tên nút tư vấn",
+      "selector": ".hero-secondary a",
+      "value": "Tư vấn tìm Thuê"
+    },
+    {
+      "id": "heroNote",
+      "label": "Banner: lưu ý",
+      "selector": ".hero-disclaimer",
+      "value": "Tin theo nguồn cung cấp, cần xác nhận tình trạng còn trống. Ảnh minh họa bằng AI."
+    },
+    {
+      "id": "listingEyebrow",
+      "label": "Danh sách BĐS: dòng giới thiệu",
+      "selector": ".listings > .section-top .eyebrow",
+      "value": "DANH SÁCH BĐS CHO THUÊ"
+    },
+    {
+      "id": "listingTitle",
+      "label": "Danh sách BĐS: tiêu đề",
+      "selector": ".listings > .section-top h2",
+      "value": "Chọn BĐS phù hợp."
+    },
+    {
+      "id": "listingIntro",
+      "label": "Danh sách BĐS: giới thiệu",
+      "selector": ".listings > .section-top > p",
+      "value": "Chọn loại BĐS cần thuê để xem thông tin và danh sách phù hợp."
+    },
+    {
+      "id": "processEyebrow",
+      "label": "Quy trình: dòng giới thiệu",
+      "selector": ".process > .eyebrow",
+      "value": "CÁCH TÌM BĐS THUÊ"
+    },
+    {
+      "id": "processTitle",
+      "label": "Quy trình: tiêu đề",
+      "selector": ".process > h2",
+      "value": "Ba bước dễ thực hiện."
+    },
+    {
+      "id": "step1Title",
+      "label": "Bước 1: tiêu đề",
+      "selector": ".steps article:nth-child(1) h3",
+      "value": "1. Chọn BĐS Thuê"
+    },
+    {
+      "id": "step1Text",
+      "label": "Bước 1: nội dung",
+      "selector": ".steps article:nth-child(1) p",
+      "value": "Lọc theo khu vực, loại bất động sản và ngân sách. Bấm “Xem chi tiết” để tìm hiểu thêm."
+    },
+    {
+      "id": "step2Title",
+      "label": "Bước 2: tiêu đề",
+      "selector": ".steps article:nth-child(2) h3",
+      "value": "2. Liên hệ"
+    },
+    {
+      "id": "step2Text",
+      "label": "Bước 2: nội dung",
+      "selector": ".steps article:nth-child(2) p",
+      "value": "Gọi 0906 215 365 để hỏi về BĐS Thuê còn trống, giá thuê và các khoản phí."
+    },
+    {
+      "id": "step3Title",
+      "label": "Bước 3: tiêu đề",
+      "selector": ".steps article:nth-child(3) h3",
+      "value": "3. Hẹn xem BĐS Thuê"
+    },
+    {
+      "id": "step3Text",
+      "label": "Bước 3: nội dung",
+      "selector": ".steps article:nth-child(3) p",
+      "value": "Thống nhất lịch xem trực tiếp. Kiểm tra hiện trạng và hợp đồng trước khi đặt cọc."
+    },
+    {
+      "id": "contactEyebrow",
+      "label": "Liên hệ: dòng giới thiệu",
+      "selector": ".contact > div > .eyebrow",
+      "value": "CẦN THUÊ, KÝ GỬI BÁN HAY CHUYỂN NHƯỢNG?"
+    },
+    {
+      "id": "contactTitle",
+      "label": "Liên hệ: tiêu đề",
+      "selector": ".contact > div > h2",
+      "value": "Cho chúng tôi biết nhu cầu của anh/chị."
+    },
+    {
+      "id": "contactIntro",
+      "label": "Liên hệ: nội dung giới thiệu",
+      "selector": ".contact > div > p:not(.eyebrow)",
+      "value": "Chọn cần thuê, ký gửi cho thuê, ký gửi bán hoặc chuyển nhượng. Điền thông tin phù hợp rồi liên hệ để trao đổi trực tiếp."
+    },
+    {
+      "id": "backLabel",
+      "label": "Đầu trang: tên nút trở về",
+      "selector": "header [data-back]",
+      "value": "← Trở về"
+    },
+    {
+      "id": "searchKeywordLabel",
+      "label": "Tìm kiếm: nhãn ô từ khóa",
+      "selector": "#search .search-keyword",
+      "mode": "directText",
+      "value": "TÌM THEO ĐỊA CHỈ HOẶC MÃ TIN"
+    },
+    {
+      "id": "searchPlaceholder",
+      "label": "Tìm kiếm: gợi ý trong ô từ khóa",
+      "selector": "#property-query",
+      "mode": "placeholder",
+      "value": "Ví dụ: Đỗ Quang, Ao Sen, HN-001"
+    },
+    {
+      "id": "searchAreaLabel",
+      "label": "Tìm kiếm: nhãn khu vực",
+      "selector": "#search > label:nth-child(2)",
+      "mode": "directText",
+      "value": "KHU VỰC"
+    },
+    {
+      "id": "searchTypeLabel",
+      "label": "Tìm kiếm: nhãn loại BĐS",
+      "selector": "#search > label:nth-child(3)",
+      "mode": "directText",
+      "value": "BĐS CHO THUÊ"
+    },
+    {
+      "id": "searchBudgetLabel",
+      "label": "Tìm kiếm: nhãn ngân sách",
+      "selector": "#search > label:nth-child(4)",
+      "mode": "directText",
+      "value": "NGÂN SÁCH"
+    },
+    {
+      "id": "searchButton",
+      "label": "Tìm kiếm: tên nút tìm",
+      "selector": "#search > button",
+      "value": "Tìm BĐS Thuê phù hợp"
+    },
+    {
+      "id": "searchAreaNote",
+      "label": "Tìm kiếm: ghi chú khu vực",
+      "selector": "#area-note",
+      "value": "Khu vực theo 30 quận, huyện và thị xã cũ của Hà Nội."
+    },
+    {
+      "id": "searchBudgetNote",
+      "label": "Tìm kiếm: ghi chú ngân sách",
+      "selector": "#budget-note",
+      "value": "Ngân sách tính bằng triệu đồng/tháng."
+    }
+  ],
+  "categories": [
+    "all",
+    "Mặt bằng kinh doanh",
+    "Văn phòng",
+    "Kho xưởng",
+    "Nhà nguyên căn",
+    "Căn hộ chung cư",
+    "Căn hộ dịch vụ",
+    "Phòng trọ",
+    "Biệt thự, nhà liền kề",
+    "Ki-ốt",
+    "Đất cho thuê",
+    "Bất động sản khác"
+  ],
+  "menu": [
+    {
+      "label": "Trang chủ",
+      "url": "/"
+    },
+    {
+      "label": "Đăng ký / Đăng nhập",
+      "url": "/thanh-vien"
+    },
+    {
+      "label": "Xem BĐS cho thuê",
+      "url": "/#bat-dong-san"
+    },
+    {
+      "label": "Liên hệ tư vấn",
+      "url": "/#tu-van"
+    },
+    {
+      "label": "Cách tìm BĐS Thuê",
+      "url": "/#quy-trinh"
+    },
+    {
+      "label": "Tin tức Hot",
+      "url": "/tin-tuc-hot"
+    }
+  ]
+}
