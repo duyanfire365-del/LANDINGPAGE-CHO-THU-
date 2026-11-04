@@ -6,6 +6,10 @@ Public menu `/tin-tuc-hot` lists published articles, featured first and then new
 
 Log into `/admin` → **Khách hàng / Công cụ** → **Tin tức Hot**. Add a title and content, optional excerpt, HTTPS source link, featured flag and one JPG/PNG/WebP cover (up to 2 MB). Choose **Lưu nháp / ẩn bài**, **Đăng công khai**, or **Gỡ bài**. Gỡ retains the article for future editing/republication. Editing uses an immutable URL and optimistic revision checks; a stale editor must reopen the latest article before saving. Public plain text rendering escapes HTML and preserves paragraph breaks.
 
+## Inline management on the public feed
+
+`/tin-tuc-hot` checks the existing HttpOnly admin session through the protected workspace endpoint. An admin sees a toolbar to create a post and open the shared editor, plus edit/hide/delete buttons under each published card. Draft/published/archived records are managed in the same shared editor as `/admin`. Delete means archive (public URL/cover removed, recoverable with Đăng công khai); it does not destroy Telegram deduplication identity. Successful mutations refresh the public feed immediately. Guests see only a link to admin login, and cannot mount the editor or access draft data. Expired-session API rejections clear the inline editor; returning focus rechecks access. No database migration or additional public write route is required.
+
 ## Telegram
 
 The existing private owner conversation in source/customer/linked bots accepts:
