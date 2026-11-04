@@ -15,7 +15,8 @@ Log into `/admin` → **Khách hàng / Công cụ** → **Tin tức Hot**. Add a
 The existing private owner conversation in source/customer/linked bots accepts:
 
 ```text
-/tintuc Tiêu đề bài viết
+#tintuc
+Tiêu đề bài viết
 Tóm tắt: Dòng tóm tắt tùy chọn
 Nội dung chi tiết bài viết…
 
@@ -23,7 +24,9 @@ Nội dung chi tiết bài viết…
 Nguồn: https://example.com/bai-goc
 ```
 
-`/tintuc` publishes immediately; `/nhaptintuc` uses the same format but saves privately as draft. Put the command/title/content into the caption to attach one photo as cover. Send a single photo rather than an album. An empty command replies with help. Edit the original message (keeping the command) to replace title/content/status, preserving the article ID/URL. Reply to the bot's news receipt with `/gotintuc` to archive. Bot replies distinguish published (with URL), draft, archived, validation failure and temporary failure.
+`#tintuc` (standalone hashtag anywhere in the message), a standalone **Tin tức** line, or **Tin tức: Tiêu đề** publish through the existing Nguồn cho thuê BĐS Hà Nội bot. The first nonempty content line is the title, the remaining paragraphs are preserved. The explicit `/tintuc` command still works and publishes immediately; `/nhaptintuc` uses the same format but saves privately as draft. Put the command/title/content into the caption to attach one photo as cover. Send a single photo rather than an album. An empty command replies with help. Edit the original message to replace title/content/status, preserving the article ID/URL. Reply to the bot's news receipt with `/gotintuc` to archive. Bot replies distinguish published (with URL), draft, archived, validation failure and temporary failure.
+
+No AI rewriting, API key or source-page fetching is used: the owner supplies the final article. Explicit source text is preserved; a supplied HTTPS source/link is attached as a reference, including Telegram text-link entities. Without a source name/link the new label/hashtag format honestly credits the content to the sender. Published references are clickable and do not claim independent verification. On edits, existing news identity is recognized even if the label is removed, so an edited news message cannot become a BĐS post.
 
 Existing webhook secret and private owner checks run first. Commands are intercepted **before** BĐS/customer ingestion in both webhook entry points. Source identity uses bot + owner chat + original message ID. Duplicate/out-of-order updates cannot duplicate or resurrect an article, and compare-and-swap retries handle simultaneous edits. After a website edit, further Telegram edits are rejected explicitly to prevent overwriting manual changes; continue editing in the admin panel. Ordinary BĐS/customer messages continue through their existing routes. Telegram download is restricted to Telegram's file endpoint with a 2 MB streaming limit. Images are decoded and converted to static WebP before saving.
 
@@ -37,4 +40,4 @@ Apply the additive `database/migrations/20261104_hot_news.sql` through Supabase 
 
 Reuses catalog/workspace/property/files handlers to remain within the existing 12 Vercel function slots. The article route is rewritten to the existing property handler. Local `server.mjs` supports the same route.
 
-Verification: `npm run check`, `node tests/news.mjs`, and `node tests/news-ui.mjs` (Playwright/Chromium). Tests fake Supabase/Telegram; do not send test messages or seed production articles.
+Verification: `npm run check`, `node tests/news.mjs`, `node tests/news-labels.mjs`, and `node tests/news-ui.mjs` (Playwright/Chromium). Tests fake Supabase/Telegram; do not send test messages or seed production articles.
