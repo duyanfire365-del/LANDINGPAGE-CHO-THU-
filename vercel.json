@@ -58,6 +58,10 @@
   },
   "rewrites": [
     {
+      "source": "/tin-tuc-hot/:slug",
+      "destination": "/api/property?news=:slug"
+    },
+    {
       "source": "/tin",
       "destination": "/api/property"
     }
