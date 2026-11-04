@@ -49,7 +49,7 @@ export default async function handler(req,res){
   if(!m||m.chat?.type!=='private'||String(m.from?.id)!==owner()||String(m.chat.id)!==owner())return send(res,200,{ok:true});
   if(!Number.isSafeInteger(update.update_id)||!Number.isSafeInteger(m.message_id))throw problem(400,'Invalid update');verifiedOwner=true;
   if(process.env.VERCEL_ENV==='production'){waitUntil(ensureLinkedBotWebhooks());waitUntil(import('../lib/source-delivery-recovery.mjs').then(m=>m.recoverSourceDeliveries()).catch(()=>{}));}
-  if(await handleNewsTelegram(m,update.update_id,botId))return send(res,200,{ok:true});
+  if(await handleNewsTelegram(m,update.update_id,botId,{edited:!!update.edited_message}))return send(res,200,{ok:true});
   const customer=await queueCustomerMessage(m,update.update_id,botId,{edited:!!update.edited_message});if(customer.handled){if(customer.id)waitUntil(processCustomerImport(customer.id));return send(res,200,{ok:true});}
   if(/^[0-3]$/.test(String(m.text||'').trim())){
    const decision=await answerSourceChoice(m,text=>sourceReply(telegram,text),{botId});
