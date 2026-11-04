@@ -1,3 +1,4 @@
+import {recordTraffic} from '../lib/website-traffic.mjs';
 import {siteContent} from '../lib/site-content.mjs';
 import {websiteLogoMetadata} from '../lib/website-logo.mjs';
 import {publicListing} from '../lib/post-history.mjs';
@@ -7,6 +8,7 @@ import {canonicalRows} from '../lib/listing-catalog.mjs';
 import {send} from '../lib/http.mjs';
 import {configured,db} from '../lib/platform.mjs';
 export default async function handler(req,res){
+ if(new URL(req.url,'http://localhost').searchParams.get('view')==='visit')return recordTraffic(req,res);
  if(req.method!=='GET')return send(res,405,{error:'Method not allowed'});
  if(new URL(req.url,'http://localhost').searchParams.get('view')==='website-brand'){try{return send(res,200,await websiteLogoMetadata())}catch{return send(res,503,{error:'Chưa tải được logo website.'})}}
  if(new URL(req.url,'http://localhost').searchParams.get('view')==='site-content'){try{return send(res,200,await siteContent())}catch{return send(res,503,{error:'Chưa tải được nội dung website.'})}}
