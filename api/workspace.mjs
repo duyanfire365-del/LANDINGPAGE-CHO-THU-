@@ -110,7 +110,7 @@ export default async function handler(req,res){
   if(!sameOrigin(req))return send(res,403,{error:'Yêu cầu không hợp lệ.'});
   if(limited(req,30))return send(res,429,{error:'Vui lòng chờ rồi thử lại.'});
   if(customerParams.has('news')||customerParams.has('site-content')||customerParams.has('website-logo'))requireAdmin(req);
-  const body=await readJson(req,customerParams.has('news')||customerParams.has('site-content')||customerParams.has('website-logo')||customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
+  const body=await readJson(req,customerParams.has('news')?4000000:customerParams.has('site-content')||customerParams.has('website-logo')||customerParams.has('scan-sources')?3000000:customerParams.has('customers')?4500000:100000);
   if(String(body.action||'').startsWith('news-')){requireAdmin(req);if(body.action!=='news-save')return send(res,400,{error:'Thao tác tin tức không hợp lệ.'});return send(res,200,await saveNews(body));}
   if(String(body.action||'').startsWith('site-content-')){requireAdmin(req);return send(res,200,await saveSiteContent(body));}
   if(String(body.action||'').startsWith('website-logo-')){requireAdmin(req);return send(res,200,await saveWebsiteLogo(body));}
