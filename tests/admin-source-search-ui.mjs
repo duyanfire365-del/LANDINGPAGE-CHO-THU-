@@ -8,7 +8,7 @@ try{
  await page.setContent('<link rel="stylesheet" href="https://fixture.test/portal.css"><main id="smart"></main><main id="ordinary"></main>');
  await page.route('https://fixture.test/**',async r=>r.fulfill({body:await readFile('public/portal.css'),contentType:'text/css'}));
  await page.evaluate(()=>{window.RentalSharing={escape:v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))};window.RentalInventory={labels:{available:'Còn hàng'},state:()=> 'available',badge:()=>'',render:()=>{}}});
- for(const name of ['admin-source-search.js','source-library.js'])await page.addScriptTag({content:await readFile('public/'+name,'utf8')});
+ for(const name of ['sharing.js','admin-source-search.js','source-library.js'])await page.addScriptTag({content:await readFile('public/'+name,'utf8')});
  await page.evaluate(()=>{
   const rows=[{slug:'one',code:'MB - 0070',title:'Nguyễn Khuyến <img src=x onerror="window.bad=1">',type:'Mặt bằng kinh doanh',categories:['Văn phòng'],area:'Hà Đông',size:60,price:15,reviewStatus:'published',post:{private_data:{sourceInfo:{sourceName:'Duy Trần'},address:'Số 18 Nguyễn Khuyến'}}},{slug:'two',code:'KX - 0002',title:'Kho Long Biên',type:'Kho xưởng',area:'Long Biên',size:200,price:30,reviewStatus:'rejected'}];
   window.lib=RentalSourceLibrary.mount(document.querySelector('#smart'),{smartSearch:true,extraFilters:[{key:'reviewStatus',label:'Trạng thái đăng',options:{published:'Đã đăng',rejected:'Đã gỡ'}}],detail:r=>'<button data-edit-post="'+r.slug+'">Sửa tin</button>'});lib.set(rows);

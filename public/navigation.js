@@ -24,3 +24,5 @@
 
 // Declarative website layout, shared by public navigation.
 (() => {if(document.querySelector("#admin-workspace"))return;const s=document.createElement("script");s.src="/site-layout.js";s.async=true;document.head.append(s)})();
+
+(() => {const nav=document.querySelector('header nav');if(nav&&!nav.querySelector('[data-sales-nav]')){const a=document.createElement('a');a.href='/?transaction=sale#bat-dong-san';a.textContent='Mua bán';a.dataset.salesNav='true';nav.append(a);}})();

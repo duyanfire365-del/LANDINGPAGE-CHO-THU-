@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {listingIntent,transactionType,salePrice} from '../lib/transactions.mjs';
+import {extractByRules} from '../lib/source-rules.mjs';
+import {prepareTrustedText,trustedDraft} from '../lib/trusted-intake.mjs';
+import {validateExtraction,sameProperty,fingerprint} from '../lib/source-automation.mjs';
+import {prepareEditorText} from '../lib/editor-ai.mjs';
+import {syncPricingDescription,rentPricingSummary} from '../lib/source-pricing.mjs';
+import {stockSheetRow,stockHeaders} from '../lib/sheet-stock.mjs';
+import {safePublicText} from '../lib/posts.mjs';
+import {evaluateMatch,normalizeCustomer} from '../lib/unified-match-rules.mjs';
+const {compactCaption,priceText}=createRequire(import.meta.url)('../public/sharing.js');
+const raw='Chính chủ bán nhà nguyên căn tại Cầu Giấy\nĐịa chỉ: số 20 đường Trần Duy Hưng, Cầu Giấy\nDiện tích: 80m2\n5 tầng, mặt tiền 5m\nGiá bán: 12,5 tỷ\nNguồn: Anh Hùng 0987654321\nPhí môi giới: 1% #muaban';
+const item=extractByRules(raw,{allowIncomplete:true,allowUncertain:true});assert.equal(item.intent,'sale');assert.equal(item.price,12500);assert.equal(item.size,80);assert.equal(validateExtraction(item,raw,{allowIncomplete:true}).transactionType,'sale');
+const d=await trustedDraft({text:raw});const p=d.public_data;assert.equal(p.pricePeriod,'one_time');assert.equal(p.transactionType,'sale');assert(p.title.startsWith('Bán'));assert(p.title.includes('12,5 tỷ'));assert(p.description.includes('12,5 tỷ'));assert(!/12,5 triệu|tháng|cho thuê/iu.test(p.description));assert(safePublicText(p.description));for(const text of ['Anh Hùng','0987654321','số 20','1%','#muaban'])assert(!JSON.stringify(p).includes(text),text);assert.equal(d.private_data.originalText,raw);
+assert.equal(priceText(12500,false,p),'12,5 tỷ đồng');assert.equal(priceText(42,false,{}),'42 triệu đồng/tháng');assert(!/tháng|cho thuê/iu.test(compactCaption(p)));assert(compactCaption(p).includes('12,5 tỷ đồng'));
+const sheet=stockSheetRow(p,{private_data:d.private_data});assert.equal(sheet.length,stockHeaders.length);assert.equal(sheet[stockHeaders.indexOf('Giá thuê (triệu/tháng)')],'');assert.equal(sheet[stockHeaders.indexOf('Giá bán (triệu đồng)')],12500);
+const prepared=await prepareEditorText(raw);assert.equal(prepared.item.transactionType,'sale');assert(prepared.item.title.startsWith('Bán'));assert(!/tháng|cho thuê/iu.test(prepared.item.description));
+const changed=syncPricingDescription(p.description,p,{...p,price:13000});assert(changed.includes('13 tỷ đồng'));assert(!changed.includes('Giá bán: 12,5 tỷ'));assert.equal(rentPricingSummary(p),'Giá bán: 12,5 tỷ đồng');
+assert.equal(listingIntent('Bán: căn hộ 80m2, Hà Đông, 3 tỷ'),'sale');for(const text of ['Cần mua đất Hà Đông 3 tỷ','Bán nhà 8 tỷ, cho thuê 30 triệu/tháng','Bán nhà và sang nhượng quán'])assert.throws(()=>listingIntent(text),{status:422});assert.equal(listingIntent('Cho thuê nhà Cầu Giấy, 80m2, 30tr/tháng'),'rent');assert.equal(listingIntent('Sang nhượng cửa hàng 200tr, thuê 20tr/tháng'),'rent');
+const rent={...item,intent:'rent',transactionType:'rent'};assert.notEqual(fingerprint(item),fingerprint(rent));assert(!sameProperty(item,{public_data:rent,private_data:{address:item.privateAddress}}));assert(sameProperty(item,{public_data:item,private_data:{address:item.privateAddress}}));
+for(const [amount,expected]of [['3 tỷ5',3500],['3,5 tỷ',3500],['900 triệu',900],['100 triệu/m2',8000]]){const x=extractByRules(raw.replace('12,5 tỷ',amount),{allowIncomplete:true,allowUncertain:true});assert.equal(x.price,expected,amount);}
+const land=await trustedDraft({text:'Bán đất tại Đông Anh, diện tích 100m2, giá bán 5 tỷ'});assert(!/cho thuê/iu.test(land.public_data.title));assert(!/cho thuê/iu.test(land.public_data.description));assert(!/cho thuê/iu.test(compactCaption(land.public_data)));
+const missing=extractByRules('Bán nhà nguyên căn Cầu Giấy, 80m2',{allowIncomplete:true,allowUncertain:true});assert.equal(missing.price,null);assert.equal(missing.intent,'sale');
+const c=normalizeCustomer({name:'Khách thuê',phone:'0901234567',area:'Cầu Giấy',maxBudget:20000,minSize:50},{key:'test'});const m=evaluateMatch(c,{...p,status:'published',availability:'available'});assert(!['criteria','exact'].includes(m.level),'Rental customer must never match sale stock');
+console.log('PASS sales: currency, one-time prices, shared Telegram classification, private originals, manual draft, immutable transaction editing, exports, mixed/demand review and rental matching isolation.');

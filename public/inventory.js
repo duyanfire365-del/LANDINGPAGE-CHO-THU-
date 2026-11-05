@@ -1,5 +1,5 @@
 (() => {
- const labels={available:'Còn hàng',awaiting:'Chờ xác nhận',rented:'Đã cho thuê',paused:'Tạm dừng cho thuê'},states={},hot={},hotSelected={},messages={};let loaded=false,failed=false;
+ const labels={available:'Còn hàng',awaiting:'Chờ xác nhận',rented:'Đã cho thuê',sold:'Đã bán',paused:'Tạm dừng giao dịch'},states={},hot={},hotSelected={},messages={};let loaded=false,failed=false;
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const state=slug=>states[slug]||(loaded?'available':'unknown');
  const label=slug=>labels[state(slug)]||(failed?'Chưa xác nhận':'Đang cập nhật');

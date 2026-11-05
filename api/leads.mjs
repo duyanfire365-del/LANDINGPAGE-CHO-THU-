@@ -16,7 +16,7 @@ export default async function handler(req,res){
    const maxBudget=body.maxBudget==null||body.maxBudget===''?null:Number(body.maxBudget),minSize=body.minSize==null||body.minSize===''?null:Number(body.minSize);
    if(maxBudget!==null&&(!Number.isFinite(maxBudget)||maxBudget<=0||maxBudget>1000000)||minSize!==null&&(!Number.isFinite(minSize)||minSize<1||minSize>10000000))return send(res,400,{error:'Kiểm tra ngân sách tối đa và diện tích tối thiểu.'});
    record.industry=text(body.industry,100);record.maxBudget=maxBudget;record.minSize=minSize;record.requirements=text(body.requirements,1000);
-   record.ownerNotes=['Ngành nghề: '+(record.industry||'Chưa chọn'),'Ngân sách tối đa: '+(maxBudget===null?'Chưa chọn':maxBudget+' triệu/tháng'),'Diện tích tối thiểu: '+(minSize===null?'Chưa chọn':minSize+' m²'),'Yêu cầu thêm: '+record.requirements].join('\n');
+   record.ownerNotes=[...(body.transactionType==='sale'?['Loại giao dịch: Mua bán']:[]),'Ngành nghề: '+(record.industry||'Chưa chọn'),'Ngân sách tối đa: '+(maxBudget===null?'Chưa chọn':maxBudget+(body.transactionType==='sale'?' triệu đồng':' triệu/tháng')),'Diện tích tối thiểu: '+(minSize===null?'Chưa chọn':minSize+' m²'),'Yêu cầu thêm: '+record.requirements].join('\n');
   }
   if(isConsignment(intent)){
    const ownerAddress=text(body.ownerAddress),ownerSize=Number(body.ownerSize),ownerPrice=(body.ownerPrice??body.ownerRent)===''||(body.ownerPrice??body.ownerRent)==null?null:Number(body.ownerPrice??body.ownerRent),transferMonthlyRent=body.transferMonthlyRent===''||body.transferMonthlyRent==null?null:Number(body.transferMonthlyRent);

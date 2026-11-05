@@ -1,3 +1,4 @@
+import {transactionType,saleCopy,salePrice} from '../lib/transactions.mjs';
 import {listNews,getNews,saveNews} from '../lib/news.mjs';
 import {trafficReport} from '../lib/website-traffic.mjs';
 import {apifyHook,apifyConnectionView,checkApifyConnection,apifyWebhookSetup,syncLatestApify,syncApifyRun} from '../lib/apify-connection.mjs';
@@ -161,7 +162,7 @@ export default async function handler(req,res){
    const {safePublicText}=await import('../lib/posts.mjs');
    const hidden=splitPrivateNotes(clean(body.description,3000)),separated=splitPriceNotes(hidden.publicSource);let description=polishListingCopy({text:separated.publicSource});const {size,price,priceBasis,pricePerM2}=formPricing(body,{allowIncomplete:true});
    if(!description||!safePublicText(description)||size!==null&&(!Number.isFinite(size)||size<=0||size>10000000)||price!==null&&(!Number.isFinite(price)||price<=0||price>1000000))return send(res,400,{error:'Kiểm tra diện tích, giá và mô tả. Phần công khai không chứa số nhà/ngõ/ngách, hashtag hoặc liên kết.'});
-   const p=rows[0].public_data;
+   const p=rows[0].public_data;if(body.transactionType!==undefined&&body.transactionType!==transactionType(p))return send(res,400,{error:'Không đổi giao dịch khi sửa tin. Tạo tin mới để tránh nhầm giá bán và giá thuê.'});
    const rawTitle=hideNarrowFrontageText(body.title===undefined?p.title:clean(body.title,160)),type=body.type===undefined?p.type:clean(body.type),title=sensitiveCopy(rawTitle)?standardTitle({...p,type,size,price}):rawTitle;
    if(!title||!safePublicText(title)||!categories.includes(type))return send(res,400,{error:'Kiểm tra tiêu đề và danh mục. Tiêu đề công khai không chứa số nhà, ngõ/ngách, SĐT nguồn, hoa hồng hoặc liên kết.'});
    const titleMode=body.title===undefined?p.titleMode:body.autoTitle===true||body.autoTitle==='on'?'auto':'custom';
@@ -178,6 +179,7 @@ export default async function handler(req,res){
    public_data.shareText=`${title}\nKhu vực: ${p.address}\nDiện tích: ${size===null?'Đang cập nhật':size+' m²'}\nGiá thuê: ${price===null?'Liên hệ':price+' triệu đồng/tháng'}\n${description}\nLiên hệ: 0906215365`;
    if(pricePerM2)public_data.shareText+='\nĐơn giá: '+new Intl.NumberFormat('vi-VN').format(pricePerM2)+' đồng/m²/tháng.';
    public_data.shareText+='\n'+dimensionFacts(dimensions).join('\n');
+   if(transactionType(p)==='sale'){public_data.description=saleCopy(public_data.description);public_data.facts=public_data.facts.map(saleCopy);public_data.shareText=saleCopy(public_data.shareText);}
    if((public_data.media||[]).some(m=>m.isIllustration))public_data.shareText+='\nCó ảnh minh họa AI, không phải ảnh chụp thực tế.';
    if(transfer.isTransfer)public_data.shareText+='\nGiá chuyển nhượng: Liên hệ.';
    const private_data={...rows[0].private_data,privateTransferPrice:transfer.transferPrice,sourceInfo:{...rows[0].private_data?.sourceInfo,privateNotes:mergePriceNotes(rows[0].private_data?.sourceInfo?.privateNotes,transfer.transferPrice?'Giá sang nhượng — giữ kín: '+transfer.transferPrice+' triệu đồng.':'',hidden.privateNotes,separated.priceTrackingNotes,sensitiveCopy(rawTitle)?rawTitle:'',body.transferNegotiable?'Có thể thương lượng (ghi chú của người đăng)':'')},priceTrackingNotes:mergePriceNotes(body.priceTrackingNotes===undefined?trackedPriceNotes(rows[0].private_data):(typeof body.priceTrackingNotes==='string'?body.priceTrackingNotes:''),separated.priceTrackingNotes),address:clean(body.privateAddress,500),hashtags:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
