@@ -92,7 +92,11 @@
     },
     {
       "label": "Viber",
-      "url": ""
+      "url": "viber://chat?number=%2B84906215365"
+    },
+    {
+      "label": "Telegram",
+      "url": "https://t.me/+84906215365"
     }
   ],
   "copyright": "© 2026 Nguồn cho thuê BĐS Hà Nội. Ảnh minh họa bằng AI; thông tin cần được xác nhận.",

@@ -4,7 +4,7 @@ import {createHmac} from 'node:crypto';
 import sharp from 'sharp';
 import {fixture} from './three-bot-fixture.mjs';
 import {prepareWebsiteLogo,saveWebsiteLogo,websiteLogoMetadata,websiteLogoImage} from '../lib/website-logo.mjs';
-import {siteContent,saveSiteContent,validateSiteContent} from '../lib/site-content.mjs';
+import {siteContent,saveSiteContent,validateSiteContent,safeSocialURL} from '../lib/site-content.mjs';
 import chat from '../api/chat.mjs';
 import workspace from '../api/workspace.mjs';
 import catalog from '../api/catalog.mjs';
@@ -12,7 +12,7 @@ import files from '../api/files.mjs';
 const f=await fixture(),original=global.fetch;global.fetch=f.fetch;
 async function call(handler,method,url,body,headers={}){let status,replyHeaders,payload;await handler({method,url,body,headers:{host:'localhost','content-type':'application/json',...headers},socket:{remoteAddress:'logo-unit'}},{writeHead(s,h){status=s;replyHeaders=h},end(p){payload=p},setHeader(){}});return {status,headers:replyHeaders,payload}}
 try{
- const initial=await siteContent();assert.equal(initial.content.faqs.length,10);assert(initial.content.faqs[2].question.startsWith('Làm thế nào'));assert(!JSON.stringify(initial).includes('base64'));
+ assert.equal(safeSocialURL('viber://chat?number=+84906215365'),'viber://chat?number=%2B84906215365');for(const url of ['viber://chat?number=%2B84906215365&text=bad','viber://open?file=x','javascript:alert(1)','data:text/html,bad'])assert.throws(()=>safeSocialURL(url),{status:400});const initial=await siteContent();assert.equal(initial.content.socials.find(x=>x.label==='Telegram').url,'https://t.me/+84906215365');assert.equal(validateSiteContent(initial.content).socials.find(x=>x.label==='Viber').url,'viber://chat?number=%2B84906215365');assert.equal(initial.content.faqs.length,10);assert(initial.content.faqs[2].question.startsWith('Làm thế nào'));assert(!JSON.stringify(initial).includes('base64'));
  const c=structuredClone(initial.content);c.faqs=[{question:'<img src=x onerror=alert(1)>',answer:'Trả lời mới\n\nĐoạn hai',group:1}];c.address='Địa chỉ mới';c.socials=[{label:'Facebook',url:'https://facebook.com/example'}];
  assert.throws(()=>validateSiteContent({...c,mapUrl:'javascript:alert(1)'}),{status:400});assert.throws(()=>validateSiteContent({...c,links:[{label:'X',url:'//evil.test'}]}),{status:400});assert.throws(()=>validateSiteContent({...c,faqs:[]}),{status:400});
  const saved=await saveSiteContent({action:'site-content-save',revision:null,content:c});assert.equal((await siteContent()).content.address,'Địa chỉ mới');await assert.rejects(saveSiteContent({action:'site-content-save',revision:null,content:c}),{status:409});
