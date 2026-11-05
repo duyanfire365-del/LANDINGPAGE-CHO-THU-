@@ -14,5 +14,5 @@
  const footer=document.querySelector('.site-footer');if(footer)footer.hidden=c?.footerHidden===true;
  }
  window.addEventListener('site-layout-apply',e=>{preview=true;apply(e.detail);});
- Promise.all([fetch('/site-layout-schema.json').then(r=>r.json()),fetch('/api/catalog?view=site-content',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json();})]).then(([s,d])=>{schema=s;if(!preview)apply(d.content);else if(last)apply(last);window.dispatchEvent(new Event('site-layout-ready'));}).catch(()=>{});
+ Promise.all([fetch('/site-layout-schema.json').then(r=>r.json()),fetch('/api/catalog?view=site-content',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json();})]).then(([s,d])=>{schema=s;if(!preview)apply(d.content);else if(last)apply(last);window.dispatchEvent(new CustomEvent('site-layout-ready',{detail:last}));}).catch(()=>{});
 })();
