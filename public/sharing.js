@@ -71,18 +71,17 @@
       return ok;
     }
   }
-  function prepare(listing) {
-    if (!files.has(listing.id)) files.set(listing.id, fetch(listing.shareImage || listing.image).then(r => {
-      if (!r.ok) throw Error('image'); return r.blob();
-    }).then(blob => new File([blob], `${listing.code}.${blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'}`, {type:blob.type || 'image/jpeg'})).catch(() => null));
-    return files.get(listing.id);
+  async function publicImageSources(listing){
+    if(!String(listing.slug||'').startsWith('live-'))return imageSources(listing);
+    const r=await fetch('/api/files?action=public-media&slug='+encodeURIComponent(listing.slug),{cache:'no-store'});if(!r.ok)throw Error('Chưa kiểm tra được ảnh công khai.');const data=await r.json();return data.media.length?data.media.map(m=>'/api/files?action=media&public=1&id='+encodeURIComponent(m.id)+'&slug='+encodeURIComponent(listing.slug)):['/banner.png'];
   }
+  async function prepare(listing){try{const sources=await publicImageSources(listing),r=await fetch(sources[0]);if(!r.ok)return null;const blob=await r.blob();return new File([blob],listing.code+'.jpg',{type:blob.type||'image/jpeg'});}catch{return null;}}
   function imageSources(listing){
-    const media=(listing.media||[]).filter(m=>m.kind==='image');
-    return media.length?media.slice(0,12).map(m=>'/api/files?action=media&id='+encodeURIComponent(m.id)+'&slug='+encodeURIComponent(listing.slug)):[listing.shareImage||listing.image];
+    const media=(listing.media||[]).filter(m=>m.kind==='image'&&(!m.visibility||m.visibility==='public'));
+    return media.length?media.slice(0,12).map(m=>'/api/files?action=media&public=1&id='+encodeURIComponent(m.id)+'&slug='+encodeURIComponent(listing.slug)):[listing.shareImage||listing.image];
   }
   function prepareAll(listing){
-    if(!albums.has(listing.id))albums.set(listing.id,(async()=>{const sources=imageSources(listing),results=await Promise.all(sources.map(async(src,i)=>{try{const response=await fetch(src);if(!response.ok)throw Error('image');const blob=await response.blob();if(!/^image\/(?:jpeg|png|webp)$/.test(blob.type))throw Error('image');return new File([blob],`${listing.code.replace(/[^A-Z0-9-]/gi,'-')}-${i+1}.${blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'}`,{type:blob.type})}catch{return null}}));const prepared=results.filter(Boolean);readyFiles.delete(listing.id);readyFiles.set(listing.id,prepared);while(readyFiles.size>3){const oldest=readyFiles.keys().next().value;readyFiles.delete(oldest);albums.delete(oldest);files.delete(oldest)}return prepared})());
+    albums.set(listing.id,(async()=>{const sources=await publicImageSources(listing),results=await Promise.all(sources.map(async(src,i)=>{try{const response=await fetch(src);if(!response.ok)throw Error('image');const blob=await response.blob();if(!/^image\/(?:jpeg|png|webp)$/.test(blob.type))throw Error('image');return new File([blob],`${listing.code.replace(/[^A-Z0-9-]/gi,'-')}-${i+1}.${blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'}`,{type:blob.type})}catch{return null}}));const prepared=results.filter(Boolean);readyFiles.delete(listing.id);readyFiles.set(listing.id,prepared);while(readyFiles.size>3){const oldest=readyFiles.keys().next().value;readyFiles.delete(oldest);albums.delete(oldest);files.delete(oldest)}return prepared})());
     return albums.get(listing.id);
   }
   function canShareFiles(prepared){try{return !!prepared.length&&!!navigator.canShare?.({files:prepared})}catch{return false}}
@@ -93,8 +92,6 @@
     catch(error){if(error.name!=='AbortError')status(element,'Chưa chia sẻ được trực tiếp. Anh/chị dùng bảng sao chép bài và ảnh.');return false}
   }
   async function share(listing,element){
-    const ready=readyFiles.get(listing.id);
-    if(navigator.share&&ready){if(await nativeShare(listing,element,ready))return true;return composer(listing,element,'');}
     const promise=prepareAll(listing);
     if(navigator.share){const prepared=await promise;if(navigator.userActivation?.isActive!==false&&await nativeShare(listing,element,prepared))return true}
     return composer(listing,element,'');
@@ -179,7 +176,7 @@
     }
     const upload=dialog.querySelector('[data-add-share-photos]');upload.onchange=()=>{const added=[...upload.files];let rejected=0;for(const file of added){if(!/^image\/(?:jpeg|png|webp)$/.test(file.type)||file.size>10*1024*1024||photos.length>=12||photos.reduce((n,p)=>n+p.file.size,0)+file.size>40*1024*1024){rejected++;continue}addPhoto(file)}upload.value='';update();message('Đã chuẩn bị '+photos.length+' ảnh; đang chọn '+selected().length+' ảnh.'+(rejected?' Một số tệp bị bỏ qua: chỉ nhận JPG/PNG/WebP, tối đa 10 MB/ảnh, 12 ảnh và tổng 40 MB.':' Ảnh thêm từ máy chỉ dùng để chia sẻ, không tải lên website.'));};
     mountDestinations(dialog,listing,element,platform);
-    prepareAll(listing).then(prepared=>{if(disposed)return;prepared.forEach(file=>{if(file.size<=10*1024*1024&&photos.reduce((n,p)=>n+p.file.size,0)+file.size<=40*1024*1024)addPhoto(file)});upload.disabled=false;update();message(photos.length?'Đã chuẩn bị '+photos.length+' / '+imageSources(listing).length+' ảnh kèm bài và link. Bỏ tích ảnh không muốn chia sẻ hoặc thêm ảnh từ máy.':'Chưa tải được ảnh của tin. Anh/chị có thể thêm ảnh từ máy để chia sẻ kèm bài và link.');});
+    prepareAll(listing).then(prepared=>{if(disposed)return;prepared.forEach(file=>{if(file.size<=10*1024*1024&&photos.reduce((n,p)=>n+p.file.size,0)+file.size<=40*1024*1024)addPhoto(file)});upload.disabled=false;update();message(photos.length?'Đã chuẩn bị '+photos.length+' / '+imageSources(listing).length+' ảnh kèm bài và link. Bỏ tích ảnh không muốn chia sẻ hoặc thêm ảnh từ máy.':'Chưa tải được ảnh của tin. Anh/chị có thể thêm ảnh từ máy để chia sẻ kèm bài và link.');}).catch(()=>{if(!disposed){upload.disabled=false;update();message('Chưa kiểm tra được danh sách ảnh công khai. Anh/chị đóng bảng và thử lại.');}});
     return dialog;
   }
   function markup(listing) {
@@ -196,9 +193,16 @@
   });
   document.addEventListener('pointerover', event => {
     const element = event.target.closest('[data-share-id]');
-    if (element) { const listing = window.RENTAL_LISTINGS?.find(h => h.id === Number(element.dataset.shareId)); if (listing) {prepare(listing);if(element.dataset.shareAction!=='copy')prepareAll(listing);} }
+    if (element) { const listing = window.RENTAL_LISTINGS?.find(h => h.id === Number(element.dataset.shareId)); if (listing) {prepare(listing);if(element.dataset.shareAction!=='copy')prepareAll(listing).catch(()=>{});} }
   });
   window.addEventListener('pagehide',()=>document.querySelector('#share-composer')?.close());
   function register(listing){const rows=window.RENTAL_LISTINGS||(window.RENTAL_LISTINGS=[]);const index=rows.findIndex(row=>row.id===listing.id);if(index>=0&&JSON.stringify([rows[index].image,rows[index].shareImage,rows[index].mediaRevision,rows[index].media])!==JSON.stringify([listing.image,listing.shareImage,listing.mediaRevision,listing.media])){files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}if(index<0)rows.push(listing);else rows[index]=listing;}
+  let privateEpoch=0;
+  async function loadPrivate(host){if(host.dataset.privateLoaded||document.visibilityState==='hidden')return;host.dataset.privateLoaded='true';const epoch=privateEpoch;try{const r=await fetch('/api/files?action=private-media&slug='+encodeURIComponent(host.dataset.privateMedia),{cache:'no-store'});if(!r.ok)return;const data=await r.json();if(epoch!==privateEpoch||!host.isConnected)return;host.innerHTML=data.media?.length?'<h3>Ảnh riêng tư — chỉ tài khoản được cấp quyền</h3><div class="portal-gallery">'+data.media.map(m=>'<div><img loading="lazy" src="/api/files?action=media&id='+encodeURIComponent(m.id)+'" alt="Ảnh riêng tư"><p>'+escape(m.accessReason||'Ảnh được Admin cấp quyền xem')+'</p><a href="/api/files?action=media&id='+encodeURIComponent(m.id)+'&download=1">Tải ảnh riêng tư</a></div>').join('')+'</div>':'';}catch{}}
+  const scanPrivate=()=>document.querySelectorAll('[data-private-media]:not([data-private-loaded])').forEach(loadPrivate);
+  const clearPrivate=()=>{privateEpoch++;document.querySelectorAll('[data-private-media]').forEach(h=>{h.replaceChildren();delete h.dataset.privateLoaded;});};
+  for(const name of ['admin-session','member-session'])window.addEventListener(name,()=>{clearPrivate();scanPrivate();});
+  document.addEventListener('visibilitychange',()=>{clearPrivate();if(document.visibilityState!=='hidden')scanPrivate();});window.addEventListener('pagehide',clearPrivate);
+  new MutationObserver(scanPrivate).observe(document.body,{childList:true,subtree:true});scanPrivate();
   window.RentalSharing = {isSale,isDual,supportsTransaction,transactionView,register,priceText,sizeText,transferText,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
 })();
