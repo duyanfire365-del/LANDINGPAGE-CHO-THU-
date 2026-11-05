@@ -15,3 +15,5 @@ Bot trả lại tóm tắt có ngành nghề, đơn vị ngân sách, diện tí
 Quản trị có thêm ô địa điểm trung tâm và bán kính tìm kiếm. Bán kính được lưu thành tiêu chí riêng; khi chưa có tọa độ/đo khoảng cách đáng tin cậy, bộ khớp ghi cần xác nhận khoảng cách thay vì tuyên bố đã khớp chính xác trong bán kính. Thái Hà được nhận diện thuộc Đống Đa; không tự suy đoán các địa danh chưa biết thành quận cụ thể.
 
 Kiểm tra: `tests/customer-freeform.mjs`, `tests/customer-presentation-formats.mjs`, `tests/telegram-flexible-customers.mjs`, `tests/customers.mjs`, `tests/precise-matching.mjs`, `tests/matching-lifecycle.mjs`, `tests/matching-bots-ui.mjs`.
+
+Tên nguồn cũng nhận dấu chấm phẩy, dấu phẩy, dấu hai chấm, gạch ngang, dấu `|`, xuống dòng hoặc dấu cách trước nhãn tài chính/nhu cầu. Ví dụ `KH của Mrs Trang Nguyễn; Tài chính 15tr làm giặt là, ...` cho tên **Nguồn đối tác Mrs Trang Nguyễn**, nguồn **Mrs Trang Nguyễn**, ngành **Giặt là / Giặt sấy**. Cụm yêu cầu như “Mặt bằng có chỗ ở lại” được giữ trong nhu cầu, không gộp vào tên hoặc khu vực.

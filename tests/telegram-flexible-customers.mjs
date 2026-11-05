@@ -62,5 +62,6 @@ try{
  await hook('Sửa: tc <=120tr',imported);assert.equal(flex.data.maxBudget,120);assert.equal(flex.data.budget,'');
  await hook('Sửa: bán kính 2km',imported);assert.equal(flex.data.searchRadiusKm,2);assert.equal(flex.data.area,'Thái Hà (bán kính 2 km)');
  await hook('Sửa: Xóa: bán kính',imported);assert.equal(flex.data.searchRadiusKm,null);assert.equal(flex.data.area,'Thái Hà');
+ const trangText='KH của Mrs Trang Nguyễn; Tài chính 15tr làm giặt là, mong tìm ở khu vực Cầu Giấy, Nam Từ Liêm. Mặt bằng có chỗ ở lại.';await hook(trangText);const trang=tables.customer_watch.find(r=>r.data.sourceText===trangText);assert.equal(trang.data.name,'Nguồn đối tác Mrs Trang Nguyễn');assert.equal(trang.data.source,'Mrs Trang Nguyễn');assert.equal(trang.data.industry,'Giặt là / Giặt sấy');assert.equal(trang.data.maxBudget,15);assert(!trang.data.area.includes('Mặt bằng'));
  console.log('PASS real customer webhook: anonymous/masked contacts, increasing stable KH codes/concurrency, original-message Reply without phone, duplicate consent =0/=1, durable replay, edit/append/replace/clear, stale decision safety, owner/secret checks, legacy recovery.');
 }finally{globalThis.fetch=original}
