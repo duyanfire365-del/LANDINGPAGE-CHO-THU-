@@ -58,6 +58,10 @@
   },
   "rewrites": [
     {
+      "source": "/kinh-nghiem-tim-mbkd/:slug",
+      "destination": "/api/property?news=:slug&section=experience"
+    },
+    {
       "source": "/tin-tuc-hot/:slug",
       "destination": "/api/property?news=:slug"
     },
