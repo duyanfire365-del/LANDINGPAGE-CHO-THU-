@@ -260,10 +260,6 @@
     {
       "label": "Kinh nghiệm tìm MBKD",
       "url": "/kinh-nghiem-tim-mbkd"
-    },
-    {
-      "label": "Mua bán",
-      "url": "/?transaction=sale#bat-dong-san"
     }
   ]
 }
