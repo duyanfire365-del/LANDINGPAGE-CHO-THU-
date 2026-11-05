@@ -256,6 +256,10 @@
     {
       "label": "Tin tức Hot",
       "url": "/tin-tuc-hot"
+    },
+    {
+      "label": "Kinh nghiệm tìm MBKD",
+      "url": "/kinh-nghiem-tim-mbkd"
     }
   ]
 }

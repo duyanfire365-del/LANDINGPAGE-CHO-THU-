@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {newsFixture} from './news-fixture.mjs';
+import {saveNews,listNews,getNews} from '../lib/news.mjs';
+import {parseNewsMessage} from '../lib/news-message.mjs';
+import {handleNewsTelegram} from '../lib/news-telegram.mjs';
+import property from '../api/property.mjs';
+import catalog from '../api/catalog.mjs';
+const f=await newsFixture(),original=global.fetch;global.fetch=f.fetch;
+async function call(handler,url){let status,payload;await handler({method:'GET',url,headers:{}},{writeHead(s){status=s},end(p){payload=p}});return {status,payload};}
+try{
+ const base={id:randomUUID(),title:'Kinh nghiệm chọn mặt bằng cà phê',content:'Nội dung kinh nghiệm do quản trị tự biên tập.\n\nXem xét điều kiện thuê và công năng thực tế.',section:'experience',industry:'cafe',status:'published'};
+ const first=await saveNews(base);assert.equal(first.article.section,'experience');assert.equal((await listNews()).articles.length,0);const feed=await listNews({section:'experience'});assert.equal(feed.articles.length,1);assert(feed.articles[0].href.startsWith('/kinh-nghiem-tim-mbkd/'));assert.equal(feed.articles[0].industry,'cafe');assert.equal((await listNews({section:'experience',industry:'spa'})).articles.length,0);
+ await saveNews({...base,id:randomUUID(),title:'Tin tức giữ riêng',section:'news',industry:''});await saveNews({...base,id:randomUUID(),title:'Kinh nghiệm spa',industry:'spa'});const draft=await saveNews({...base,id:randomUUID(),title:'Kinh nghiệm chưa đăng',status:'draft'});assert.equal((await listNews()).articles.length,1);assert.equal((await listNews({section:'experience'})).articles.length,2);assert.equal((await listNews({admin:true,section:'experience'})).articles.length,3);assert.equal((await listNews({admin:true})).articles.length,4);
+ assert.equal((await call(catalog,'/api/catalog?view=news&section=experience&industry=cafe')).status,200);assert.equal(JSON.parse((await call(catalog,'/api/catalog?view=news&section=experience&industry=cafe')).payload).articles.length,1);
+ for(const options of [{section:'unknown'},{section:'experience',industry:'spa&status=eq.draft'}])await assert.rejects(listNews(options),{status:400});await assert.rejects(saveNews({...base,id:randomUUID(),industry:'made-up'}),{status:400});
+ const slug=first.article.slug;assert.equal((await call(property,'/api/property?news='+slug)).status,404);const page=await call(property,'/api/property?news='+slug+'&section=experience');assert.equal(page.status,200);assert(page.payload.includes('Kinh nghiệm tìm MBKD'));assert(page.payload.includes('href="https://nguonchothue.vn/kinh-nghiem-tim-mbkd/'+slug+'"'));assert(page.payload.includes('Cà phê / đồ uống'));assert.equal((await call(property,'/api/property?news='+draft.article.slug+'&section=experience')).status,404);
+ for(const marker of ['#kinhnghiemmbkd','Kinh nghiệm tìm MBKD','Kinh nghiệm MBKD','/kinhnghiemmbkd']){const p=parseNewsMessage(marker+'\nTiêu đề kinh nghiệm\nNgành: Cà phê\nNội dung giữ nguyên.');assert.equal(p.section,'experience');assert.equal(p.industry,'cafe');assert.equal(p.title,'Tiêu đề kinh nghiệm');assert(p.content.startsWith('Nội dung giữ nguyên.'));}
+ assert.equal(parseNewsMessage('/nhapkinhnghiemmbkd Tiêu đề\nNội dung').status,'draft');assert.equal(parseNewsMessage('#tintuc\nTin mới\nNội dung').section,'news');assert.equal(parseNewsMessage('Cho thuê MBKD\nhttps://example.com/#kinhnghiemmbkd'),null);assert(parseNewsMessage('#kinhnghiemmbkd #tintuc\nTiêu đề\nNội dung').help);
+ process.env.TELEGRAM_SOURCE_BOT_TOKEN='123456:'+'a'.repeat(35);process.env.TELEGRAM_SOURCE_OWNER_ID='777';const m={message_id:800,from:{id:777},chat:{id:777,type:'private'},text:'#kinhnghiemmbkd\nChọn mặt bằng ngành spa\nNgành: spa\nNội dung anh đã biên tập.'};
+ await handleNewsTelegram(m,100,'source');const a=f.rows.at(-1);assert.equal(a.section,'experience');assert.equal(a.industry,'spa');assert(f.messages.at(-1).body.text.includes('Đã đăng Kinh nghiệm tìm MBKD thành công.'));assert(f.messages.at(-1).body.text.includes('/kinh-nghiem-tim-mbkd/'));const count=f.rows.length;
+ await handleNewsTelegram(m,100,'source');assert.equal(f.rows.length,count);await handleNewsTelegram({...m,text:'Tiêu đề chỉnh sửa bỏ nhãn\nNội dung cập nhật.'},101,'source',{edited:true});assert.equal(a.section,'experience');assert.equal(a.industry,'spa');assert.equal(a.title,'Tiêu đề chỉnh sửa bỏ nhãn');
+ const receipt=f.messages.at(-1).body.text;await handleNewsTelegram({...m,message_id:801,text:'/gotintuc',reply_to_message:{text:receipt}},102,'source');assert.equal(a.status,'archived');assert.equal(a.section,'experience');
+ await handleNewsTelegram({...m,message_id:802,text:'#kinhnghiemmbkd\nTiêu đề\nNgành: không đúng\nNội dung'},103,'source');assert.equal(f.rows.length,count);assert(f.messages.at(-1).body.text.includes('Ngành hàng không hợp lệ'));
+ const moved=await saveNews({...base,id:first.article.id,revision:first.article.revision,section:'news'});assert.equal(moved.article.section,'news');assert.equal((await call(property,'/api/property?news='+slug+'&section=experience')).status,404);assert.equal((await call(property,'/api/property?news='+slug)).status,200);assert.equal(f.tables.posts.length,0);
+ console.log('PASS MBKD experience: separate feeds/detail routes, industry filters/validation, draft privacy, admin category move, Telegram labels/industry/publish/draft/dedup/edit/archive, existing news and BĐS records preserved.');
+}finally{global.fetch=original}

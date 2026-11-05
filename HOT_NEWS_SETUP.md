@@ -30,6 +30,10 @@ No AI rewriting, API key or source-page fetching is used: the owner supplies the
 
 Existing webhook secret and private owner checks run first. Commands are intercepted **before** BĐS/customer ingestion in both webhook entry points. Source identity uses bot + owner chat + original message ID. Duplicate/out-of-order updates cannot duplicate or resurrect an article, and compare-and-swap retries handle simultaneous edits. After a website edit, further Telegram edits are rejected explicitly to prevent overwriting manual changes; continue editing in the admin panel. Ordinary BĐS/customer messages continue through their existing routes. Telegram download is restricted to Telegram's file endpoint with a 2 MB streaming limit. Images are decoded and converted to static WebP before saving.
 
+## Kinh nghiệm tìm MBKD
+
+The same editor also manages the separate experience section, with a Mục bài viết selector and optional industry tags. See [MBKD_EXPERIENCE_SETUP.md](MBKD_EXPERIENCE_SETUP.md) for the dedicated page, filters and Telegram #kinhnghiemmbkd format. Existing news articles keep their section and URLs.
+
 ## Requests through this ChatGPT conversation
 
 The user can provide the article title/content, source, optional image and an explicit instruction to save a draft or publish. The connected project tools can save to the same `news_articles` storage; this is an operator workflow in this authorized conversation, not a generic public ChatGPT account integration or an unauthenticated posting endpoint. Do not invent or publish articles without supplied/approved content. Before reporting success, read the saved row back; for published articles verify its public URL. Respect the same validation, image conversion and revision rules as `lib/news.mjs`. Prefer a draft if no publication state was specified. Do not place credentials or Telegram origin metadata in public content.

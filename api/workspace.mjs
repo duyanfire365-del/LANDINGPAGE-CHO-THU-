@@ -51,7 +51,7 @@ export default async function handler(req,res){
   if(customerParams.has('google-docs-hook'))return await (await import('../lib/google-doc-automation.mjs')).googleDocsHook(req,res,p=>waitUntil(p));
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
-   if(customerParams.get('view')==='news'){requireAdmin(req);return send(res,200,customerParams.get('id')?{article:await getNews(customerParams.get('id'),{admin:true})}:await listNews({admin:true,offset:Number(customerParams.get('offset')||0)}));}
+   if(customerParams.get('view')==='news'){requireAdmin(req);return send(res,200,customerParams.get('id')?{article:await getNews(customerParams.get('id'),{admin:true})}:await listNews({admin:true,offset:Number(customerParams.get('offset')||0),section:customerParams.get('section')||null}));}
    const params=new URL(req.url,'http://localhost').searchParams;
    if(params.get('view')==='traffic'){requireAdmin(req);return send(res,200,await trafficReport(params));}
    if(params.get('view')==='apify-connection'){requireAdmin(req);return send(res,200,await apifyConnectionView());}
