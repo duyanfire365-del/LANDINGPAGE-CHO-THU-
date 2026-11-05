@@ -4,9 +4,9 @@
   const form = q('#lead-form');
   const state = {ai:false, lead:false, busy:false, draft:{}, flow:false, history:[], opened:false};
   const norm = text => String(text).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
-  let customFaqs=false;
-  window.addEventListener('site-faq-updated',e=>{faqs=e.detail.faqs;customFaqs=e.detail.custom});
-  let faqs = [...document.querySelectorAll('.faq details')].map(el => ({question:el.querySelector('summary span:last-child')?.textContent || el.querySelector('summary').textContent, answer:[...el.querySelectorAll('.faq-answer p')].map(p=>p.textContent).join('\n\n')}));
+  let customFaqs=window.RentalCurrentFAQ?.custom||false,faqTransaction=window.RentalCurrentFAQ?.transaction||(new URLSearchParams(location.search).get('transaction')==='sale'?'sale':'rent');
+  window.addEventListener('site-faq-updated',e=>{faqs=e.detail.faqs;customFaqs=e.detail.custom;faqTransaction=e.detail.transaction||'rent'});
+  let faqs = window.RentalCurrentFAQ?.faqs||[...document.querySelectorAll('.faq details')].map(el => ({question:el.querySelector('summary span:last-child')?.textContent || el.querySelector('summary').textContent, answer:[...el.querySelectorAll('.faq-answer p')].map(p=>p.textContent).join('\n\n')}));
   const propertyOptions = [...q('#type').options].filter(o=>o.value!=='all');
   const areaOptions = [...q('#area').options].filter(o=>o.value!=='all');
   const budgetOptions = [...q('#budget').options].filter(o=>o.value!=='all');
@@ -100,7 +100,8 @@
   function showFaqs() {append('assistant','Anh/chị chọn câu hỏi cần giải đáp. Các câu trả lời dựa trên nội dung FAQ của website.');buttons(faqs.map(f=>[f.question,()=>respond(f.question)]))}
   document.querySelectorAll('[data-chat-action]').forEach(button=>button.addEventListener('click',()=>button.dataset.chatAction==='faq'?showFaqs():start(button.dataset.chatAction)));
   function detectFacts(text) {
-    const normalized=norm(text);let changed=false;
+    const normalized=norm(text);
+    const exactFAQ=faqs.find(f=>norm(f.question)===normalized);if(exactFAQ){append('assistant',exactFAQ.answer);contactOptions();return}let changed=false;
     for(const [field,available]of [['type',propertyOptions],['area',areaOptions]]){const found=available.find(o=>normalized.includes(norm(o.value)));if(found){state.draft[field]=found.value;changed=true}}
     const aliases=[['mat bang','Mặt bằng kinh doanh'],['van phong','Văn phòng'],['kho','Kho xưởng'],['xuong','Kho xưởng'],['tro','Phòng trọ']];
     if(!state.draft.type)for(const [word,value]of aliases)if(new RegExp(`\\b${word}\\b`).test(normalized)){state.draft.type=value;changed=true;break}
@@ -112,9 +113,10 @@
     return changed;
   }
   function faqAnswer(text) {
-    const normalized=norm(text);const exact=faqs.find(f=>norm(f.question)===normalized);if(exact)return exact.answer;
+    const normalized=norm(text);
+    const exactFAQ=faqs.find(f=>norm(f.question)===normalized);if(exactFAQ){append('assistant',exactFAQ.answer);contactOptions();return}const exact=faqs.find(f=>norm(f.question)===normalized);if(exact)return exact.answer;
     if(customFaqs)return null;
-    const patterns=[[/phi tu van|phi moi gioi|mat phi|mien phi|phi xem/,1],[/thuong luong|giam gia|dam phan/,6],[/hop dong|thoi han|hoan.*coc/,5],[/truoc khi ky|kiem tra.*gi|phap ly|phong chay/,9],[/dat coc.*(?:web|giu|online)|chuyen tien/,7],[/dat coc|tien coc/,5],[/gia thue|chi phi|dien nuoc|phi dich vu|phi quan ly/,0],[/lich xem|hen xem|di xem|xem nha|xem mat bang/,2],[/anh.*thuc|chinh xac|hinh anh|tin that|con trong/,3],[/loai hinh|co nhung loai|thue.*(?:xuong|van phong|kho)/,4],[/khong tim|ho tro tim|tim kiem/,8]];
+    const patterns=faqTransaction==='sale'?[[/phi tu van|phi moi gioi|mat phi|mien phi|phi xem/,1],[/thuong luong|giam gia|dam phan/,6],[/truoc khi ky|kiem tra.*gi|phap ly|ho so|quy hoach|the chap|tranh chap/,9],[/dat coc.*(?:web|giu|online)|thanh toan.*(?:web|online)|chuyen tien/,7],[/hop dong|thoi han|hoan.*coc|dat coc|tien coc|tien do thanh toan/,5],[/gia ban|chi phi|thue phi|le phi|phi cong chung/,0],[/lich xem|hen xem|di xem|xem nha|xem mat bang/,2],[/anh.*thuc|chinh xac|hinh anh|tin that|con ban|chao ban/,3],[/loai hinh|co nhung loai|ky gui ban|mua.*(?:xuong|van phong|kho)/,4],[/khong tim|ho tro tim|tim kiem/,8]]:[[/phi tu van|phi moi gioi|mat phi|mien phi|phi xem/,1],[/thuong luong|giam gia|dam phan/,6],[/hop dong|thoi han|hoan.*coc/,5],[/truoc khi ky|kiem tra.*gi|phap ly|phong chay/,9],[/dat coc.*(?:web|giu|online)|chuyen tien/,7],[/dat coc|tien coc/,5],[/gia thue|chi phi|dien nuoc|phi dich vu|phi quan ly/,0],[/lich xem|hen xem|di xem|xem nha|xem mat bang/,2],[/anh.*thuc|chinh xac|hinh anh|tin that|con trong/,3],[/loai hinh|co nhung loai|thue.*(?:xuong|van phong|kho)/,4],[/khong tim|ho tro tim|tim kiem/,8]];
     const found=patterns.find(([regex])=>regex.test(normalized));return found?faqs[found[1]]?.answer||null:null;
   }
   function transportHistory() {
@@ -129,6 +131,7 @@
   async function respond(text) {
     if(state.busy)return;append('user',text);options.replaceChildren();
     const normalized=norm(text);
+    const exactFAQ=faqs.find(f=>norm(f.question)===normalized);if(exactFAQ){append('assistant',exactFAQ.answer);contactOptions();return}
     if(/can gap|khan cap|gap qua|can ngay|hotline|goi ngay/.test(normalized)){urgent();return}
     if(/(?:ky gui|toi co|muon sang|can sang|can chuyen).*?(?:chuyen nhuong|sang nhuong)/.test(normalized)){state.draft={intent:'owner_transfer'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
     if(/ky gui ban|muon ban|can ban/.test(normalized)){state.draft={intent:'owner_sale'};state.flow=true;detectFacts(text);state.draft.ownerNotes=text;nextStep();return}
