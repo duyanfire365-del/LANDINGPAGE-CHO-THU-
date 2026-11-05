@@ -1,0 +1,278 @@
+{
+  "faqEyebrow": "GIẢI ĐÁP TRƯỚC KHI MUA/BÁN BĐS",
+  "faqTitle": "Câu hỏi thường gặp.",
+  "faqIntro": "Giải đáp về giá bán, chi phí giao dịch, lịch xem, đặt cọc và hồ sơ cần kiểm tra trước khi mua bán BĐS.",
+  "faqGroups": [
+    "Giá bán, thông tin và lịch xem",
+    "Đặt cọc, giao dịch và hỗ trợ"
+  ],
+  "faqs": [
+    {
+      "group": 0,
+      "question": "Giá bán niêm yết đã bao gồm thuế, phí và các chi phí khác chưa?",
+      "answer": "Giá bán hiển thị là mức giá chào tại thời điểm đăng tin và cần được xác nhận lại với bên bán. Thuế, lệ phí, phí công chứng, phí dịch vụ hoặc môi giới và các chi phí khác, nếu có, cần được làm rõ theo từng giao dịch.\n\nCác bên nên thống nhất bằng văn bản khoản nào đã bao gồm trong giá, bên nào chịu từng khoản và thời điểm thanh toán trước khi quyết định giao dịch."
+    },
+    {
+      "group": 0,
+      "question": "Tư vấn, xem BĐS và môi giới mua bán có mất phí không?",
+      "answer": "Anh/chị cần xác nhận trước phạm vi hỗ trợ và các khoản phí, nếu có. Mức phí, bên chịu phí, thời điểm thanh toán và điều kiện áp dụng nên được thống nhất rõ trước khi sử dụng dịch vụ hoặc ký thỏa thuận."
+    },
+    {
+      "group": 0,
+      "question": "Làm thế nào để đặt lịch xem BĐS cần mua?",
+      "answer": "Anh/chị có thể gọi {phone} hoặc liên hệ Zalo, cung cấp mã tin BĐS, khu vực, nhu cầu mua và thời gian mong muốn. Tư vấn viên sẽ trao đổi để kiểm tra tình trạng chào bán và phối hợp lịch xem.\n\nLịch xem chỉ được coi là đã xác nhận sau khi có trao đổi và xác nhận cụ thể từ người phụ trách; việc điền biểu mẫu trên website chưa đồng nghĩa với một lịch hẹn đã được chốt."
+    },
+    {
+      "group": 0,
+      "question": "Thông tin, hình ảnh và tình trạng chào bán đã được xác minh chưa?",
+      "answer": "Tin đăng được giới thiệu theo thông tin nguồn cung cấp. Hình ảnh có thể là ảnh minh họa hoặc ảnh do nguồn gửi; giá bán, hiện trạng và tình trạng giao dịch có thể thay đổi.\n\nViệc xuất hiện trên website không thay thế kiểm tra hồ sơ, quyền bán và điều kiện giao dịch. Anh/chị nên xác nhận lại thông tin, đối chiếu hồ sơ phù hợp và khảo sát BĐS thực tế trước khi đặt cọc."
+    },
+    {
+      "group": 0,
+      "question": "Tôi có thể tìm mua hoặc ký gửi bán những loại BĐS nào?",
+      "answer": "Anh/chị có thể dùng danh mục và bộ lọc để tìm BĐS đang chào bán theo khu vực, loại hình và ngân sách. Khi có nhu cầu ký gửi, chọn “Ký gửi bán” và cung cấp thông tin thực tế về BĐS, giá chào, hình ảnh và thông tin liên hệ.\n\nQuyền sở hữu hoặc quyền sử dụng, mục đích sử dụng và điều kiện chuyển nhượng cần được kiểm tra theo hồ sơ của từng BĐS."
+    },
+    {
+      "group": 1,
+      "question": "Thỏa thuận đặt cọc và mua bán cần làm rõ những nội dung nào?",
+      "answer": "Cần làm rõ BĐS giao dịch, người có quyền ký kết, giá bán, khoản đặt cọc, tiến độ và điều kiện thanh toán, hồ sơ cần cung cấp, các khoản thuế/phí, thời điểm bàn giao và trách nhiệm của mỗi bên.\n\nĐiều kiện hoàn trả, xử lý tiền cọc và cách giải quyết khi giao dịch không thực hiện được cần được ghi rõ. Nên kiểm tra hồ sơ và trao đổi với đơn vị chuyên môn phù hợp trước khi ký hoặc chuyển tiền."
+    },
+    {
+      "group": 1,
+      "question": "Tôi có thể thương lượng giá bán và điều kiện giao dịch không?",
+      "answer": "Anh/chị có thể đề nghị trao đổi về giá chào, tiến độ thanh toán, thời gian bàn giao, nội thất đi kèm và việc phân chia các khoản chi phí. Kết quả phụ thuộc vào thỏa thuận của các bên. Mọi điều chỉnh nên được xác nhận và ghi rõ trong văn bản giao dịch."
+    },
+    {
+      "group": 1,
+      "question": "Tôi có thể đặt cọc hoặc thanh toán mua BĐS trực tiếp trên website không?",
+      "answer": "Website hiện không có chức năng nhận tiền đặt cọc hoặc thanh toán mua bán BĐS. Trước khi chuyển tiền, anh/chị cần xác minh người có quyền nhận tiền, hồ sơ BĐS và điều kiện giao dịch; thực hiện theo thỏa thuận đã được các bên kiểm tra, xác nhận."
+    },
+    {
+      "group": 1,
+      "question": "Chưa tìm được BĐS phù hợp, tôi có được hỗ trợ tìm mua không?",
+      "answer": "Anh/chị có thể gửi nhu cầu hoặc liên hệ tư vấn, nêu rõ khu vực, loại BĐS, khoảng ngân sách mua, diện tích, mục đích sử dụng và các tiêu chí bắt buộc. Thông tin càng cụ thể càng thuận tiện cho việc trao đổi và tìm nguồn phù hợp.\n\nThông tin liên hệ chỉ được gửi qua biểu mẫu sau khi anh/chị đồng ý và bấm gửi. Nguồn BĐS thực tế và điều kiện giao dịch vẫn cần được xác nhận trước khi quyết định."
+    },
+    {
+      "group": 1,
+      "question": "Những hồ sơ và thông tin nào cần kiểm tra trước khi mua bán BĐS?",
+      "answer": "Cần kiểm tra người có quyền bán hoặc đại diện, hồ sơ quyền sở hữu/quyền sử dụng, hiện trạng, diện tích, ranh giới, mục đích sử dụng và các thông tin có thể ảnh hưởng đến giao dịch như quy hoạch, hạn chế giao dịch, thế chấp hoặc tranh chấp nếu có.\n\nĐồng thời làm rõ giá, tiến độ thanh toán, thuế/phí, việc bàn giao và thủ tục phù hợp với loại BĐS. Nên đối chiếu hồ sơ gốc và làm việc với đơn vị chuyên môn hoặc cơ quan có thẩm quyền khi cần."
+    }
+  ],
+  "faqNote": "Thông tin theo nguồn cung cấp; hình ảnh có thể là ảnh minh họa hoặc ảnh nguồn. Vui lòng xác nhận lại giá bán, hiện trạng, tình trạng giao dịch, hồ sơ pháp lý và các chi phí liên quan trước khi quyết định.",
+  "brandName": "Nguồn cho thuê BĐS Hà Nội",
+  "description": "Kết nối nhu cầu mua và nguồn BĐS chào bán tại Hà Nội.",
+  "browseLabel": "Xem BĐS mua/bán",
+  "officeTitle": "Văn phòng & liên hệ",
+  "address": "17 Vũ Phạm Hàm, Cầu Giấy, Hà Nội",
+  "mapUrl": "https://www.google.com/maps/search/?api=1&query=17%20V%C5%A9%20Ph%E1%BA%A1m%20H%C3%A0m%2C%20C%E1%BA%A7u%20Gi%E1%BA%A5y%2C%20H%C3%A0%20N%E1%BB%99i",
+  "phone": "0906215365",
+  "phoneLabel": "0906 215 365",
+  "phoneNote": "Liên hệ để trao đổi nhu cầu và xác nhận lịch xem.",
+  "socialTitle": "Kết nối với chúng tôi",
+  "socials": [
+    {
+      "label": "Facebook",
+      "url": ""
+    },
+    {
+      "label": "TikTok",
+      "url": ""
+    },
+    {
+      "label": "YouTube",
+      "url": ""
+    },
+    {
+      "label": "Zalo",
+      "url": "https://zalo.me/0906215365"
+    },
+    {
+      "label": "Instagram",
+      "url": ""
+    },
+    {
+      "label": "Viber",
+      "url": "viber://chat?number=%2B84906215365"
+    },
+    {
+      "label": "Telegram",
+      "url": "https://t.me/+84906215365"
+    }
+  ],
+  "copyright": "© 2026 Nguồn cho thuê BĐS Hà Nội. Ảnh minh họa bằng AI; thông tin cần được xác nhận.",
+  "links": [
+    {
+      "label": "Câu hỏi thường gặp",
+      "url": "#cau-hoi-thuong-gap"
+    },
+    {
+      "label": "Mua BĐS / Ký gửi bán",
+      "url": "#tu-van"
+    },
+    {
+      "label": "Về đầu trang ↑",
+      "url": "#"
+    }
+  ],
+  "layout": {
+    "fields": {
+      "heroEyebrow": "NGUỒN BĐS HÀ NỘI · 0906 215 365",
+      "heroTitle": "Tìm nguồn Mua/Bán BĐS tại Hà Nội",
+      "heroSlogan": "TÌM ĐÚNG BĐS – CHỌN ĐÚNG NHU CẦU",
+      "heroDescription": "Chọn khu vực, loại BĐS và ngân sách mua phù hợp.",
+      "heroButton": "Xem BĐS mua/bán",
+      "heroSecondary": "Tư vấn mua/bán BĐS",
+      "heroNote": "Tin theo nguồn cung cấp; cần xác nhận giá bán, hiện trạng và hồ sơ pháp lý. Ảnh minh họa bằng AI.",
+      "listingEyebrow": "DANH SÁCH BĐS",
+      "listingTitle": "Chọn BĐS phù hợp.",
+      "listingIntro": "Chọn loại BĐS để xem thông tin và danh sách phù hợp.",
+      "processEyebrow": "CÁCH TÌM BĐS",
+      "processTitle": "Ba bước dễ thực hiện.",
+      "step1Title": "1. Chọn BĐS phù hợp",
+      "step1Text": "Lọc theo khu vực, loại BĐS và ngân sách mua. Bấm “Xem chi tiết” để tìm hiểu thêm.",
+      "step2Title": "2. Liên hệ tư vấn",
+      "step2Text": "Trao đổi về BĐS đang chào bán, giá bán, tình trạng giao dịch và các chi phí liên quan.",
+      "step3Title": "3. Hẹn xem BĐS thực tế",
+      "step3Text": "Thống nhất lịch xem trực tiếp. Kiểm tra hiện trạng, hồ sơ pháp lý và thỏa thuận giao dịch trước khi đặt cọc.",
+      "contactEyebrow": "CẦN MUA BĐS HAY KÝ GỬI BÁN?",
+      "contactTitle": "Cho chúng tôi biết nhu cầu của anh/chị.",
+      "contactIntro": "Chia sẻ nhu cầu mua BĐS hoặc ký gửi bán, kèm khu vực, loại BĐS và mức giá để được tư vấn trực tiếp.",
+      "backLabel": "← Trở về",
+      "searchKeywordLabel": "TÌM THEO ĐỊA CHỈ HOẶC MÃ TIN",
+      "searchPlaceholder": "Ví dụ: Đỗ Quang, Ao Sen, HN-001",
+      "searchAreaLabel": "KHU VỰC",
+      "searchTypeLabel": "DANH MỤC BĐS",
+      "searchBudgetLabel": "NGÂN SÁCH",
+      "searchButton": "Tìm BĐS Phù Hợp",
+      "searchAreaNote": "Khu vực theo 30 quận, huyện và thị xã cũ của Hà Nội.",
+      "searchBudgetNote": "Giá bán tính theo tổng giá trị BĐS."
+    },
+    "sections": [
+      {
+        "id": "search",
+        "hidden": false
+      },
+      {
+        "id": "hero",
+        "hidden": false
+      },
+      {
+        "id": "listings",
+        "hidden": false
+      },
+      {
+        "id": "process",
+        "hidden": false
+      },
+      {
+        "id": "contact",
+        "hidden": false
+      },
+      {
+        "id": "faq",
+        "hidden": false
+      }
+    ],
+    "menu": [
+      {
+        "label": "Trang chủ",
+        "url": "/"
+      },
+      {
+        "label": "Đăng ký / Đăng nhập",
+        "url": "/thanh-vien"
+      },
+      {
+        "label": "Xem BĐS mua/bán",
+        "url": "/#bat-dong-san"
+      },
+      {
+        "label": "Liên hệ tư vấn",
+        "url": "/#tu-van"
+      },
+      {
+        "label": "Cách tìm BĐS",
+        "url": "/#quy-trinh"
+      },
+      {
+        "label": "Tin tức Hot",
+        "url": "/tin-tuc-hot"
+      },
+      {
+        "label": "Kinh nghiệm tìm MBKD",
+        "url": "/kinh-nghiem-tim-mbkd"
+      }
+    ],
+    "categories": [
+      {
+        "id": "all",
+        "label": "Tất cả",
+        "hidden": false
+      },
+      {
+        "id": "Mặt bằng kinh doanh",
+        "label": "Mặt bằng kinh doanh",
+        "hidden": false
+      },
+      {
+        "id": "Văn phòng",
+        "label": "Văn phòng",
+        "hidden": false
+      },
+      {
+        "id": "Kho xưởng",
+        "label": "Kho xưởng",
+        "hidden": false
+      },
+      {
+        "id": "Nhà nguyên căn",
+        "label": "Nhà nguyên căn",
+        "hidden": false
+      },
+      {
+        "id": "Căn hộ chung cư",
+        "label": "Căn hộ chung cư",
+        "hidden": false
+      },
+      {
+        "id": "Căn hộ dịch vụ",
+        "label": "Căn hộ dịch vụ",
+        "hidden": false
+      },
+      {
+        "id": "Phòng trọ",
+        "label": "Phòng trọ",
+        "hidden": false
+      },
+      {
+        "id": "Biệt thự, nhà liền kề",
+        "label": "Biệt thự, nhà liền kề",
+        "hidden": false
+      },
+      {
+        "id": "Ki-ốt",
+        "label": "Ki-ốt",
+        "hidden": false
+      },
+      {
+        "id": "Đất cho thuê",
+        "label": "Đất",
+        "hidden": false
+      },
+      {
+        "id": "Bất động sản khác",
+        "label": "Bất động sản khác",
+        "hidden": false
+      }
+    ],
+    "theme": {},
+    "banner": "/sale-banner.webp",
+    "quick": {
+      "badge": "CLICK XEM NGAY",
+      "title": "TÌM BĐS PHÙ HỢP",
+      "text": "Hỗ trợ tìm mua BĐS theo nhu cầu và ngân sách",
+      "hidden": false
+    },
+    "footerHidden": false
+  }
+}

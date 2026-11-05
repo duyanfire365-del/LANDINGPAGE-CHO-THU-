@@ -147,7 +147,7 @@
       state.busy=true;q('#chat-send').disabled=true;
       const pending=document.createElement('p');pending.className='chat-pending';pending.textContent='Đang trả lời…';messages.append(pending);messages.scrollTop=messages.scrollHeight;
       try {
-        const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:transportHistory()}),signal:AbortSignal.timeout(15000)});
+        const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({transaction:faqTransaction,messages:transportHistory()}),signal:AbortSignal.timeout(15000)});
         const data=await response.json();if(!response.ok||typeof data.reply!=='string')throw Error('AI unavailable');append('assistant',data.reply);contactOptions();
       }catch{append('assistant','AI tạm thời chưa kết nối được. Anh/chị có thể chọn câu hỏi thường gặp, điền nhu cầu hoặc gọi 0906 215 365.');contactOptions()}
       finally{pending.remove();state.busy=false;q('#chat-send').disabled=false}

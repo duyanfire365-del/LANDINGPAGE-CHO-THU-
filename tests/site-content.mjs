@@ -24,5 +24,20 @@ try{
  assert.equal((await call(workspace,'POST','/api/workspace?site-content=1',{action:'site-content-reset',revision:own.revision},{...cookie,origin:'https://evil.example'})).status,403);
  const reset=await call(workspace,'POST','/api/workspace?site-content=1',{action:'site-content-reset',revision:own.revision},cookie);assert.equal(reset.status,200);const restored=JSON.parse(reset.payload);assert.equal(restored.content.faqs.length,10);assert(restored.logo.custom);const header=await saveSiteContent({action:'site-content-logo-reset',revision:restored.revision});assert(!header.logo.custom);assert.equal(header.logo.alt,'Logo đầu trang mới');
  const pub=await call(catalog,'GET','/api/catalog?view=site-content');assert.equal(pub.status,200);assert(!String(pub.payload).includes('base64'));assert.equal(f.tables.posts.length,0);assert.equal(f.tables.customer_watch[0].data.name,'Khách admin');
+ const rentalBeforeSale=await siteContent();const saleInitial=await siteContent('sale');assert.equal(saleInitial.transaction,'sale');assert.equal(saleInitial.content.layout.banner,'/sale-banner.webp');assert.equal(saleInitial.content.faqs.length,10);
+ const saleDraft=structuredClone(saleInitial.content);saleDraft.layout.fields.heroTitle='BĐS mua bán tự chỉnh';saleDraft.faqs[0].answer='Nội dung mua bán tự chỉnh';
+ const saleSaved=await saveSiteContent({transaction:'sale',action:'site-content-save',revision:null,content:saleDraft});
+ global.fetch=async(url,options)=>{if(String(url)==='https://api.openai.com/v1/chat/completions'){const prompt=JSON.parse(options.body).messages[0].content;assert(prompt.includes('Nội dung mua bán tự chỉnh'));assert(!prompt.includes('Trả lời mới'));return Response.json({choices:[{message:{content:'FAQ mua bán đúng tab'}}]});}return f.fetch(url,options);};
+ assert.equal((await call(chat,'POST','/api/chat',{transaction:'sale',messages:[{role:'user',content:'Câu hỏi mua bán'}]})).status,200);global.fetch=f.fetch;
+ assert.equal((await siteContent('sale')).content.layout.fields.heroTitle,'BĐS mua bán tự chỉnh');assert.deepEqual(await siteContent(),rentalBeforeSale);
+ await assert.rejects(saveSiteContent({transaction:'sale',action:'site-content-save',revision:null,content:saleDraft}),{status:409});
+ await assert.rejects(saveSiteContent({transaction:'invalid',action:'site-content-save',revision:null,content:saleDraft}),{status:400});
+ const saleOwn=await saveSiteContent({transaction:'sale',action:'site-content-logo-save',revision:saleSaved.revision,base64:png.toString('base64'),alt:'Logo cuối trang mua bán'});
+ assert(saleOwn.logo.url.includes('transaction=sale'));const saleImage=await call(files,'GET',saleOwn.logo.url);assert.equal(saleImage.status,200);assert(Buffer.isBuffer(saleImage.payload));assert.deepEqual(await siteContent(),rentalBeforeSale);
+ const saleReset=await saveSiteContent({transaction:'sale',action:'site-content-reset',revision:saleOwn.revision});assert.equal(saleReset.content.layout.fields.heroTitle,saleInitial.content.layout.fields.heroTitle);assert(saleReset.logo.custom);
+ const saleUndo=await saveSiteContent({transaction:'sale',action:'site-content-undo',revision:saleReset.revision});assert.equal(saleUndo.content.layout.fields.heroTitle,'BĐS mua bán tự chỉnh');assert.deepEqual(await siteContent(),rentalBeforeSale);
+ assert.equal((await call(workspace,'GET','/api/workspace?view=site-content&transaction=sale')).status,401);
+ const saleRead=await call(workspace,'GET','/api/workspace?view=site-content&transaction=sale',undefined,cookie);assert.equal(JSON.parse(saleRead.payload).transaction,'sale');
+ const bundled=JSON.parse((await call(catalog,'GET','/api/catalog?view=site-content')).payload);assert.equal(bundled.sale.content.layout.fields.heroTitle,'BĐS mua bán tự chỉnh');assert(!JSON.stringify(bundled).includes('history'));
  console.log('PASS editable FAQ/footer: validation, default preservation, CRUD/CAS, independent footer logo/header fallback, public DTO/image/ETag, admin-only and CSRF guards, original records unchanged.');
 }finally{global.fetch=original}
