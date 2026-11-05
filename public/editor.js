@@ -34,7 +34,7 @@
     status('Đang tải '+file.name+'…');const mime=file.type||fileMimes[file.name.split('.').pop().toLowerCase()];
     const signed=await request('/api/files',{action:'upload',name:file.name,mime,size:file.size,brandingApplied:file.brandingApplied===true||file.name.startsWith('nguonchothue-branded-'),brandingVersion:file.brandingVersion||(file.name.startsWith('nguonchothue-branded-v3-')?'center-v3':'')});
     const response=await fetch(signed.url,{method:'PUT',headers:{'Content-Type':mime},body:file});if(!response.ok)throw Error('Tệp chưa tải lên thành công. Vui lòng thử lại.');
-    assets.push({id:signed.id,name:file.name,kind:signed.kind});
+    if(signed.kind==='image'){status('Đang kiểm tra quyền riêng tư của ảnh…');const checked=await request('/api/files',{action:'inspect-media',id:signed.id});assets.push({...checked.media,id:signed.id,name:file.name,kind:signed.kind});}else assets.push({id:signed.id,name:file.name,kind:signed.kind});
     renderAssets();
    }status('Đã tải tệp lên. Ảnh/video sẽ gắn vào tin; tài liệu chỉ dùng làm nguồn riêng tư.')}
   q('.editor-upload').addEventListener('change',async event=>{const input=event.target;input.disabled=true;try{await uploadFiles(input.files)}catch(error){status(error.message)}finally{input.disabled=false;input.value=''}});

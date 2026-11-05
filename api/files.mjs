@@ -1,3 +1,4 @@
+import {canReadAsset,isPublicAsset,accessOf,inspectAsset,mediaEntry,assetBytes} from '../lib/media-access.mjs';
 import {newsCover} from '../lib/news.mjs';
 import {footerLogoImage} from '../lib/site-content.mjs';
 import {websiteLogoImage} from '../lib/website-logo.mjs';
@@ -19,8 +20,11 @@ const types={'image/jpeg':['image','jpg'],'image/png':['image','png'],'image/web
 async function asset(req,id,{publicRead=false}={}){
  if(!/^[-\da-f]{36}$/i.test(id||''))throw problem(400,'Mã tệp không hợp lệ.');
  const rows=await db('assets',{query:'?id=eq.'+id});if(!rows[0])throw problem(404,'Không tìm thấy tệp.');const item=rows[0];
- if(publicRead){const posts=await db('posts',{query:'?status=eq.published&select=id&public_data->media=cs.'+encodeURIComponent(JSON.stringify([{id}]))+'&limit=1'});if(posts.length)return item}
- const who=await actor(req);if(!who.admin&&item.owner_id!==who.id)throw problem(403,'Không có quyền truy cập tệp này.');return item;
+ const refs=await db('posts',{query:'?public_data->media=cs.'+encodeURIComponent(JSON.stringify([{id}]))+'&select=id,status,public_data,author_id&limit=100'});
+ const published=refs.some(r=>r.status==='published');
+ if(publicRead&&isPublicAsset(item)&&published)return item;
+ if(new URL(req.url,'http://localhost').searchParams.get('public')==='1')throw problem(403,'Ảnh này không còn công khai.');
+ const who=await actor(req);if(!canReadAsset(item,who,{attached:refs.length>0,published}))throw problem(403,'Anh/chị chưa được cấp quyền xem ảnh này.');return item;
 }
 async function signed(item){const result=await supa('/storage/v1/object/sign/rental-private/'+item.path,{method:'POST',body:{expiresIn:120}});const path=result.signedURL||result.signedUrl;return new URL(path.startsWith('/storage/')?path:'/storage/v1'+path,process.env.SUPABASE_URL).href}
 async function branded(item,slug=''){
@@ -40,6 +44,15 @@ export default async function handler(req,res){
  try{
   const query=new URL(req.url,'http://localhost').searchParams;
   if(req.method==='GET'){
+   if(query.get('action')==='public-media'){
+    const slug=query.get('slug');if(!/^live-\d{10,20}$/.test(slug||''))throw problem(400,'Mã tin không hợp lệ.');const post=(await db('posts',{query:'?status=eq.published&public_data->>slug=eq.'+slug+'&limit=1'}))[0];if(!post)throw problem(404,'Tin chưa công khai.');const ids=(post.public_data.media||[]).map(m=>m.id),assets=ids.length?await db('assets',{query:'?id=in.('+ids.join(',')+')&select=*'}):[];const map=new Map(assets.map(a=>[a.id,a]));return send(res,200,{media:ids.map(id=>map.get(id)).filter(a=>a&&a.kind==='image'&&isPublicAsset(a)).map(a=>({id:a.id,kind:a.kind}))});
+   }
+   if(query.get('action')==='private-media'){
+    const who=await actor(req),slug=query.get('slug');if(!/^live-\d{10,20}$/.test(slug||''))throw problem(400,'Mã tin không hợp lệ.');
+    const post=(await db('posts',{query:'?public_data->>slug=eq.'+slug+'&limit=1'}))[0];if(!post||!who.admin&&post.status!=='published')throw problem(404,'Không tìm thấy tin.');
+    const ids=(post.public_data.media||[]).map(m=>m.id),assets=ids.length?await db('assets',{query:'?id=in.('+ids.join(',')+')&select=*'}):[];
+    const media=assets.filter(a=>a.kind==='image'&&!isPublicAsset(a)&&canReadAsset(a,who,{attached:true,published:post.status==='published'})).map(a=>({id:a.id,kind:a.kind,name:who.admin?a.name:'Ảnh được cấp quyền',visibility:accessOf(a).visibility,...(who.admin?{accessReason:accessOf(a).reason||''}:{})}));return send(res,200,{media});
+   }
    if(['news-cover','news-cover-preview'].includes(query.get('action'))){const bytes=await newsCover(req,query.get('id'),{admin:query.get('action')==='news-cover-preview'});res.writeHead(200,{'Content-Type':'image/webp','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});return res.end(bytes)}
    if(['website-logo','footer-logo'].includes(query.get('action'))){const logo=await (query.get('action')==='footer-logo'?footerLogoImage(query.get('transaction')):websiteLogoImage()),headers={'Content-Type':'image/webp','Cache-Control':'public, max-age=0, must-revalidate','X-Content-Type-Options':'nosniff',ETag:'\"'+logo.revision+'\"'};if(req.headers['if-none-match']===headers.ETag){res.writeHead(304,headers);return res.end()}res.writeHead(200,headers);return res.end(logo.bytes)}
    if(query.get('action')==='illustration')return illustrationResponse(req,res);
@@ -58,6 +71,9 @@ export default async function handler(req,res){
     let bytes=await readFile(new URL('../public/images/'+slug+'.jpg',import.meta.url));const qr=await brandingQR();if(qr.custom)bytes=await replaceQR(bytes,qr.bytes,{code:rows.find(r=>r.slug===slug).code});res.writeHead(200,{'Content-Type':'image/jpeg','Content-Disposition':`attachment; filename="${slug}.jpg"`});return res.end(bytes);
    }
    const item=await asset(req,query.get('id'),{publicRead:true});if(item.kind==='document')throw problem(403,'Tài liệu nguồn chỉ dành cho chủ tài khoản và quản trị viên.');
+   if(!isPublicAsset(item)){
+    const bytes=await assetBytes(item);res.writeHead(200,{'Content-Type':item.mime,'Cache-Control':'private, no-store, max-age=0','Vary':'Cookie','X-Content-Type-Options':'nosniff',...(query.get('download')==='1'?{'Content-Disposition':'attachment; filename="anh-rieng-tu.'+(item.mime==='image/png'?'png':item.mime==='image/webp'?'webp':'jpg')+'"'}:{})});return res.end(bytes);
+   }
    let url=item.kind==='image'?await branded(item,query.get('post')||query.get('slug')||''):await signed(item);if(query.get('download')==='1')url+='&download='+encodeURIComponent(item.kind==='image'?item.name.replace(/\.[^.]+$/,'')+'.jpg':item.name);
    res.writeHead(302,{Location:url,'Cache-Control':'no-store'});return res.end();
   }
@@ -67,10 +83,11 @@ export default async function handler(req,res){
   if(body.action==='prepare-text')return send(res,200,await (await import('../lib/editor-ai.mjs')).prepareEditorText(body.text));
   if(body.action==='generate-editor-image')return send(res,200,await (await import('../lib/editor-ai.mjs')).createEditorImage(body,who));
   if(body.action==='set-default-qr'){requireAdmin(req);return send(res,200,await setBrandingQR(body.id));}
+  if(body.action==='inspect-media'){const a=await asset(req,body.id);const result=await inspectAsset(a);return send(res,200,{media:who.admin?mediaEntry(result):{id:result.id,kind:result.kind,mime:result.mime,name:result.name,visibility:accessOf(result).visibility}});}
   if(body.action==='upload'){
    const pair=types[body.mime],size=Number(body.size);if(!pair||!Number.isInteger(size)||size<=0||size>(pair[0]==='video'?50:10)*1024*1024)throw problem(400,'Ảnh/tài liệu tối đa 10 MB; video MP4/WebM tối đa 50 MB.');
    const path=(body.brandingApplied===true&&pair[0]==='image'?(body.brandingVersion==='center-v3'?'manual-branded/v3/':'manual-branded/'):'')+(who.id||'admin')+'/'+randomUUID()+'.'+pair[1],name=clean(body.name,150).replace(/[\r\n/\\]/g,'_');
-   const rows=await db('assets',{method:'POST',body:{owner_id:who.id,path,name,mime:body.mime,size,kind:pair[0]}});
+   const rows=await db('assets',{method:'POST',body:{owner_id:who.id,path,name,mime:body.mime,size,kind:pair[0],access_data:pair[0]==='image'?{visibility:'owner',members:[],scan:'pending',reason:'Đang chờ kiểm tra ảnh trước khi công khai.'}:{visibility:pair[0]==='video'?'public':'owner',members:[],scan:'not_image'}}});
    const result=await supa('/storage/v1/object/upload/sign/rental-private/'+path,{method:'POST',body:{}});
    const raw=result.url||result.signedURL||result.signedUrl;
    return send(res,200,{id:rows[0].id,url:new URL(raw.startsWith('/storage/')?raw:'/storage/v1'+raw,process.env.SUPABASE_URL).href,kind:pair[0]});
