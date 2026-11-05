@@ -4,7 +4,27 @@
   const isDual=p=>p?.transactionType==='both'||p?.transactionOrigin==='both';
   const supportsTransaction=(p,kind)=>isDual(p)||(isSale(p)?'sale':'rent')===kind;
   const viewHref=(p,kind)=>{const u=new URL(p.href||'/tin?slug='+p.slug,'https://nguonchothue.vn');if(kind==='sale')u.searchParams.set('transaction','sale');else u.searchParams.delete('transaction');return u.pathname+u.search+u.hash;};
-  const transactionView=(p,kind)=>!isDual(p)?p:kind==='sale'?{...p,transactionOrigin:'both',transactionType:'sale',pricePeriod:'one_time',rentalPriceOptions:p.rentalPriceOptions??p.priceOptions,priceOptions:undefined,href:viewHref(p,kind),rentalPriceFrom:p.rentalPriceFrom??p.priceFrom,rentalPrice:p.rentalPrice??p.price,price:p.salePrice,pricePerM2:p.salePricePerM2||null,priceFrom:p.salePriceFrom===true}:{...p,transactionOrigin:'both',transactionType:'rent',href:viewHref(p,kind),rentalPrice:p.rentalPrice??p.price,price:p.rentalPrice??p.price};
+  // Project public copy without modifying the shared source or private record.
+  const copyParts=value=>String(value||'').split(/\r?\n|[;；]|,\s*(?=(?:[Gg]iá\s*(?:thuê|bán))\s*[:：])|\s+[·|]\s+|(?<=[.!?])\s+(?=[\p{Lu}])/u).map(s=>s.trim()).filter(Boolean);
+  function transactionCopy(p,kind){
+    const source=p.transactionCopySource||{title:p.title,description:p.description,facts:p.facts,notes:p.notes,imageAlt:p.imageAlt};
+    const sale=kind==='sale',label=sale?'Bán':'Cho thuê';
+    const normalize=value=>String(value||'').replace(/(?:cho\s+thuê\s*(?:và|hoặc|\/|&)\s*(?:mua\s*\/\s*)?bán|bán\s*(?:và|hoặc|\/|&)\s*(?:cho\s+)?thuê)/giu,label);
+    const opposite=sale?/(?:cho\s+thuê|giá\s+thuê|tiền\s+thuê|khách\s+thuê|người\s+thuê|hợp\s+đồng\s+thuê|thời\s+hạn\s+thuê|thuê|đặt\s+cọc|thanh\s+toán\s+\d+\s+tháng|\/\s*tháng)/iu:/(?:giá\s+bán|mua\s*bán|bán|khách\s+mua|người\s+mua|sang\s+tên|chuyển\s+quyền)/iu;
+    const clean=value=>copyParts(value).map(normalize).filter(line=>!opposite.test(line)&&!/(?:giá\s*(?:thuê|bán)?\s*[:：]|\d[\d.,]*\s*(?:triệu|tr(?:iệu)?|tỷ|tỉ|đồng|vnd|vnđ)\b|\d[\d.,]*\s*đ\s*\/)/iu.test(line)).join('\n');
+    // Build the heading from verified public fields, keeping prices in their own field.
+    const category=String(p.type||'bất động sản').replace(/đất cho thuê/giu,'đất').toLocaleLowerCase('vi');
+    const title=label+' '+category+(Number(p.size)>0?' '+sizeText(p.size)+(p.areaPerFloor?'/sàn':''):'')+(p.address||p.area?' — '+(p.address||p.area):'');
+    const price=sale?p.salePrice:(p.rentalPrice??p.price),from=sale?p.salePriceFrom:(p.rentalPriceFrom??p.priceFrom);
+    const facts=[...new Set((source.facts||[]).flatMap(value=>copyParts(clean(value))))];
+    const description=[clean(source.description),sale?'Giá bán: '+priceText(price,from,{transactionType:'sale'})+'.':'Giá thuê: '+priceText(price,from,{transactionType:'rent'})+'.'].filter(Boolean).join('\n\n');
+    return {transactionCopySource:source,title,description,facts,notes:(source.notes||[]).map(clean).filter(Boolean),imageAlt:clean(source.imageAlt)||title};
+  }
+  const transactionView=(p,kind)=>{
+    if(!isDual(p))return p;
+    const copy=transactionCopy(p,kind);
+    return kind==='sale'?{...p,...copy,transactionOrigin:'both',transactionType:'sale',pricePeriod:'one_time',rentalPriceOptions:p.rentalPriceOptions??p.priceOptions,priceOptions:undefined,href:viewHref(p,kind),rentalPriceFrom:(p.rentalPriceFrom??p.priceFrom)===true,rentalPricePerM2:p.rentalPricePerM2??p.pricePerM2,rentalPrice:p.rentalPrice??p.price,price:p.salePrice,pricePerM2:p.salePricePerM2||null,priceFrom:p.salePriceFrom===true,isTransfer:false,transferPrice:null,transferNegotiable:false}:{...p,...copy,transactionOrigin:'both',transactionType:'rent',pricePeriod:'monthly',href:viewHref(p,kind),rentalPrice:p.rentalPrice??p.price,price:p.rentalPrice??p.price,priceFrom:(p.rentalPriceFrom??p.priceFrom)===true,pricePerM2:p.rentalPricePerM2??p.pricePerM2,priceOptions:p.rentalPriceOptions??p.priceOptions};
+  };
   const priceText=(value,from=false,post={})=>isSale(post)?(Number(value)>0&&from?'Từ ':'')+salePrice(value):Number(value)>0?(from?'Từ ':'')+new Intl.NumberFormat('vi-VN').format(value)+' triệu đồng/tháng':'Giá liên hệ';
   const sizeText=value=>Number(value)>0?new Intl.NumberFormat('vi-VN').format(value)+' m²':'Diện tích đang cập nhật';
   const transferText=post=>'Giá chuyển nhượng: '+(Number(post.transferPrice)>0?new Intl.NumberFormat('vi-VN').format(post.transferPrice)+' triệu đồng':'Liên hệ')+(post.transferNegotiable?' — Có thể thương lượng':'');
@@ -17,8 +37,8 @@
   const captionFold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   function compactCaption(listing){
     const address=String(listing.address||listing.area||'').trim();
-    const heading=listing.type?(isDual(listing)?'Cho thuê / Bán ':isSale(listing)?'Bán ':listing.isTransfer?'Sang nhượng ':'Cho thuê ')+String(isSale(listing)&&listing.type==='Đất cho thuê'?'Đất':listing.type).toLocaleLowerCase('vi')+(address?' — '+address:''):publicCaption(listing.title)||'Bất động sản cho thuê';
-    const dimensions=[Number(listing.size)>0?sizeText(listing.size)+(listing.areaPerFloor?'/sàn':''):'',Number(listing.floors)>0?listing.floors+' tầng':'',listing.bedrooms!=null?'Phòng ngủ: '+listing.bedrooms+'.':'',listing.bathrooms!=null?'Phòng WC: '+listing.bathrooms+'.':'',Number(listing.frontage)>=3.5?'MT '+String(listing.frontage).replace('.',',')+' m':'',isDual(listing)?'Thuê: '+priceText(listing.rentalPrice??listing.price,listing.rentalPriceFrom??listing.priceFrom,{})+' · Bán: '+salePrice(listing.salePrice):priceText(listing.price,listing.priceFrom,listing)].filter(Boolean).join(' · ');
+    const heading=listing.type?(listing.transactionType==='both'?'Cho thuê / Bán ':isSale(listing)?'Bán ':listing.isTransfer?'Sang nhượng ':'Cho thuê ')+String(isSale(listing)&&listing.type==='Đất cho thuê'?'Đất':listing.type).toLocaleLowerCase('vi')+(address?' — '+address:''):publicCaption(listing.title)||'Bất động sản cho thuê';
+    const dimensions=[Number(listing.size)>0?sizeText(listing.size)+(listing.areaPerFloor?'/sàn':''):'',Number(listing.floors)>0?listing.floors+' tầng':'',listing.bedrooms!=null?'Phòng ngủ: '+listing.bedrooms+'.':'',listing.bathrooms!=null?'Phòng WC: '+listing.bathrooms+'.':'',Number(listing.frontage)>=3.5?'MT '+String(listing.frontage).replace('.',',')+' m':'',listing.transactionType==='both'?'Thuê: '+priceText(listing.rentalPrice??listing.price,listing.rentalPriceFrom??listing.priceFrom,{})+' · Bán: '+salePrice(listing.salePrice):priceText(listing.price,listing.priceFrom,listing)].filter(Boolean).join(' · ');
     const selected=[],seen=new Set();
     const candidates=publicCaption(listing.description||'').split(/\n+/).concat(listing.facts||[]);
     for(const raw of candidates){
@@ -167,7 +187,7 @@
   }
   document.addEventListener('click', event => {
     const target = event.target.closest('[data-share-action]'); if (!target) return;
-    const listing = window.RENTAL_LISTINGS?.find(h => h.id === Number(target.dataset.shareId)); if (!listing) return;
+    const raw = window.RENTAL_LISTINGS?.find(h => h.id === Number(target.dataset.shareId)); const listing=raw?transactionView(raw,new URLSearchParams(location.search).get('transaction')==='sale'?'sale':'rent'):null; if (!listing) return;
     const action = target.dataset.shareAction;
     if (action === 'copy') copy(listing, target);
     else if (action === 'native') share(listing, target);
