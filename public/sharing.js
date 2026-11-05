@@ -1,6 +1,10 @@
 (() => {
   const salePrice=value=>Number(value)>0?new Intl.NumberFormat('vi-VN',{maximumFractionDigits:3}).format(value>=1000?value/1000:value)+(value>=1000?' tỷ đồng':' triệu đồng'):'Giá liên hệ';
-  const isSale=post=>post?.transactionType==='sale'||post?.transaction==='sale'||post?.isSale===true;
+  const isSale=post=>post?.transactionType?post.transactionType==='sale':post?.transaction==='sale'||post?.isSale===true;
+  const isDual=p=>p?.transactionType==='both'||p?.transactionOrigin==='both';
+  const supportsTransaction=(p,kind)=>isDual(p)||(isSale(p)?'sale':'rent')===kind;
+  const viewHref=(p,kind)=>{const u=new URL(p.href||'/tin?slug='+p.slug,'https://nguonchothue.vn');if(kind==='sale')u.searchParams.set('transaction','sale');else u.searchParams.delete('transaction');return u.pathname+u.search+u.hash;};
+  const transactionView=(p,kind)=>!isDual(p)?p:kind==='sale'?{...p,transactionOrigin:'both',transactionType:'sale',pricePeriod:'one_time',rentalPriceOptions:p.rentalPriceOptions??p.priceOptions,priceOptions:undefined,href:viewHref(p,kind),rentalPriceFrom:p.rentalPriceFrom??p.priceFrom,rentalPrice:p.rentalPrice??p.price,price:p.salePrice,pricePerM2:p.salePricePerM2||null,priceFrom:p.salePriceFrom===true}:{...p,transactionOrigin:'both',transactionType:'rent',href:viewHref(p,kind),rentalPrice:p.rentalPrice??p.price,price:p.rentalPrice??p.price};
   const priceText=(value,from=false,post={})=>isSale(post)?(Number(value)>0&&from?'Từ ':'')+salePrice(value):Number(value)>0?(from?'Từ ':'')+new Intl.NumberFormat('vi-VN').format(value)+' triệu đồng/tháng':'Giá liên hệ';
   const sizeText=value=>Number(value)>0?new Intl.NumberFormat('vi-VN').format(value)+' m²':'Diện tích đang cập nhật';
   const transferText=post=>'Giá chuyển nhượng: '+(Number(post.transferPrice)>0?new Intl.NumberFormat('vi-VN').format(post.transferPrice)+' triệu đồng':'Liên hệ')+(post.transferNegotiable?' — Có thể thương lượng':'');
@@ -13,14 +17,14 @@
   const captionFold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   function compactCaption(listing){
     const address=String(listing.address||listing.area||'').trim();
-    const heading=listing.type?(isSale(listing)?'Bán ':listing.isTransfer?'Sang nhượng ':'Cho thuê ')+String(isSale(listing)&&listing.type==='Đất cho thuê'?'Đất':listing.type).toLocaleLowerCase('vi')+(address?' — '+address:''):publicCaption(listing.title)||'Bất động sản cho thuê';
-    const dimensions=[Number(listing.size)>0?sizeText(listing.size)+(listing.areaPerFloor?'/sàn':''):'',Number(listing.floors)>0?listing.floors+' tầng':'',listing.bedrooms!=null?'Phòng ngủ: '+listing.bedrooms+'.':'',listing.bathrooms!=null?'Phòng WC: '+listing.bathrooms+'.':'',Number(listing.frontage)>=3.5?'MT '+String(listing.frontage).replace('.',',')+' m':'',priceText(listing.price,listing.priceFrom,listing)].filter(Boolean).join(' · ');
+    const heading=listing.type?(isDual(listing)?'Cho thuê / Bán ':isSale(listing)?'Bán ':listing.isTransfer?'Sang nhượng ':'Cho thuê ')+String(isSale(listing)&&listing.type==='Đất cho thuê'?'Đất':listing.type).toLocaleLowerCase('vi')+(address?' — '+address:''):publicCaption(listing.title)||'Bất động sản cho thuê';
+    const dimensions=[Number(listing.size)>0?sizeText(listing.size)+(listing.areaPerFloor?'/sàn':''):'',Number(listing.floors)>0?listing.floors+' tầng':'',listing.bedrooms!=null?'Phòng ngủ: '+listing.bedrooms+'.':'',listing.bathrooms!=null?'Phòng WC: '+listing.bathrooms+'.':'',Number(listing.frontage)>=3.5?'MT '+String(listing.frontage).replace('.',',')+' m':'',isDual(listing)?'Thuê: '+priceText(listing.rentalPrice??listing.price,listing.rentalPriceFrom??listing.priceFrom,{})+' · Bán: '+salePrice(listing.salePrice):priceText(listing.price,listing.priceFrom,listing)].filter(Boolean).join(' · ');
     const selected=[],seen=new Set();
     const candidates=publicCaption(listing.description||'').split(/\n+/).concat(listing.facts||[]);
     for(const raw of candidates){
       const line=publicCaption(raw).replace(/^[•●▪✓✅📍📐💰\s]+/u,'').replace(/(?:theo thông tin nguồn cung cấp|theo nguồn cung cấp)\s*[:：]?/giu,'').replace(/\s+([.,])/g,'$1').trim(),folded=captionFold(line);
       if(!line||line.length>200||selected.length>=4)continue;
-      if(/^(?:cho thue|sang nhuong|chuyen nhuong|dien tich|gia thue|gia lien he|mat tien|so tang|phong ngu|phong wc|ket cau su dung|vi tri|dia chi|khu vuc|lien he|hotline|ma tin|anh minh hoa|banner minh hoa|thong tin theo nguon|voi quy mo|khach co the|anh chi quan tam|hen xem|mo hinh cu the|so nguoi su dung)/.test(folded))continue;
+      if(/^(?:cho thue|sang nhuong|chuyen nhuong|dien tich|gia thue|gia ban|gia lien he|mat tien|so tang|phong ngu|phong wc|ket cau su dung|vi tri|dia chi|khu vuc|lien he|hotline|ma tin|anh minh hoa|banner minh hoa|thong tin theo nguon|voi quy mo|khach co the|anh chi quan tam|hen xem|mo hinh cu the|so nguoi su dung)/.test(folded))continue;
       if(/(?:hoa hong|phi moi gioi|nguon|chu nha|doi tac|gia chot|gia chu|thuong luong|dang kinh doanh|gia sang nhuong)/.test(folded))continue;
       if(!folded||seen.has(folded)||selected.some(s=>captionFold(s).includes(folded)||folded.includes(captionFold(s))))continue;
       seen.add(folded);selected.push(line.replace(/[;；]+$/u,''));
@@ -28,7 +32,7 @@
     return [heading,listing.code?'Mã tin: '+listing.code:'',dimensions,...selected.map(s=>'• '+s),listing.isIllustration?'Ảnh minh họa tham khảo.':'','Liên hệ: 0906 215 365 (Call/Zalo)'].filter(Boolean).join('\n');
   }
   const text = listing => compactCaption(listing)+'\nXem chi tiết: '+url(listing);
-  if(typeof module!=='undefined'&&module.exports){module.exports={compactCaption,text,publicCaption,priceText,isSale};return;}
+  if(typeof module!=='undefined'&&module.exports){module.exports={compactCaption,text,publicCaption,priceText,isSale,isDual,supportsTransaction,transactionView};return;}
 
   function status(element, message) {
     const target = element?.closest('.sharing-tools')?.querySelector('.share-status') || document.querySelector('#share-status');
@@ -176,5 +180,5 @@
   });
   window.addEventListener('pagehide',()=>document.querySelector('#share-composer')?.close());
   function register(listing){const rows=window.RENTAL_LISTINGS||(window.RENTAL_LISTINGS=[]);const index=rows.findIndex(row=>row.id===listing.id);if(index>=0&&JSON.stringify([rows[index].image,rows[index].shareImage,rows[index].mediaRevision,rows[index].media])!==JSON.stringify([listing.image,listing.shareImage,listing.mediaRevision,listing.media])){files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}if(index<0)rows.push(listing);else rows[index]=listing;}
-  window.RentalSharing = {isSale,register,priceText,sizeText,transferText,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
+  window.RentalSharing = {isSale,isDual,supportsTransaction,transactionView,register,priceText,sizeText,transferText,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
 })();
