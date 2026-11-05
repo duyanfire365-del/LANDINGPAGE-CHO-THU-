@@ -88,13 +88,14 @@ function renderCategory(type, count) {
   $('#category-checklist').replaceChildren(...content.checklist.map(text => {
     const item = document.createElement('li'); item.textContent = text; return item;
   }));
-  $('#results-title').textContent = type === 'all' ? 'Danh sách BĐS' : `Danh sách ${type.toLocaleLowerCase('vi')}`;
+  const displayedType=transaction==='sale'&&type==='Đất cho thuê'?'Đất':type;
+  $('#results-title').textContent = type === 'all' ? 'Danh sách BĐS' : `Danh sách ${displayedType.toLocaleLowerCase('vi')}`;
   $('#category-consult').textContent = type === 'all' ? 'Tư vấn tìm BĐS' : 'Tư vấn loại BĐS này';
   const empty = $('#properties .empty');
   if (empty) {
     const hasCategoryListings = homes.some(home => (RentalSharing.isSale(home)?'sale':'rent')===transaction&&inCategory(home,type));
     const title = document.createElement('strong');
-    title.textContent = hasCategoryListings ? 'Chưa có kết quả phù hợp với bộ lọc.' : `Chưa có tin đăng trong mục ${type.toLocaleLowerCase('vi')}.`;
+    title.textContent = hasCategoryListings ? 'Chưa có kết quả phù hợp với bộ lọc.' : `Chưa có tin đăng trong mục ${displayedType.toLocaleLowerCase('vi')}.`;
     const body = document.createElement('span');
     body.textContent = hasCategoryListings ? 'Anh/chị có thể đổi khu vực, ngân sách hoặc liên hệ để được tư vấn.' : 'Anh/chị có thể liên hệ để trao đổi nhu cầu. Tin được tổng hợp từ nguồn cung cấp; ảnh là minh họa bằng AI.';
     const link = document.createElement('a'); link.href = '#tu-van'; link.className = 'text-link';
