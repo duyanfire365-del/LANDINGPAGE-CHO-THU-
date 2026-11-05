@@ -56,7 +56,7 @@ export default async function handler(req,res){
    const params=new URL(req.url,'http://localhost').searchParams;
    if(params.get('view')==='traffic'){requireAdmin(req);return send(res,200,await trafficReport(params));}
    if(params.get('view')==='apify-connection'){requireAdmin(req);return send(res,200,await apifyConnectionView());}
-   if(params.get('view')==='site-content'){requireAdmin(req);return send(res,200,await siteContent());}
+   if(params.get('view')==='site-content'){requireAdmin(req);return send(res,200,await siteContent(params.get('transaction')));}
    if(params.get('view')==='website-logo'){requireAdmin(req);return send(res,200,await websiteLogoMetadata());}
    if(params.get('view')==='matching-bots'){requireAdmin(req);return send(res,200,await matchingBotView(params.get('customer')||'',params.get('q')||''));}
    if(params.get('view')==='scan-comment-targets'){requireAdmin(req);return send(res,200,await savedCommentTargets());}

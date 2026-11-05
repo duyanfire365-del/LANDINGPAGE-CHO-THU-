@@ -22,5 +22,5 @@
 // First-party traffic recording on public pages only; no form/search values sent.
 (() => {if(!['/','/index.html','/tin','/tin.html'].includes(location.pathname)&&!/^\/bds\//.test(location.pathname))return;const script=document.createElement('script');script.src='/visit-tracker.js';script.async=true;document.head.append(script)})();
 
-// Declarative website layout, shared by public navigation.
-(() => {if(document.querySelector("#admin-workspace"))return;const s=document.createElement("script");s.src="/site-layout.js";s.async=true;document.head.append(s)})();
+// Pages without the home transaction controller still use the shared layout renderer.
+(() => {if(document.querySelector('#admin-workspace')||document.querySelector('main > .hero'))return;const s=document.createElement('script');s.src='/site-layout.js';s.async=true;document.head.append(s)})();
