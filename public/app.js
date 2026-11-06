@@ -126,10 +126,10 @@ function render(){
   const selected=homes.filter(home=>RentalSharing.supportsTransaction(home,transaction)).map(home=>RentalSharing.transactionView(home,transaction)).filter(home=>RentalLocations.matches(home,locationFilters.read())&&(area==='all'||home.area===area)&&inCategory(home,type)&&rentMatches(home,budget)&&(!query||`${home.code} ${(home.legacyCodes||[]).join(' ')} ${home.title} ${home.address} ${home.categories.join(' ')}`.toLocaleLowerCase('vi').includes(query)||[home.code,...(home.legacyCodes||[])].some(code=>String(code).toLocaleLowerCase('vi').replace(/[\s–—-]+/g,'')===queryCode)));
   selected.sort((a,b)=>Number(RentalInventory.isHot(b.slug))-Number(RentalInventory.isHot(a.slug))||(a.catalogOrder??1000000)-(b.catalogOrder??1000000));
   locationFilters.suggest(homes.filter(p=>RentalSharing.supportsTransaction(p,transaction)&&(area==='all'||p.area===area)));
-  $('#result-count').textContent=`${selected.length} BĐS phù hợp`;
+  window.RentalListingCounts?.render(selected.length,Math.max(0,selected.length-visibleLimit));
   $('#properties').innerHTML=selected.length?selected.slice(0,visibleLimit).map(card).join(''):'<div class="empty"></div>';
   $('#load-more').hidden=selected.length<=visibleLimit;
-  $('#load-more').textContent=`Xem thêm BĐS (${Math.max(0,selected.length-visibleLimit)} tin còn lại)`;
+  // Count labels are controlled by the server-verified admin session.
   renderCategory(type,selected.length);
   document.querySelectorAll('[data-type]').forEach(button=>{button.classList.toggle('active',button.dataset.type===type);button.setAttribute('aria-pressed',String(button.dataset.type===type))});
 }
