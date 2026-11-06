@@ -1,3 +1,4 @@
+import {canViewNewsDates} from '../lib/news-access.mjs';
 import {getNews,renderNewsArticle} from '../lib/news.mjs';
 import {canonicalizeSubset} from '../lib/listing-catalog.mjs';
 import {readFile} from 'node:fs/promises';
@@ -7,7 +8,7 @@ export default async function handler(req,res){
  if(req.method!=='GET'){res.writeHead(405);return res.end('Method not allowed')}
  try{
   const newsSlug=new URL(req.url,'http://localhost').searchParams.get('news');
-  if(newsSlug){try{const page=renderNewsArticle(await getNews(newsSlug,{slug:true,section:new URL(req.url,'http://localhost').searchParams.get('section')||'news'}));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});return res.end(page)}catch(e){res.writeHead(e.status||503,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'});return res.end(e.status===404?'Tin tức chưa được đăng hoặc đã được gỡ.':'Chưa tải được tin tức. Vui lòng thử lại.')}}
+  if(newsSlug){try{const page=renderNewsArticle(await getNews(newsSlug,{slug:true,showDates:await canViewNewsDates(req),section:new URL(req.url,'http://localhost').searchParams.get('section')||'news'}));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});return res.end(page)}catch(e){res.writeHead(e.status||503,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'});return res.end(e.status===404?'Tin tức chưa được đăng hoặc đã được gỡ.':'Chưa tải được tin tức. Vui lòng thử lại.')}}
   const slug=new URL(req.url,'http://localhost').searchParams.get('slug');
   if(!/^live-\d{10,20}$/.test(slug||'')||!configured()){res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'});return res.end('Tin chưa được đăng hoặc đã được gỡ.')}
   const rows=await db('posts',{query:'?status=eq.published&public_data->>slug=eq.'+encodeURIComponent(slug)+'&select=id,public_data&limit=1'});
