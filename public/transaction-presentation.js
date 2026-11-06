@@ -25,7 +25,7 @@
  }
  window.addEventListener('transaction-changed',event=>{sale=event.detail==='sale';sync()});
  window.addEventListener('site-layout-ready',event=>sync(event.detail));
- window.addEventListener('site-content-rendered',event=>sync(event.detail));
+ window.addEventListener('site-content-rendered',()=>sync());
  document.querySelector('#lead-form')?.addEventListener('rental-intent',()=>sync());
  sync();
 })();
