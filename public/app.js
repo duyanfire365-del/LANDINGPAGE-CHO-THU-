@@ -5,6 +5,7 @@ const esc=window.RentalSharing.escape;
 const inCategory=(home,type)=>type==='all'||home.categories.includes(type);
 let visibleLimit=9;let transaction=new URLSearchParams(location.search).get('transaction')==='sale'?'sale':'rent';
 let saved=new Set();try{saved=new Set(JSON.parse(localStorage.getItem('rental-favorites')||'[]').filter(id=>homes.some(h=>h.id===id)))}catch{}
+const locationFilters=RentalLocations.mount($('#search'),{prefix:'public-location',before:$('#type').closest('label'),onChange:()=>{visibleLimit=9;render();}});
 let toastTimer;
 function toast(message){$('#toast').textContent=message;$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',2800)}
 // Prices are in millions of VND per month. The two "under" options intentionally overlap.
@@ -118,8 +119,9 @@ function card(home){
 function render(){
   const area=$('#area').value,type=$('#type').value,budget=$('#budget').value,query=($('#property-query')?.value||'').trim().toLocaleLowerCase('vi');
   const queryCode=query.replace(/[\s–—-]+/g,'');
-  const selected=homes.filter(home=>RentalSharing.supportsTransaction(home,transaction)).map(home=>RentalSharing.transactionView(home,transaction)).filter(home=>(area==='all'||home.area===area)&&inCategory(home,type)&&rentMatches(home,budget)&&(!query||`${home.code} ${(home.legacyCodes||[]).join(' ')} ${home.title} ${home.address} ${home.categories.join(' ')}`.toLocaleLowerCase('vi').includes(query)||[home.code,...(home.legacyCodes||[])].some(code=>String(code).toLocaleLowerCase('vi').replace(/[\s–—-]+/g,'')===queryCode)));
+  const selected=homes.filter(home=>RentalSharing.supportsTransaction(home,transaction)).map(home=>RentalSharing.transactionView(home,transaction)).filter(home=>RentalLocations.matches(home,locationFilters.read())&&(area==='all'||home.area===area)&&inCategory(home,type)&&rentMatches(home,budget)&&(!query||`${home.code} ${(home.legacyCodes||[]).join(' ')} ${home.title} ${home.address} ${home.categories.join(' ')}`.toLocaleLowerCase('vi').includes(query)||[home.code,...(home.legacyCodes||[])].some(code=>String(code).toLocaleLowerCase('vi').replace(/[\s–—-]+/g,'')===queryCode)));
   selected.sort((a,b)=>Number(RentalInventory.isHot(b.slug))-Number(RentalInventory.isHot(a.slug))||(a.catalogOrder??1000000)-(b.catalogOrder??1000000));
+  locationFilters.suggest(homes.filter(p=>RentalSharing.supportsTransaction(p,transaction)&&(area==='all'||p.area===area)));
   $('#result-count').textContent=`${selected.length} BĐS phù hợp`;
   $('#properties').innerHTML=selected.length?selected.slice(0,visibleLimit).map(card).join(''):'<div class="empty"></div>';
   $('#load-more').hidden=selected.length<=visibleLimit;

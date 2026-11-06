@@ -188,14 +188,14 @@
     {
       "id": "searchTypeLabel",
       "label": "Tìm kiếm: nhãn loại BĐS",
-      "selector": "#search > label:nth-child(3)",
+      "selector": "#search-type-label",
       "mode": "directText",
       "value": "BĐS CHO THUÊ"
     },
     {
       "id": "searchBudgetLabel",
       "label": "Tìm kiếm: nhãn ngân sách",
-      "selector": "#search > label:nth-child(4)",
+      "selector": "#search-budget-label",
       "mode": "directText",
       "value": "NGÂN SÁCH"
     },
