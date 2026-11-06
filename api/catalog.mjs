@@ -1,3 +1,4 @@
+import {listingCountAccess} from '../lib/listing-counts.mjs';
 import {canViewNewsDates} from '../lib/news-access.mjs';
 import {assetsForPosts,publicMedia} from '../lib/media-access.mjs';
 import {listNews} from '../lib/news.mjs';
@@ -13,6 +14,7 @@ import {configured,db} from '../lib/platform.mjs';
 export default async function handler(req,res){
  if(new URL(req.url,'http://localhost').searchParams.get('view')==='visit')return recordTraffic(req,res);
  if(req.method!=='GET')return send(res,405,{error:'Method not allowed'});
+ if(new URL(req.url,'http://localhost').searchParams.get('view')==='listing-count-access')return send(res,200,listingCountAccess(req));
  if(new URL(req.url,'http://localhost').searchParams.get('view')==='website-brand'){try{return send(res,200,await websiteLogoMetadata())}catch{return send(res,503,{error:'Chưa tải được logo website.'})}}
  if(new URL(req.url,'http://localhost').searchParams.get('view')==='site-content'){try{const [rental,sale]=await Promise.all([siteContent(),siteContent('sale')]);return send(res,200,{...rental,sale})}catch{return send(res,503,{error:'Chưa tải được nội dung website.'})}}
  if(new URL(req.url,'http://localhost').searchParams.get('view')==='news'){try{return send(res,200,await listNews({showDates:await canViewNewsDates(req,{adminOnly:['services','recruitment'].includes(new URL(req.url,'http://localhost').searchParams.get('section'))}),offset:Number(new URL(req.url,'http://localhost').searchParams.get('offset')||0),section:new URL(req.url,'http://localhost').searchParams.get('section')||'news',industry:new URL(req.url,'http://localhost').searchParams.get('industry')||''}))}catch(e){return send(res,e.status||503,{error:e.message||'Chưa tải được tin tức.'})}}

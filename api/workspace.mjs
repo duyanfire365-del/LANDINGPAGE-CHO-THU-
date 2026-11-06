@@ -1,3 +1,4 @@
+import {ownListingCounts,setListingCountPermission} from '../lib/listing-counts.mjs';
 import {postLocationFields} from '../lib/post-location-fields.mjs';
 import {areas} from '../lib/posts.mjs';
 import {assetsForPosts,mediaEntry,commitMediaAccess,publicMedia} from '../lib/media-access.mjs';
@@ -55,6 +56,7 @@ export default async function handler(req,res){
   if(customerParams.has('google-docs-hook'))return await (await import('../lib/google-doc-automation.mjs')).googleDocsHook(req,res,p=>waitUntil(p));
   if(req.method==='POST'&&customerParams.has('customer-hook'))return await customerHook(req,res,promise=>waitUntil(promise));
   if(req.method==='GET'){
+   if(customerParams.get('view')==='own-listing-counts')return send(res,200,await ownListingCounts(req));
    if(customerParams.get('view')==='news'){requireAdmin(req);return send(res,200,customerParams.get('id')?{article:await getNews(customerParams.get('id'),{admin:true})}:await listNews({admin:true,offset:Number(customerParams.get('offset')||0),section:customerParams.get('section')||null}));}
    const params=new URL(req.url,'http://localhost').searchParams;
    if(params.get('view')==='traffic'){requireAdmin(req);return send(res,200,await trafficReport(params));}
@@ -210,6 +212,7 @@ export default async function handler(req,res){
    const notice=await notify('Thông báo gửi lại: '+entry.kind,records[0]);if(!notice.sent)return send(res,502,{error:notice.error||'Telegram chưa xác nhận nhận thông báo.'});
    await db('notification_log',{method:'PATCH',query:'?id=eq.'+body.id,body:{sent:true}});return send(res,200,{ok:true});
   }
+  if(body.action==='listing-count-permission')return send(res,200,await setListingCountPermission(body));
   if(body.action==='publish-permission'){
    if(!/^[a-f0-9-]{36}$/i.test(body.id||'')||!['review','auto'].includes(body.mode))return send(res,400,{error:'Chọn đúng thành viên và chế độ duyệt.'});
    const profile=(await db('profiles',{query:'?id=eq.'+body.id+'&kind=eq.sales'}))[0];if(!profile)return send(res,404,{error:'Không tìm thấy tài khoản Sale/CTV.'});

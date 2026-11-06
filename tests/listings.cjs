@@ -24,7 +24,7 @@ const records=require('../public/listings.json');
   const context=await browser.newContext({permissions:['clipboard-read','clipboard-write']});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   const base=process.env.DEMO_URL||'http://127.0.0.1:3003';await page.goto(base);
-  assert.equal(await page.locator('#result-count').innerText(),'30 BĐS phù hợp');
+  assert(await page.locator('#result-count').isHidden());assert.equal(await page.locator('#result-count').textContent(),'');assert.equal(await page.locator('#load-more').textContent(),'Xem thêm BĐS');
   assert.equal(await page.locator('.card').count(),9);await page.locator('#load-more').click();assert.equal(await page.locator('.card').count(),18);
   await page.locator('#load-more').click();assert.equal(await page.locator('.card').count(),27);await page.locator('#load-more').click();assert.equal(await page.locator('.card').count(),30);assert(await page.locator('#load-more').isHidden());
   await page.locator('#property-query').fill('HN-006');await page.locator('#search button').click();assert.equal(await page.locator('.card').count(),1);
