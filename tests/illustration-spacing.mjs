@@ -25,7 +25,7 @@ assert(heldResult.every(r=>r.public_data.illustrationOriginalId&&r.public_data.i
 const oldFetch=global.fetch;global.fetch=()=>{throw Error('No external requests allowed for free illustrations')};
 const thumbs=[],hashes=new Set();
 try{for(let i=0;i<8;i++){
- const item=pickIllustration({...rows[0].public_data,illustrationProcedural:true,illustrationStyleIndex:i*9});
+ const item=pickIllustration({...rows[0].public_data,illustrationProcedural:true,illustrationStyleIndex:i});
  const bytes=await renderLibraryIllustration(item,item.variant,undefined,'MB - 0104'),meta=await sharp(bytes).metadata();
  assert.equal(meta.width,1200);assert.equal(meta.height,800);hashes.add(createHash('sha256').update(bytes).digest('hex'));
  thumbs.push({input:await sharp(bytes).resize(420,280).toBuffer(),left:(i%2)*420,top:Math.floor(i/2)*280});
