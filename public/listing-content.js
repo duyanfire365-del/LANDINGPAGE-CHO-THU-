@@ -1,5 +1,5 @@
 (function(root){
- const categories=['Mặt bằng kinh doanh','Văn phòng','Kho xưởng','Nhà nguyên căn','Căn hộ chung cư','Căn hộ dịch vụ','Phòng trọ','Biệt thự, nhà liền kề','Ki-ốt','Đất cho thuê','Bất động sản khác'];
+ const categories=['Mặt bằng kinh doanh','Văn phòng','Kho xưởng','Nhà nguyên căn','Căn hộ chung cư','Căn hộ dịch vụ','Phòng trọ','Biệt thự, nhà liền kề','Ki-ốt','Đất cho thuê','Các Dự Án Lớn','Bất động sản khác'];
  const fold=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
  function houseBusinessCategories(value){
   const text=fold(value).replace(/#[^\s]+/g,'');
@@ -11,6 +11,7 @@
  }
  function inferCategory(value){
   const text=fold(value).replace(/#[^\s]+/g,'');
+  if(/^(?:(?:cho thue|ban|mua ban)\s+)?(?:cac\s+)?du an lon(?:$|[^a-z])/.test(text.trim()))return 'Các Dự Án Lớn';
   const dual=houseBusinessCategories(value);if(dual)return dual[0];
   // Explicit building types win over incidental suggested business uses.
   const types=[['Kho xưởng',/\b(?:kho xuong|nha xuong|xuong san xuat|cho thue kho|kho hang)\b/],['Căn hộ dịch vụ',/\b(?:can ho dich vu|chdv)\b/],['Căn hộ chung cư',/\b(?:chung cu|can ho|chcc)\b/],['Phòng trọ',/\bphong tro\b/],['Biệt thự, nhà liền kề',/\b(?:biet thu|lien ke)\b/],['Nhà nguyên căn',/\b(?:nha nguyen can|nha rieng|nguyen can|nguyen nha|nnc|\bnc\b)\b/],['Đất cho thuê',/\b(?:dat cho thue|cho thue dat)\b/],['Ki-ốt',/\bki.?ot\b/],['Văn phòng',/\b(?:cho thue van phong|toa van phong|vp cho thue)\b/],['Mặt bằng kinh doanh',/\b(?:mat bang|mat bag|mbkd|mo hinh sach|kinh doanh sach|kh hang an|khong nhan hang an|khong o qua dem|cua hang|sang nhuong quan|chuyen nhuong quan|nhuong quan|quan bia|quan nhau|bia hoi|moi mo hinh|quan an|nha hang|ca phe|cafe|coffee|tra sua|spa|nail|salon|shop|showroom)\b/]];

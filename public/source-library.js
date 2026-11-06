@@ -1,6 +1,6 @@
 (() => {
  const esc=RentalSharing.escape;
- const order=['Mặt bằng kinh doanh','Văn phòng','Kho xưởng','Nhà nguyên căn','Căn hộ chung cư','Căn hộ dịch vụ','Phòng trọ','Biệt thự, nhà liền kề','Ki-ốt','Đất cho thuê','Bất động sản khác'];
+ const order=['Mặt bằng kinh doanh','Văn phòng','Kho xưởng','Nhà nguyên căn','Căn hộ chung cư','Căn hộ dịch vụ','Phòng trọ','Biệt thự, nhà liền kề','Ki-ốt','Đất cho thuê','Các Dự Án Lớn','Bất động sản khác'];
  const normalize=v=>String(v||'').normalize('NFD').replace(/\p{M}/gu,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
  function mount(host,{detail,summary,searchText=r=>JSON.stringify(r),extraFilters=[],smartSearch=false,transaction=''}={}){
   const fixedTransaction=['rent','sale'].includes(transaction)?transaction:'';

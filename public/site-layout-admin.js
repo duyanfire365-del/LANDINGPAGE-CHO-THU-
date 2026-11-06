@@ -2,6 +2,7 @@
  const make=(tag,text)=>{const e=document.createElement(tag);if(text!=null)e.textContent=text;return e;};
  window.RentalSiteLayoutEditor={mount({content,schema,transaction,field,button,message,preview,imageUpload,save}){
  const host=make('div'),c=content.layout||{fields:{},sections:schema.sections.map(s=>({id:s.id,hidden:false})),menu:null,categories:schema.categories.map(id=>({id,label:id==='all'?'Tất cả':id,hidden:false})),theme:{},banner:'',quick:{badge:'CLICK XEM NGAY',title:'TÌM NGUỒN THUÊ NGAY',text:'Hỗ trợ tìm thuê nhanh & chính xác theo nhu cầu',hidden:false},footerHidden:false};content.layout=c;
+ for(const id of schema.categories)if(!c.categories.some(x=>x.id===id))c.categories.push({id,label:id==='all'?'Tất cả':transaction==='sale'&&id==='Đất cho thuê'?'Đất':id,hidden:false});
  const group=(title)=>{const d=make('details'),s=make('summary',title);d.append(s);host.append(d);return d;};
  const checkbox=(label,value,set)=>{const l=make('label'),i=make('input');i.type='checkbox';i.checked=value;i.onchange=()=>set(i.checked);l.append(i,document.createTextNode(' '+label));return l;};
  const move=(arr,i,delta,render)=>{const j=i+delta;if(j>=0&&j<arr.length){[arr[i],arr[j]]=[arr[j],arr[i]];render();}};

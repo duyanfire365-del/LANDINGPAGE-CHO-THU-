@@ -77,6 +77,10 @@ const categoryContent = {
     description: 'Tìm diện tích đất theo nhu cầu sử dụng cụ thể. Xác minh quyền cho thuê, mục đích sử dụng đất và điều kiện được phép triển khai trước khi ký hợp đồng.',
     checklist: ['Mục đích sử dụng đất', 'Đường vào và hạ tầng', 'Hồ sơ và thời hạn thuê']
   },
+  'Các Dự Án Lớn': {
+    description: 'Tìm nguồn dự án quy mô lớn theo khu vực và mục đích sử dụng. Cần xác minh quy mô, hiện trạng, hồ sơ pháp lý và điều kiện giao dịch của từng dự án.',
+    checklist: ['Quy mô và hạng mục dự án', 'Hồ sơ pháp lý cần xác minh', 'Giá và điều kiện giao dịch']
+  },
   'Bất động sản khác': {
     description: 'Anh/chị có nhu cầu đặc thù hoặc chưa tìm thấy danh mục phù hợp? Chia sẻ mục đích sử dụng, diện tích và khu vực để trao đổi cụ thể.',
     checklist: ['Nhu cầu sử dụng', 'Diện tích dự kiến', 'Điều kiện cần đáp ứng']
