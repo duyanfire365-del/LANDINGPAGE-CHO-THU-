@@ -1,7 +1,7 @@
 import {applySourceUpdate,isUpdateCommand,updateReference} from '../lib/source-updates.mjs';
 import assert from 'node:assert/strict';
 import {draft,safePublicText} from '../lib/posts.mjs';
-import {validateExtraction,fingerprint,sameProperty,processSource} from '../lib/source-automation.mjs';
+import {validateExtraction,fingerprint,sameProperty,processSource,sourceClaimLimit,sourceClaimMessage} from '../lib/source-automation.mjs';
 assert.ok(safePublicText('Diện tích 100 m², giá 20 triệu đồng/tháng.'));assert.ok(!safePublicText('Địa chỉ 123 Lạc Long Quân'));assert.ok(!safePublicText('123 lạc long quân'));assert.ok(safePublicText('Mặt tiền: 5 m. Số tầng: 3 tầng.'));assert.ok(!safePublicText('số 123, ngõ 20'));
 const text='Cho thuê văn phòng số 987 đường Lạc Long Quân, Tây Hồ, diện tích 123m2, giá thuê 32tr/tháng. #NguonTest';
 const item={listingCount:1,intent:'rent',type:'Văn phòng',area:'Tây Hồ',location:'Lạc Long Quân',privateAddress:'số 987 đường Lạc Long Quân',price:32,size:123,priceEvidence:'giá thuê 32tr/tháng',sizeEvidence:'123m2'};
@@ -29,7 +29,7 @@ global.fetch=async (raw,options={})=>{
   imageCalls++;if(failImage)return new Response('{}',{status:429});const bytes=Buffer.alloc(200);bytes[0]=255;bytes[1]=216;return response({data:[{b64_json:bytes.toString('base64')}]});
  }
  if(url.pathname.includes('/storage/'))return response({});
- if(url.pathname.endsWith('/rpc/claim_source_job')){const job=albumRows.find(r=>r.id===body.job_id)||inboxRows.find(r=>r.id===body.job_id)||source;if(!claim||['published','updated'].includes(job.processing_status))return response([]);job.processing_status='processing';job.attempts++;return response([job])}
+ if(url.pathname.endsWith('/rpc/claim_source_job')){const job=albumRows.find(r=>r.id===body.job_id)||inboxRows.find(r=>r.id===body.job_id)||source;if(!claim||['published','updated'].includes(job.processing_status))return response([]);job.processing_status='processing';job.attempts++;job.parsed_data={...job.parsed_data,_automationQuota:{mode:body.daily_limit>0?'ai':'provided',day:'2026-11-07'}};return response([job])}
  const table=url.pathname.split('/').at(-1),method=options.method||'GET';
  if(table==='source_inbox'){
   if(url.searchParams.has('media_group_id'))return response(albumRows);
@@ -57,7 +57,13 @@ global.fetch=async (raw,options={})=>{
  }
  throw Error('Unexpected request '+url);
 };
-source=fixture();await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(imageCalls,0);assert.equal(chatCalls,1);assert.equal(posts[0].public_data.isIllustration,true);
+assert.equal(sourceClaimLimit({mode:'provided',aiReady:true,dailyLimit:20}),0);
+assert.equal(sourceClaimLimit({mode:'ai',aiReady:false,dailyLimit:20}),0);
+assert.equal(sourceClaimLimit({mode:'ai',aiReady:true,dailyLimit:20}),20);
+assert.match(sourceClaimMessage({attempts:3},{mode:'provided'}),/3 lần/);
+assert.doesNotMatch(sourceClaimMessage({attempts:0},{mode:'provided'}),/20|hạn mức/);
+assert.match(sourceClaimMessage({attempts:0},{mode:'ai',aiReady:true,dailyLimit:20}),/00:00 giờ Việt Nam/);
+source=fixture();await runSource(source.id);assert.equal(source.parsed_data._automationQuota.mode,'ai');assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(imageCalls,0);assert.equal(chatCalls,1);assert.equal(posts[0].public_data.isIllustration,true);
 const publicText=JSON.stringify(posts[0].public_data);assert.ok(!publicText.includes('987'));assert.ok(!publicText.includes('#NguonTest'));assert.equal(posts[0].private_data.sourceText,text);assert.equal(posts[0].private_data.address,item.privateAddress);assert.ok(posts[0].private_data.hashtags.includes('#NguonTest'));
 await runSource(source.id);assert.equal(posts.length,1);assert.equal(imageCalls,0);
 source={...fixture(),id:'33333333-3333-4333-8333-333333333333'};await runSource(source.id);assert.equal(source.processing_status,'review');assert.equal(imageCalls,0);assert.equal(posts.length,1);
