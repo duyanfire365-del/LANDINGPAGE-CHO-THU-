@@ -21,3 +21,15 @@ Gửi ảnh kèm caption `Thêm ảnh #chiminhtoi MB - 0002`, hoặc Reply trự
 `assets.access_data` là nguồn quyền chính, chỉ service_role đọc/ghi qua API máy chủ; không mở RLS/GRANT cho anon/authenticated. Ảnh mới vào kho ở trạng thái riêng tư pending. Các bộ đọc công khai lọc theo quyền hiện tại trong assets, không tin metadata cũ của bài. API tải ảnh kiểm tra lại quyền; ảnh kín được gửi qua proxy private/no-store, không trả signed URL cho trình duyệt. Gallery kín kiểm tra phiên và xóa DOM khi logout/ẩn trang. Chia sẻ làm mới danh sách ảnh công khai và đọc ảnh với public=1, kể cả phiên Admin.
 
 Các URL ký của ảnh từng công khai có hạn tối đa 120 giây theo cơ chế cũ; không thể thu hồi bản ảnh mà người khác đã tải xuống trước khi đổi quyền. Ảnh kín chưa từng công khai không được cấp URL đọc công khai.
+
+## Ghi chú Telegram bằng lời thường và lựa chọn 1/0
+
+- `công khai` hoặc `#congkhai`: chủ bot chủ động cho phép công khai các ảnh gửi cùng lượt; không cần AI xác nhận lại.
+- `đăng làm ảnh đại diện`, `đặt ảnh đại diện`, `#anhdaidien`: công khai và đặt ảnh đầu tiên trong lượt gửi làm đại diện. Các ảnh khác trong cùng lượt vẫn công khai. Ảnh album đến muộn không thay lại ảnh đại diện đầu tiên.
+- `chỉ mình tôi`, `không công khai`, `#chiminhtoi`: giữ kín, ưu tiên hơn lệnh công khai nếu có cả hai.
+
+Để sửa bài cũ, gửi kèm mã tin hoặc Reply bài gốc. Các ghi chú điều khiển được loại khỏi mô tả công khai, bản tin gốc vẫn lưu kín đầy đủ.
+
+Nếu không ghi chú, ảnh rõ ràng và nhận diện an toàn vẫn công khai tự động. Ảnh nghi lộ nguồn hoặc chưa kiểm tra được (kể cả thiếu khóa AI) được giữ kín và bot hỏi riêng từng ảnh: `Đăng công khai = 1` / `Chỉ mình tôi = 0`. Reply trực tiếp đúng câu hỏi. Lựa chọn chỉ áp dụng cho ảnh được hỏi, không phải toàn bài; hết hạn sau 72 giờ. Không có câu trả lời thì tiếp tục giữ kín.
+
+Câu hỏi và lựa chọn lưu bền vững trong notification_log (không thêm bảng/quyền công khai). Câu trả lời cũ không ghi đè lần đã xử lý hoặc quyền đã sửa trong Admin. Lỗi gửi câu hỏi được thử lại qua cơ chế khôi phục bot; không cần gửi lại ảnh hoặc tạo bài mới.
