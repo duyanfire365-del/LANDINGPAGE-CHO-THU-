@@ -1,6 +1,6 @@
 # Dịch vụ hỗ trợ và tuyển dụng
 
-Hai chuyên mục công khai: `/dich-vu-ho-tro`, `/tuyen-dung`, dùng chung CMS bài viết, rich text, ảnh bìa, nháp/công khai/gỡ, revision và quyền admin hiện có. Sáu bài dịch vụ: đo đạc, ngân hàng, sổ đỏ, công chứng/vi bằng, thừa kế, đất đai khác; một bài tuyển CTV. Ảnh AI riêng từng bài, lưu WebP ~808 KB tổng, có thể thay trong admin. Menu đầu trang dùng font-weight 600, các mục mới vẫn xuất hiện khi dùng cấu hình menu cũ.
+Hai chuyên mục công khai: `/dich-vu-ho-tro`, `/tuyen-dung`, dùng chung CMS bài viết, rich text, ảnh bìa, nháp/công khai/gỡ, revision và quyền admin hiện có. Bảy bài dịch vụ: đo đạc, ngân hàng, sổ đỏ, công chứng/vi bằng, thừa kế, đất đai khác, Dịch vụ khác; một bài tuyển CTV. Ảnh AI riêng từng bài, lưu WebP ~808 KB tổng, có thể thay trong admin. Menu đầu trang dùng font-weight 600, các mục mới vẫn xuất hiện khi dùng cấu hình menu cũ.
 
 Ngày ở hai mục này chỉ được máy chủ trả cho admin. Thành viên có quyền đăng tin vẫn không thấy ngày của services/recruitment. Các quy tắc ngày của news/experience giữ nguyên. Nội dung có sẵn là giới thiệu, không cam kết pháp lý, giải ngân, thu nhập hoặc thù lao; vi bằng không thay thế công chứng và thủ tục bắt buộc. Không tự sửa bài đã được admin chỉnh.
 
@@ -14,6 +14,6 @@ Trạng thái gửi `pending/sending/sent/failed`; gửi có claim để tránh 
 
 ## Triển khai
 
-`database/migrations/20261106_support_services.sql` mở rộng enum chuyên mục/chủ đề và tạo bảng riêng có index, RLS và grant service_role. Không sửa tin/news cũ. Triển khai ứng dụng rồi khởi tạo 7 bài bằng SQL do `node scripts/service-seed-sql.mjs <key>` tạo; ảnh lấy từ public/service-images. `on conflict do nothing` giữ nguyên bài đã tồn tại và chỉnh sửa thủ công. Script không đọc credential, không gửi Telegram.
+`database/migrations/20261106_support_services.sql` mở rộng enum chuyên mục/chủ đề và tạo bảng riêng có index, RLS và grant service_role. Không sửa tin/news cũ. Triển khai ứng dụng rồi khởi tạo 8 bài bằng SQL do `node scripts/service-seed-sql.mjs <key>` tạo; ảnh lấy từ public/service-images. `on conflict do nothing` giữ nguyên bài đã tồn tại và chỉnh sửa thủ công. Script không đọc credential, không gửi Telegram.
 
 Kiểm tra: `tests/support-services.mjs`, `tests/services-ui.mjs`, `tests/article-date-access.mjs`, `tests/news.mjs`, `tests/mbkd-experience.mjs`, `tests/news-ui.mjs`, `tests/sale-ui.mjs`. Fixture chỉ gửi Telegram giả lập, không tạo đăng ký thử trên production.
