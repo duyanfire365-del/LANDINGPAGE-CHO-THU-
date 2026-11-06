@@ -58,6 +58,14 @@
   },
   "rewrites": [
     {
+      "source": "/dich-vu-ho-tro/:slug",
+      "destination": "/api/property?news=:slug&section=services"
+    },
+    {
+      "source": "/tuyen-dung/:slug",
+      "destination": "/api/property?news=:slug&section=recruitment"
+    },
+    {
       "source": "/kinh-nghiem-tim-mbkd/:slug",
       "destination": "/api/property?news=:slug&section=experience"
     },

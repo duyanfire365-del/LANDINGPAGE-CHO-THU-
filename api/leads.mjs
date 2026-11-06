@@ -1,8 +1,10 @@
+import {handleServiceRequests} from '../lib/service-requests.mjs';
 import {waitUntil} from '@vercel/functions';
 import {intentLabels,isConsignment} from '../lib/inquiries.mjs';
 import {configured,db,member,notify} from '../lib/platform.mjs';
 import {readJson,send,sameOrigin,limited} from '../lib/http.mjs';
 export default async function handler(req,res){
+ if(new URL(req.url,'http://localhost').searchParams.get('services')==='1')return handleServiceRequests(req,res);
  if(req.method!=='POST'){res.setHeader('Allow','POST');return send(res,405,{error:'Method not allowed'})}
  if(!sameOrigin(req))return send(res,403,{error:'Origin not allowed'});
  if(limited(req,8))return send(res,429,{error:'Anh/chị vui lòng chờ một phút rồi gửi lại.'});
