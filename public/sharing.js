@@ -36,6 +36,27 @@
   function publicLines(value){let internal=false;return String(value||'').split(/\r?\n/).filter(line=>{const folded=line.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();if(/(?:luu y|ghi chu|thong tin)\s+noi bo|(?:phan|muc)\s+(?:rieng tu|noi bo)|danh rieng cho.*moi gioi/.test(folded))internal=true;return !internal&&!/\bdu kien\b.*\bchot\b|\bchot\b.*\b(?:khoang|tam|tu)\b|\b(?:muc|chu|thuong luong|co the)\b.*\bchot\b|(?:gia|thong tin)\s+bao khach|\bbao khach\b|phi chenh|gia chu(?:\s+chao)?\b/.test(folded)}).join('\n')}
   const publicCaption = value => publicLines(value).replace(/(^|[^\p{L}\p{N}_])(?:(?:hoa\s*hồng|hoa\s*hong|phí\s*môi\s*giới|phi\s*moi\s*gioi)\s*[:：=]\s*[^\n]*|(?:hoa\s*hồng|hoa\s*hong|hh)\s*[:：=]?\s*(?=\d|thỏa\s*thuận|thoa\s*thuan|thương\s*lượng|thuong\s*luong)[^\n]*|h\s*\d+(?:[.,]\d+)?\s*%[^\n]*)/gimu,'$1').replace(/\s+#\s*(?=\n|$)/g,'').replace(/\n{3,}/g,'\n\n').trim();
   const captionFold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  // Same comparison is used by the server composer and the detail views.
+  function detailKey(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase()
+    .replace(/(\d)[.,](\d)/g,'$1d$2').replace(/m\s*[²2]/g,'m2').replace(/(\d)\s*(m2|m|trieu|ty)(?![a-z])/g,'$1 $2')
+    .replace(/\btrieu dong\b/g,'trieu').replace(/\b(?:cong trinh ve sinh|nha ve sinh)\b/g,'wc').replace(/\b(?:dt|dien tich tung tang)\s*[:：]?/g,'')
+    .replace(/[^a-z0-9]+/g,' ').replace(/\bkinh doanh cac mo hinh sach\b|\bcac mo hinh kinh doanh sach\b/g,'mo hinh sach').trim();}
+  const technicalDetail=value=>/dien tich chinh hien thi/.test(detailKey(value));
+  function detailCovered(detail,text){
+    const key=detailKey(detail);if(!key)return true;
+    const parts=copyParts(text).map(detailKey),all=' '+parts.join(' ')+' ';
+    if(parts.some(p=>p===key||p==='co '+key||'co '+p===key))return true;
+    if(!/^(?:khong|chua) /.test(key)&&parts.some(p=>! /^(?:khong|chua) /.test(p)&&(' '+p+' ').includes(' '+key+' ')))return true;
+    const price=key.match(/^gia (?:thue|ban) (.+)$/);if(price&&all.includes(' gia '+price[1]+' '))return true;
+    const floors=key.match(/^so tang (\d+)$/);if(floors&&all.includes(' '+floors[1]+' tang '))return true;
+    if(/mo hinh sach/.test(key)&&/^(?:uu tien|phu hop)/.test(key)&&all.includes(' mo hinh sach '))return true;
+    return false;
+  }
+  function detailFacts(post){
+    const out=[];for(const raw of post.facts||[])for(const line of copyParts(raw)){
+      if(technicalDetail(line)||detailCovered(line,[post.description,...out].join('\n')))continue;out.push(line);
+    }return out;
+  }
   function compactCaption(listing){
     if(listing.adminAuthoredCopy===true)return [String(listing.title||''),listing.code?'Mã tin: '+listing.code:'',listing.address?'Khu vực: '+listing.address:'',Number(listing.size)>0?'Diện tích: '+sizeText(listing.size):'',Number(listing.frontage)>0?'Mặt tiền: '+listing.frontage+' m':'',listing.transactionType==='both'?'Giá thuê: '+priceText(listing.rentalPrice??listing.price,listing.priceFrom,{})+' · Giá bán: '+salePrice(listing.salePrice):isSale(listing)?'Giá bán: '+priceText(listing.price,listing.priceFrom,listing):'Giá thuê: '+priceText(listing.price,listing.priceFrom,listing),listing.transferPrice!=null?'Giá chuyển nhượng: '+listing.transferPrice+' triệu đồng':'',String(listing.description||''),listing.isIllustration?'Ảnh minh họa tham khảo.':'','Liên hệ: 0906 215 365 (Call/Zalo)'].filter(Boolean).join('\n');
 
@@ -55,7 +76,7 @@
     return [heading,listing.code?'Mã tin: '+listing.code:'',dimensions,...selected.map(s=>'• '+s),listing.isIllustration?'Ảnh minh họa tham khảo.':'','Liên hệ: 0906 215 365 (Call/Zalo)'].filter(Boolean).join('\n');
   }
   const text = listing => compactCaption(listing)+'\nXem chi tiết: '+url(listing);
-  if(typeof module!=='undefined'&&module.exports){module.exports={compactCaption,text,publicCaption,priceText,isSale,isDual,supportsTransaction,transactionView};return;}
+  if(typeof module!=='undefined'&&module.exports){module.exports={detailKey,detailCovered,detailFacts,technicalDetail,compactCaption,text,publicCaption,priceText,isSale,isDual,supportsTransaction,transactionView};return;}
 
   function status(element, message) {
     const target = element?.closest('.sharing-tools')?.querySelector('.share-status') || document.querySelector('#share-status');
@@ -207,5 +228,5 @@
   for(const name of ['admin-session','member-session'])window.addEventListener(name,()=>{clearPrivate();scanPrivate();});
   document.addEventListener('visibilitychange',()=>{clearPrivate();if(document.visibilityState!=='hidden')scanPrivate();});window.addEventListener('pagehide',clearPrivate);
   new MutationObserver(scanPrivate).observe(document.body,{childList:true,subtree:true});scanPrivate();
-  window.RentalSharing = {isSale,isDual,supportsTransaction,transactionView,register,priceText,sizeText,transferText,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
+  window.RentalSharing = {detailKey,detailCovered,detailFacts,technicalDetail,isSale,isDual,supportsTransaction,transactionView,register,priceText,sizeText,transferText,url, text, copy, share, prepare, markup, escape, prepareAll,composer,publicCaption,photoBundle,invalidate:listing=>{files.delete(listing.id);albums.delete(listing.id);readyFiles.delete(listing.id)}};
 })();
