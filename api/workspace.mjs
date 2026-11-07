@@ -1,3 +1,4 @@
+import {protectLocation} from '../lib/private-location.mjs';
 import {ownListingCounts,setListingCountPermission} from '../lib/listing-counts.mjs';
 import {postLocationFields} from '../lib/post-location-fields.mjs';
 import {areas} from '../lib/posts.mjs';
@@ -186,7 +187,7 @@ export default async function handler(req,res){
    if(transfer.isTransfer)public_data.shareText+='\nGiá chuyển nhượng: '+(public_data.transferPrice==null?'Liên hệ':public_data.transferPrice+' triệu đồng')+'.';
    const private_data={...rows[0].private_data,privateTransferPrice:transfer.transferPrice,sourceInfo:{...rows[0].private_data?.sourceInfo,privateNotes:mergePriceNotes(rows[0].private_data?.sourceInfo?.privateNotes,transfer.transferPrice?'Giá sang nhượng — giữ kín: '+transfer.transferPrice+' triệu đồng.':'',body.transferNegotiable?'Có thể thương lượng (ghi chú của người đăng)':'')},priceTrackingNotes:mergePriceNotes(body.priceTrackingNotes===undefined?trackedPriceNotes(rows[0].private_data):(typeof body.priceTrackingNotes==='string'?body.priceTrackingNotes:'')),address:body.privateAddress===undefined?rows[0].private_data?.address||'':clean(body.privateAddress,500),hashtags:body.hashtags===undefined?rows[0].private_data?.hashtags||[]:clean(body.hashtags,1500).match(/#[\p{L}\p{N}_]+/gu)||[]};
    delete private_data.privateFrontage;
-   const previousRevision=p.contentRevision,editQuery='?id=eq.'+body.id+'&status=eq.'+rows[0].status+'&public_data->>contentRevision='+(previousRevision?'eq.'+encodeURIComponent(previousRevision):'is.null');const edited=await db('posts',{method:'PATCH',query:editQuery,body:protectFrontage({public_data,private_data})});if(!edited.length)return send(res,409,{error:'Tin vừa thay đổi hoặc bị xóa. Tải lại trước khi sửa.'});await commitMediaAccess(mediaChanges.accessUpdates);
+   const previousRevision=p.contentRevision,editQuery='?id=eq.'+body.id+'&status=eq.'+rows[0].status+'&public_data->>contentRevision='+(previousRevision?'eq.'+encodeURIComponent(previousRevision):'is.null');const edited=await db('posts',{method:'PATCH',query:editQuery,body:protectLocation(protectFrontage({public_data,private_data}))});if(!edited.length)return send(res,409,{error:'Tin vừa thay đổi hoặc bị xóa. Tải lại trước khi sửa.'});await commitMediaAccess(mediaChanges.accessUpdates);
    const canonical=(await canonicalizeSubset([{...rows[0],public_data,private_data}]))[0];
    await db('posts',{method:'PATCH',query:'?id=eq.'+body.id+'&public_data->>contentRevision=eq.'+public_data.contentRevision,body:{public_data:canonical.public_data}});
    if(body.assetIds!==undefined)await logPostHistory(p.slug,'photos-updated');
