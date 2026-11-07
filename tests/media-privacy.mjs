@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import sharp from 'sharp';
 import files from '../api/files.mjs';
 import {imagePrivacy,privateMediaCommand,canReadAsset,publicMedia,mediaEntry,setMediaAccess} from '../lib/media-access.mjs';
+import {inspectTelegramAsset} from '../lib/telegram-media.mjs';
 import {editedMedia} from '../lib/post-media.mjs';
 const originalFetch=global.fetch;
 process.env.SUPABASE_URL='https://privacy-db.test';process.env.SUPABASE_SERVICE_ROLE_KEY='fake';process.env.SUPABASE_ANON_KEY='fake';process.env.ADMIN_SECRET='privacy-test-only-secret-0123456789012345';process.env.OPENAI_API_KEY='privacy-test';delete process.env.OPENROUTER_API_KEY;process.env.AI_PROVIDER='openai';
@@ -26,6 +27,7 @@ global.fetch=async(raw,options={})=>{const u=new URL(raw),body=typeof options.bo
 async function call(action,{cookie='',id,slug=post.public_data.slug,body,publicOnly=false}={}){let status,headers,payload;const url='/api/files?action='+action+(id?'&id='+id:'')+'&slug='+slug+(publicOnly?'&public=1':'');await files({method:body?'POST':'GET',url,headers:{host:'privacy.test',cookie,'content-type':'application/json'},body,socket:{remoteAddress:randomUUID()}},{writeHead(s,h){status=s;headers=h;},end(v){payload=v;}});let json;try{json=JSON.parse(payload)}catch{}return {status,headers,payload,json};}
 try{
  assert(privateMediaCommand('Thêm ảnh #chiminhtoi MB - 0001'));assert(!privateMediaCommand('#chiminhtoikhac'));
+ const freeCalls=calls;assert.equal((await imagePrivacy(bytes,{allowPaidAI:false})).visibility,'owner');assert.equal((await imagePrivacy(bytes,{allowPaidAI:false,forcePublic:true})).visibility,'public');const pending={id:randomUUID(),kind:'image',path:'telegram/pending.jpg',access_data:{visibility:'owner',scan:'pending'}};assets.push(pending);assert.equal((await inspectTelegramAsset(pending)).access_data.visibility,'owner');assert.equal(calls,freeCalls,'Telegram photos never invoke paid vision with provider keys present');assets.pop();
  let p=await imagePrivacy(bytes);assert.equal(p.visibility,'public');for(const categories of [['land_document'],['exact_address'],['personal_document']]){vision={sensitive:true,clear:true,categories};assert.equal((await imagePrivacy(bytes)).visibility,'owner');}
  vision={sensitive:false,clear:false,categories:['uncertain']};assert.equal((await imagePrivacy(bytes)).visibility,'owner');visionFail=true;assert.equal((await imagePrivacy(bytes)).visibility,'owner');visionFail=false;const before=calls;assert.equal((await imagePrivacy(bytes,{forcePrivate:true})).scan,'command');assert.equal(calls,before);delete process.env.OPENAI_API_KEY;assert.equal((await imagePrivacy(bytes)).visibility,'owner');process.env.OPENAI_API_KEY='privacy-test';
  const sanitized=publicMedia(post.public_data,new Map(assets.map(a=>[a.id,a])));assert.equal(sanitized.media.length,1);assert.equal(sanitized.media[0].id,assets[0].id);assert(!JSON.stringify(sanitized).includes('trusted@example.com'));assert(!JSON.stringify(sanitized).includes(assets[1].id));assert(!JSON.stringify(sanitized).includes(assets[2].id));

@@ -25,4 +25,4 @@ Webhook có chữ ký bí mật dẫn xuất từ token và kiểm tra cả ngư
 
 ## Nâng cấp tự đăng
 
-Đã bổ sung chế độ tự phân tích văn bản, tạo ảnh AI và đăng tự động khi bật riêng. Xem `TELEGRAM_AUTO_PUBLISH.md`, chạy migration 005 và nhập khóa OpenAI có số dư. Những giới hạn về soạn thủ công ở trên áp dụng khi chưa bật chế độ này.
+Luồng hiện hành tự đọc bằng quy tắc, đăng bài và dùng ảnh gửi kèm hoặc minh họa nội bộ, không gọi API AI và không giới hạn 20 tin/ngày. Xem `TELEGRAM_AUTO_PUBLISH.md`. Các mô tả giới hạn ban đầu ở trên chỉ là tài liệu của giai đoạn chưa bật tự đăng.

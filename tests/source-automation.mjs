@@ -1,7 +1,8 @@
 import {applySourceUpdate,isUpdateCommand,updateReference} from '../lib/source-updates.mjs';
 import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
 import {draft,safePublicText} from '../lib/posts.mjs';
-import {validateExtraction,fingerprint,sameProperty,processSource,sourceClaimLimit,sourceClaimMessage} from '../lib/source-automation.mjs';
+import {validateExtraction,fingerprint,sameProperty,processSource,automationConfiguration,sourceClaimLimit,sourceClaimMessage} from '../lib/source-automation.mjs';
 assert.ok(safePublicText('Diện tích 100 m², giá 20 triệu đồng/tháng.'));assert.ok(!safePublicText('Địa chỉ 123 Lạc Long Quân'));assert.ok(!safePublicText('123 lạc long quân'));assert.ok(safePublicText('Mặt tiền: 5 m. Số tầng: 3 tầng.'));assert.ok(!safePublicText('số 123, ngõ 20'));
 const text='Cho thuê văn phòng số 987 đường Lạc Long Quân, Tây Hồ, diện tích 123m2, giá thuê 32tr/tháng. #NguonTest';
 const item={listingCount:1,intent:'rent',type:'Văn phòng',area:'Tây Hồ',location:'Lạc Long Quân',privateAddress:'số 987 đường Lạc Long Quân',price:32,size:123,priceEvidence:'giá thuê 32tr/tháng',sizeEvidence:'123m2'};
@@ -29,7 +30,7 @@ global.fetch=async (raw,options={})=>{
   imageCalls++;if(failImage)return new Response('{}',{status:429});const bytes=Buffer.alloc(200);bytes[0]=255;bytes[1]=216;return response({data:[{b64_json:bytes.toString('base64')}]});
  }
  if(url.pathname.includes('/storage/'))return response({});
- if(url.pathname.endsWith('/rpc/claim_source_job')){const job=albumRows.find(r=>r.id===body.job_id)||inboxRows.find(r=>r.id===body.job_id)||source;if(!claim||['published','updated'].includes(job.processing_status))return response([]);job.processing_status='processing';job.attempts++;job.parsed_data={...job.parsed_data,_automationQuota:{mode:body.daily_limit>0?'ai':'provided',day:'2026-11-07'}};return response([job])}
+ if(url.pathname.endsWith('/rpc/claim_source_job')){assert.equal(body.daily_limit,0,'Telegram rules must never consume a paid AI quota');const job=albumRows.find(r=>r.id===body.job_id)||inboxRows.find(r=>r.id===body.job_id)||source;if(!claim||['published','updated'].includes(job.processing_status))return response([]);job.processing_status='processing';job.attempts++;job.parsed_data={...job.parsed_data,_automationQuota:{mode:body.daily_limit>0?'ai':'provided',day:'2026-11-07'}};return response([job])}
  const table=url.pathname.split('/').at(-1),method=options.method||'GET';
  if(table==='source_inbox'){
   if(url.searchParams.has('media_group_id'))return response(albumRows);
@@ -63,12 +64,12 @@ assert.equal(sourceClaimLimit({mode:'ai',aiReady:true,dailyLimit:20}),20);
 assert.match(sourceClaimMessage({attempts:3},{mode:'provided'}),/3 lần/);
 assert.doesNotMatch(sourceClaimMessage({attempts:0},{mode:'provided'}),/20|hạn mức/);
 assert.match(sourceClaimMessage({attempts:0},{mode:'ai',aiReady:true,dailyLimit:20}),/00:00 giờ Việt Nam/);
-source=fixture();await runSource(source.id);assert.equal(source.parsed_data._automationQuota.mode,'ai');assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(imageCalls,0);assert.equal(chatCalls,1);assert.equal(posts[0].public_data.isIllustration,true);
-const publicText=JSON.stringify(posts[0].public_data);assert.ok(!publicText.includes('987'));assert.ok(!publicText.includes('#NguonTest'));assert.equal(posts[0].private_data.sourceText,text);assert.equal(posts[0].private_data.address,item.privateAddress);assert.ok(posts[0].private_data.hashtags.includes('#NguonTest'));
+source=fixture();await runSource(source.id);assert.equal(source.parsed_data._automationQuota.mode,'provided');assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(imageCalls,0);assert.equal(chatCalls,0);assert.equal(posts[0].public_data.isIllustration,true);
+const publicText=JSON.stringify(posts[0].public_data);assert.ok(!publicText.includes('987'));assert.ok(!publicText.includes('#NguonTest'));assert.equal(posts[0].private_data.sourceText,text);assert.match(posts[0].private_data.address,/987.*Lạc Long Quân/);assert.ok(posts[0].private_data.hashtags.includes('#NguonTest'));
 await runSource(source.id);assert.equal(posts.length,1);assert.equal(imageCalls,0);
 source={...fixture(),id:'33333333-3333-4333-8333-333333333333'};await runSource(source.id);assert.equal(source.processing_status,'review');assert.equal(imageCalls,0);assert.equal(posts.length,1);
 posts=[];assets=[];fingerprints=[];failImage=true;source=fixture();await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);
-failImage=false;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(chatCalls,3); // published retry does not extract again
+failImage=false;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(chatCalls,0); // published retry does not extract again
 source=fixture();delete process.env.OPENAI_API_KEY;await runSource(source.id);assert.equal(source.processing_status,'published');
 process.env.OPENAI_API_KEY='test';source={...fixture(),content:''};await runSource(source.id);assert.equal(source.processing_status,'review');
 posts=[];legacy=[{slug:'legacy-unit',area:'Tây Hồ',size:123,address:item.privateAddress}];source=fixture();await runSource(source.id);assert.equal(source.processing_status,'review');
@@ -76,12 +77,12 @@ claim=false;source=fixture();await runSource(source.id);assert.equal(source.proc
 claim=true;legacy=[];posts=[];assets=[];fingerprints=[];delete process.env.OPENAI_API_KEY;process.env.TELEGRAM_SOURCE_MODE='provided';
 const noApiText='Loại BĐS: Văn phòng\nĐịa chỉ: Số 987 đường Lạc Long Quân, Tây Hồ, Hà Nội\nKhu vực: Tây Hồ\nDiện tích: 123m2\nGiá thuê: 32 triệu/tháng\n#NguonTest';
 source={...fixture(),content:noApiText,media:[{kind:'image',file_id:'photo1',unique_id:'photo1'}]};
-const beforeAI=chatCalls+imageCalls;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(chatCalls+imageCalls,beforeAI);assert.equal(downloads,1);assert.equal(posts[0].public_data.isIllustration,false);assert.ok(!posts[0].public_data.description.includes('tạo bằng AI'));assert.equal(posts[0].public_data.media.length,1);
+const beforeAI=chatCalls+imageCalls;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(chatCalls+imageCalls,beforeAI);assert.equal(downloads,1);assert.equal(posts[0].public_data.isIllustration,true);assert(posts[0].public_data.media.every(m=>m.visibility==='owner'));assert.ok(!posts[0].public_data.description.includes('tạo bằng AI'));assert.equal(posts[0].public_data.media.length,1);
 posts=[];assets=[];fingerprints=[];source={...fixture(),content:noApiText,media:[]};await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts.length,1);assert.equal(posts[0].public_data.illustrationKind,'banner');assert.equal(chatCalls+imageCalls,beforeAI);
 posts=[];assets=[];fingerprints=[];source={...fixture(),content:noApiText,chat_id:'1',media_group_id:'album1',media:[{kind:'image',file_id:'album1',unique_id:'album1'}]};
 albumRows=[source,{...fixture(),id:'44444444-4444-4444-8444-444444444444',content:'',chat_id:'1',media_group_id:'album1',media:[{kind:'image',file_id:'album2',unique_id:'album2'}]}];
 await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.media.length,2);assert.equal(albumRows[1].processing_status,'grouped');assert.equal(albumRows[1].result_url,posts[0].public_data.href);assert.equal(chatCalls+imageCalls,beforeAI);
-console.log('Source automation passed: verified rent/size evidence, private address checks, sale/multiple-listing rejection, dedup without image cost, publish+AI media, source privacy, retry/recovery, missing key and job-claim guards.');
+console.log('Source automation passed: verified rent/size evidence, private address checks, sale/multiple-listing rejection, dedup without image cost, rules-only publication, source privacy, retry/recovery, missing key and job-claim guards.');
 
 albumRows=[];posts=[];assets=[];fingerprints=[];
 const warehouse='🏭 THÔNG TIN KHO XƯỞNG\n✅ Diện tích: 280m²\n✅ Đất full thổ cư\n✅ Điện 3 pha\n✅ Khung xưởng chắc chắn, chiều cao khoảng 6–8m\n✅ Cốt nền chắc chắn\n✅ Có WC khép kín\n✅ Đường vào rộng, thuận tiện vận chuyển và bốc dỡ hàng hóa\n* Kho chứa hàng\n* Kho phân phối\n* Xưởng sản xuất\n* Xưởng gia công\n💰 Giá thuê: 16 triệu/tháng\n#pc';
@@ -120,8 +121,8 @@ posts=[];assets=[];fingerprints=[];source={...fixture(),id:'99999999-9999-4999-8
 source={...fixture(),id:'98989898-9898-4989-8989-989898989898',content:'status',media:[]};await runSource(source.id);assert.equal(source.processing_status,'review');assert.equal(posts.length,0,'queued control messages must not become listings');
 console.log('PASS: range/missing prices with property facts publish; empty and control inputs stay private; private raw data, transfer fee/negotiability, multi-photo intake, targeted supplements, idempotent updates, late album photos and no-target protection');
 
-posts=[];assets=[];fingerprints=[];source={...fixture(),id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',media:[{kind:'image',file_id:'ai-provided-1',unique_id:'ai-provided-1'},{kind:'image',file_id:'ai-provided-2',unique_id:'ai-provided-2'}]};process.env.TELEGRAM_SOURCE_MODE='ai';process.env.OPENAI_API_KEY='test';const beforeGeneratedImages=imageCalls;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.media.length,2);assert.equal(posts[0].public_data.isIllustration,false);assert.equal(imageCalls,beforeGeneratedImages,'supplied photos are used even in AI mode, without paying to replace them');
-console.log('PASS: AI mode retains the supplied photo album instead of replacing it with a generated image.');
+posts=[];assets=[];fingerprints=[];source={...fixture(),id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',media:[{kind:'image',file_id:'ai-provided-1',unique_id:'ai-provided-1'},{kind:'image',file_id:'ai-provided-2',unique_id:'ai-provided-2'}]};process.env.TELEGRAM_SOURCE_MODE='ai';process.env.OPENAI_API_KEY='test';const beforeGeneratedImages=imageCalls;await runSource(source.id);assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.media.length,2);assert.equal(posts[0].public_data.isIllustration,true);assert(posts[0].public_data.media.every(m=>m.visibility==='owner'));assert.equal(imageCalls,beforeGeneratedImages,'supplied photos are used even in AI mode, without paying to replace them');
+console.log('PASS: legacy AI flags cannot trigger billing; supplied album remains private until the owner chooses public visibility.');
 
 posts=[];assets=[];fingerprints=[];privateSources=[];process.env.TELEGRAM_SOURCE_MODE='provided';const oldReview={...fixture(),id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',content:rangeText,processing_status:'review',media:[{kind:'image',file_id:'old-review-1',unique_id:'old-review-1'}]},replyUpdate={...fixture(),id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',content:'Hãy bổ sung thêm dữ liệu\nGiá thuê: 25tr/tháng',media:[{kind:'source-reference',source_id:oldReview.id,unique_id:'source-ref:'+oldReview.id},{kind:'image',file_id:'old-review-2',unique_id:'old-review-2'}]};inboxRows=[oldReview,replyUpdate];source=replyUpdate;await runSource(replyUpdate.id);assert.equal(oldReview.processing_status,'published');assert.equal(replyUpdate.processing_status,'updated');assert.equal(posts.length,1);assert.equal(posts[0].public_data.price,25);assert.equal(posts[0].public_data.media.length,2);assert.equal(posts[0].private_data.sourceText,rangeText);inboxRows=[];console.log('PASS: replying with a supplement to a previously blocked range-price source automatically publishes the original and applies the update to that same listing.');
 
@@ -163,15 +164,15 @@ for(const row of [posts[0].private_data.sourceInfo,privateSources[0].data])for(c
 assert(!/An Phúc|0987654321|Giá chốt|đối tác/iu.test(JSON.stringify(posts[0].public_data)));
 console.log('PASS: private business/negotiation/contact/landmark supplements are stored in owner notes and source records without changing public rent or copy.');
 
-// Automatic illustrations are independent of extraction mode, and duplicates cost no image call.
+// Legacy AI env flags and injected generators cannot override rules-only owner policy.
 albumRows=[];inboxRows=[];privateSources=[];posts=[];assets=[];fingerprints=[];process.env.TELEGRAM_AUTO_IMAGES='true';process.env.TELEGRAM_SOURCE_MODE='provided';
 let generatedCount=0;const fakeIllustration=async options=>{generatedCount++;assert.equal(options.concept,'coffee_office');assert(!Object.hasOwn(options,'text'));const asset={id:'abababab-abab-4bab-8bab-abababababab',owner_id:null,path:'editor-ai/telegram/'+options.requestId+'.jpg',kind:'image',mime:'image/jpeg',name:'AI illustration'};assets.push(asset);return asset};
 const tiny='50B Minh Họa, 6 tầng 66m2/sàn, 4m. 48tr. dưới 50. Cầu Giấy.\nSang nhượng quán cà phê & văn phòng 250tr (đồ cà phê) tt3c1. phi 30tr';
-source={...fixture(),id:'13131313-1313-4313-8313-131313131313',content:tiny,media:[]};await processSource(source.id,{legacyListings:async()=>[],createIllustration:fakeIllustration});assert.equal(source.processing_status,'published',source.processing_error);assert.equal(generatedCount,1);assert.equal(posts[0].public_data.isIllustration,true);assert.equal(posts[0].public_data.illustrationKind,'ai');assert.equal(posts[0].public_data.media[0].isIllustration,true);assert.equal(posts[0].public_data.price,48);assert.equal(posts[0].public_data.transferPrice,null);assert.equal(posts[0].private_data.privateTransferPrice,250);assert(!/50B|250|phi 30|tt3c1/.test(JSON.stringify(posts[0].public_data)));
-await processSource(source.id,{legacyListings:async()=>[],createIllustration:fakeIllustration});assert.equal(generatedCount,1);
-source={...fixture(),id:'14141414-1414-4414-8414-141414141414',content:tiny,media:[]};await processSource(source.id,{legacyListings:async()=>[],createIllustration:fakeIllustration});assert.equal(source.processing_status,'review');assert.equal(generatedCount,1);
-posts=[];assets=[];fingerprints=[];source={...fixture(),id:'15151515-1515-4515-8515-151515151515',content:tiny,media:[]};await processSource(source.id,{legacyListings:async()=>[],createIllustration:async()=>{throw Object.assign(Error('Không đủ số dư AI'),{status:503})}});assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.illustrationKind,'banner');assert(posts[0].private_data.imageGenerationWarning.includes('số dư'));assert.equal(posts[0].public_data.isIllustration,true);
-process.env.TELEGRAM_AUTO_IMAGES='false';console.log('PASS: sparse Telegram source publishes rich grounded copy plus AI illustration; replay/duplicates avoid image cost; image billing failure preserves publication with an honest banner and owner warning.');
+source={...fixture(),id:'13131313-1313-4313-8313-131313131313',content:tiny,media:[]};await processSource(source.id,{legacyListings:async()=>[],createIllustration:fakeIllustration});assert.equal(source.processing_status,'published',source.processing_error);assert.equal(generatedCount,0);assert.equal(posts[0].public_data.isIllustration,true);assert.equal(posts[0].public_data.illustrationKind,'banner');assert.equal(posts[0].public_data.media.length,0);assert.equal(posts[0].public_data.price,48);assert.equal(posts[0].public_data.transferPrice,null);assert.equal(posts[0].private_data.privateTransferPrice,250);assert(!/50B|250|phi 30|tt3c1/.test(JSON.stringify(posts[0].public_data)));
+await processSource(source.id,{legacyListings:async()=>[],createIllustration:fakeIllustration});assert.equal(generatedCount,0);
+source={...fixture(),id:'14141414-1414-4414-8414-141414141414',content:tiny,media:[]};await processSource(source.id,{legacyListings:async()=>[],createIllustration:fakeIllustration});assert.equal(source.processing_status,'review');assert.equal(generatedCount,0);
+posts=[];assets=[];fingerprints=[];source={...fixture(),id:'15151515-1515-4515-8515-151515151515',content:tiny,media:[]};await processSource(source.id,{legacyListings:async()=>[],createIllustration:async()=>{throw Object.assign(Error('Không đủ số dư AI'),{status:503})}});assert.equal(source.processing_status,'published');assert.equal(posts[0].public_data.illustrationKind,'banner');assert.equal(posts[0].private_data.imageGenerationWarning,'');assert.equal(posts[0].public_data.isIllustration,true);
+process.env.TELEGRAM_AUTO_IMAGES='false';console.log('PASS: sparse Telegram source publishes grounded copy with an existing illustration; legacy AI flags and credentials cannot trigger text/image charges.');
 // Explicit album replacement must replace media, while supplementary uploads append.
 const mediaSlug=posts[0].public_data.slug;
 const photoIds=['81818181-8181-4181-8181-818181818181','82828282-8282-4282-8282-828282828282','83838383-8383-4383-8383-838383838383'];for(const id of photoIds)assets.push({id,owner_id:null,path:'telegram/test/'+id+'.jpg',kind:'image',mime:'image/jpeg',name:'Ảnh thật'});
@@ -196,3 +197,18 @@ const privatePhoto=posts[0].public_data.media.find(m=>m.id===secretId);assert.eq
 await applySourceUpdate({id:'99999999-4444-4444-8444-444444444444',content:'công khai\nTin cần cập nhật: '+dualSlug,assetIds:[secretId],media:[]});assert.equal(assets.find(a=>a.id===secretId).access_data.visibility,'public');assert.equal(posts[0].public_data.price,unchangedRent);assert(!/công khai|chỉ mình tôi|ảnh đại diện/iu.test(posts[0].public_data.description));
 await applySourceUpdate({id:'99999999-5555-4555-8555-555555555555',content:'đăng làm ảnh đại diện\nTin cần cập nhật: '+dualSlug,assetIds:[secretId],media:[]});assert.equal(posts[0].public_data.media[0].id,secretId);assert(posts[0].public_data.image.includes(secretId));
 await applySourceUpdate({id:'99999999-6666-4666-8666-666666666666',content:'chỉ mình tôi\nTin cần cập nhật: '+dualSlug,assetIds:[secretId],media:[]});assert.equal(assets.find(a=>a.id===secretId).access_data.visibility,'owner');assert(!posts[0].public_data.image.includes(secretId));assert.equal(posts[0].public_data.price,unchangedRent);console.log('PASS natural Telegram photo commands: explicit public, cover reorder, private override, no listing-copy pollution, rent and other photos preserved.');
+
+// A legacy deployment may still contain every provider key and old enable flag.
+// More than 20 prepared posts must publish without a single paid provider call.
+process.env.TELEGRAM_SOURCE_MODE='ai';process.env.TELEGRAM_AUTO_IMAGES='true';
+process.env.OPENAI_API_KEY='fake-paid-key';process.env.OPENROUTER_API_KEY='fake-router-key';process.env.AI_GATEWAY_API_KEY='fake-gateway-key';
+assert.deepEqual(automationConfiguration(),{mode:'provided',enabled:true,aiReady:false,autoImages:false,imageReady:false,imageProvider:'none',bannerMode:'category',dailyLimit:null,paidAI:false});
+posts=[];assets=[];fingerprints=[];inboxRows=[];albumRows=[];legacy=[];claim=true;
+for(let i=0;i<25;i++){
+ source={...fixture(),id:randomUUID(),content:'Cho thuê văn phòng\nĐịa chỉ: Số '+(2000+i)+' đường Phố Mẫu, Tây Hồ\nDT: '+(100+i)+'m2; MT: 6m\nGiá thuê: '+(20+i)+'tr/tháng\nNguồn: Đối Tác Mẫu 0987654321; Phí 50%'};
+ await runSource(source.id);assert.equal(source.processing_status,'published',source.processing_error);
+ assert.equal(source.parsed_data._automationQuota.mode,'provided');
+ assert(!/0987654321|Đối Tác Mẫu|50%/.test(JSON.stringify(posts.at(-1).public_data)));
+}
+assert.equal(posts.length,25);assert.equal(chatCalls+imageCalls,0,'No text, vision or image generation calls for any Telegram intake');
+console.log('PASS: 25 prepared posts publish without a daily AI quota or paid API calls, even with legacy AI mode, image flags and provider credentials present.');
