@@ -74,7 +74,7 @@ export default async function handler(req,res){
    if(!isPublicAsset(item)){
     const bytes=await assetBytes(item);res.writeHead(200,{'Content-Type':item.mime,'Cache-Control':'private, no-store, max-age=0','Vary':'Cookie','X-Content-Type-Options':'nosniff',...(query.get('download')==='1'?{'Content-Disposition':'attachment; filename="anh-rieng-tu.'+(item.mime==='image/png'?'png':item.mime==='image/webp'?'webp':'jpg')+'"'}:{})});return res.end(bytes);
    }
-   let url=item.kind==='image'?await branded(item,query.get('post')||query.get('slug')||''):await signed(item);if(query.get('download')==='1')url+='&download='+encodeURIComponent(item.kind==='image'?item.name.replace(/\.[^.]+$/,'')+'.jpg':item.name);
+   let url=item.kind==='image'?await branded(item,query.get('post')||query.get('slug')||''):await signed(item);if(query.get('download')==='1')url+='&download='+encodeURIComponent((item.kind==='image'?'anh-bds-':'video-bds-')+item.id.slice(0,8)+(item.kind==='image'?'.jpg':item.mime==='video/webm'?'.webm':'.mp4'));
    res.writeHead(302,{Location:url,'Cache-Control':'no-store'});return res.end();
   }
   if(req.method!=='POST')return send(res,405,{error:'Method not allowed'});
