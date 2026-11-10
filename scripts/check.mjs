@@ -17,3 +17,5 @@ const patterns=Object.keys(config.functions||{});
 for(const file of handlers)assert.equal(patterns.filter(pattern=>matchesGlob(file,pattern)).length,1,'Each API handler must match exactly one Vercel function rule: '+file);
 for(const pattern of patterns)assert.ok(handlers.some(file=>matchesGlob(file,pattern)),'Vercel function pattern has no handler: '+pattern);
 console.log('Vercel function configuration: '+handlers.length+' handlers, no overlapping or unused rules.');
+
+for(const [pattern,rule]of Object.entries(config.functions||{})){if(typeof rule.includeFiles==='string'){assert(rule.includeFiles.length<=256,'Vercel includeFiles exceeds 256 characters: '+pattern);for(const file of ['public/hanoi-legacy-wards.json','public/listings.json','public/sharing.js'])assert(matchesGlob(file,rule.includeFiles),'Required runtime file missing from includeFiles: '+file);}}
