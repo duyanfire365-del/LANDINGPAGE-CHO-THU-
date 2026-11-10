@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {safePublicText} from '../lib/posts.mjs';
+import {inferCategory,isOpenYard} from '../lib/listing-content.mjs';
+import {extractByRules} from '../lib/source-rules.mjs';
+import {validateExtraction} from '../lib/source-automation.mjs';
+import {trustedDraft} from '../lib/trusted-intake.mjs';
+import {sourceIllustrationScene} from '../lib/source-inline.mjs';
+import {pickIllustration} from '../lib/illustration-library.mjs';
+import {illustrationCandidates,stockForIllustration} from '../lib/stock-illustrations.mjs';
+import {allocateIllustrations} from '../lib/illustration-allocation.mjs';
+import {renderLibraryIllustration} from '../lib/illustration-library-build.mjs';
+import {writeFile} from 'node:fs/promises';
+const source='CHO THUÊ MẶT BẰNG MẶT PHỐ PHỐ MẪU – 1.300M² – GIÁ 120K/M²/THÁNG\nVị trí mặt phố Phố Mẫu, khu vực Yên Sở, Hoàng Mai, Hà Nội.\nDiện tích khoảng 1.300m² (ngang 32m × sâu 43m).\nHiện trạng có sẵn 5 sân thể thao, có thể cải tạo và bố trí thêm 1–2 sân theo nhu cầu.\nCó sẵn hệ thống mái che diện tích khoảng 1.000m².\nVị trí mặt phố, phía sau tập trung nhiều tòa chung cư.\nPhù hợp nhiều mô hình kinh doanh:\nCụm sân thể thao, Pickleball, cầu lông.\nNhà hàng, quán bia.\nGiá thuê: 120.000đ/m²/tháng.\nHoa hồng môi giới: 50%';
+const item=validateExtraction(extractByRules(source,{allowIncomplete:true,allowUncertain:true}),source,{allowIncomplete:true});assert.equal(item.type,'Mặt bằng kinh doanh');assert.equal(item.size,1300);assert.equal(item.pricePerM2,120000);assert.equal(item.price,156);
+assert.equal(inferCategory('Cho thuê mặt bằng kinh doanh 1200m2 dạng sân bãi, xung quanh có chung cư, văn phòng'),'Mặt bằng kinh doanh');
+for(const [text,type]of [['Cho thuê căn hộ chung cư 1200m2, gần sân thể thao','Căn hộ chung cư'],['Cho thuê văn phòng 1200m2, đối diện chung cư','Văn phòng'],['Cho thuê kho xưởng, phù hợp làm showroom','Kho xưởng'],['Cho thuê đất 1200m2 làm sân bãi','Đất cho thuê'],['Cho thuê mặt bằng chân đế chung cư, phù hợp văn phòng','Mặt bằng kinh doanh']])assert.equal(inferCategory(text),type,text);
+assert(!isOpenYard('Cho thuê căn hộ chung cư, tiện ích sân thể thao và Pickleball'));
+assert(!isOpenYard('Cho thuê mặt bằng kinh doanh 30m2\nGần sân thể thao và Pickleball'));
+assert(!safePublicText('Địa chỉ: 123 Sân Bay'));assert(safePublicText('Có 5 sân thể thao, có thể bố trí thêm 1–2 sân theo nhu cầu.'));
+assert(isOpenYard(source));assert.equal(sourceIllustrationScene(source),'open_yard');
+const p=(await trustedDraft({text:source,item})).public_data;assert(p.title.includes('sân bãi'));assert(!/căn hộ chung cư|diện tích đang cập nhật/i.test(p.title+' '+p.description));assert(p.description.includes('5 sân thể thao'));assert(p.description.includes('1.000 m²'));assert(!p.description.includes('50%'));
+const allocated=allocateIllustrations([{id:'yard',status:'published',public_data:{...p,slug:'live-1794156458051761'}}])[0].public_data;
+assert(allocated.illustrationProcedural);const image=pickIllustration(allocated);assert.equal(image.scene,'open_yard');assert.equal(illustrationCandidates(allocated).length,0);assert.equal(stockForIllustration(image),null);
+const oldFetch=global.fetch;global.fetch=()=>{throw Error('Free yard image cannot call an external provider');};try{await writeFile('/tmp/open-yard-preview.jpg',await renderLibraryIllustration(image,image.variant,undefined,'MB - 9999'));}finally{global.fetch=oldFetch;}
+const ambiguous=extractByRules('Cho thuê mặt bằng\nDiện tích: 1200m2\nDiện tích: 1400m2\nGiá thuê: 20tr',{allowIncomplete:true,allowUncertain:true});assert.equal(ambiguous.size,null);
+console.log('PASS: property subject beats nearby buildings, 1300m² remains separate from 1000m² roof, correct unit conversion, genuine apartments remain apartments, outdoor illustration only, privacy and zero paid API calls.');

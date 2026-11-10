@@ -48,6 +48,7 @@
     if(parts.some(p=>p===key||p==='co '+key||'co '+p===key))return true;
     if(!/^(?:khong|chua) /.test(key)&&parts.some(p=>! /^(?:khong|chua) /.test(p)&&(' '+p+' ').includes(' '+key+' ')))return true;
     const price=key.match(/^gia (?:thue|ban) (.+)$/);if(price&&all.includes(' gia '+price[1]+' '))return true;
+    if(/^co mai che/.test(key)&&parts.some(p=>!/^(?:khong|chua) /.test(p)&&/mai che/.test(p)))return true;
     const floors=key.match(/^so tang (\d+)$/);if(floors&&all.includes(' '+floors[1]+' tang '))return true;
     if(/mo hinh sach/.test(key)&&/^(?:uu tien|phu hop)/.test(key)&&all.includes(' mo hinh sach '))return true;
     return false;
