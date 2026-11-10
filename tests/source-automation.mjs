@@ -212,3 +212,10 @@ for(let i=0;i<25;i++){
 }
 assert.equal(posts.length,25);assert.equal(chatCalls+imageCalls,0,'No text, vision or image generation calls for any Telegram intake');
 console.log('PASS: 25 prepared posts publish without a daily AI quota or paid API calls, even with legacy AI mode, image flags and provider credentials present.');
+// Offered MBKD yard wins over nearby apartment towers, including a Reply to a misclassified post.
+posts=[];assets=[];fingerprints=[];inboxRows=[];albumRows=[];legacy=[];
+const yardText='CHO THUÊ MẶT BẰNG SÂN BÃI PHỐ MẪU 1300m2\nVị trí mặt phố Phố Mẫu, Hoàng Mai, Hà Nội\nDiện tích khoảng 1300m2\nCó sẵn mái che diện tích 1000m2\nHiện trạng có sẵn 5 sân thể thao, Pickleball\nPhía sau có nhiều tòa chung cư\nGiá thuê 120k/m2/tháng';
+source={...fixture(),id:randomUUID(),content:yardText};await runSource(source.id);assert.equal(source.processing_status,'published',source.processing_error);assert.equal(posts[0].public_data.type,'Mặt bằng kinh doanh');assert.equal(posts[0].public_data.size,1300);assert.equal(posts[0].public_data.price,156);assert.equal(posts[0].public_data.illustrationScene,'open_yard');
+const yardSlug=posts[0].public_data.slug;Object.assign(posts[0].public_data,{type:'Căn hộ chung cư',categories:['Căn hộ chung cư'],code:'CHCC - 0001',title:'Cho thuê căn hộ chung cư',categoryMode:'auto'});
+const correctedYard=await applySourceUpdate({id:randomUUID(),content:yardText,media:[]},{targetSlug:yardSlug});assert.equal(correctedYard.public_data.type,'Mặt bằng kinh doanh');assert.equal(correctedYard.public_data.illustrationScene,'open_yard');assert.equal(correctedYard.public_data.slug,yardSlug);assert.equal(correctedYard.public_data.pricePerM2,120000);assert.equal(posts.length,1);
+console.log('PASS yard Telegram: new post and full-content Reply correct MBKD category, 1300m² area/156-million derived rent, outdoor scene and same-post update without paid AI or duplicate.');
