@@ -3,9 +3,9 @@ const $=selector=>document.querySelector(selector);
 const image=home=>home.image;
 const esc=window.RentalSharing.escape;
 const inCategory=(home,type)=>type==='all'||home.categories.includes(type);
-let visibleLimit=9;let transaction=new URLSearchParams(location.search).get('transaction')==='sale'?'sale':'rent';
+const PAGE_SIZE=20;let currentPage=1;let transaction=new URLSearchParams(location.search).get('transaction')==='sale'?'sale':'rent';
 let saved=new Set();try{saved=new Set(JSON.parse(localStorage.getItem('rental-favorites')||'[]').filter(id=>homes.some(h=>h.id===id)))}catch{}
-const locationFilters=RentalLocations.mount($('#search'),{prefix:'public-location',before:$('#type').closest('label'),onChange:()=>{visibleLimit=9;render();}});
+const locationFilters=RentalLocations.mount($('#search'),{prefix:'public-location',before:$('#type').closest('label'),onChange:()=>{currentPage=1;render();}});
 let toastTimer;
 function toast(message){$('#toast').textContent=message;$('#toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').style.display='none',2800)}
 // Prices are in millions of VND per month. The two "under" options intentionally overlap.
@@ -126,15 +126,31 @@ function render(){
   const selected=homes.filter(home=>RentalSharing.supportsTransaction(home,transaction)).map(home=>RentalSharing.transactionView(home,transaction)).filter(home=>RentalLocations.matches(home,locationFilters.read())&&(area==='all'||home.area===area)&&inCategory(home,type)&&rentMatches(home,budget)&&(!query||`${home.code} ${(home.legacyCodes||[]).join(' ')} ${home.title} ${home.address} ${home.categories.join(' ')}`.toLocaleLowerCase('vi').includes(query)||[home.code,...(home.legacyCodes||[])].some(code=>String(code).toLocaleLowerCase('vi').replace(/[\s–—-]+/g,'')===queryCode)));
   selected.sort((a,b)=>Number(RentalInventory.isHot(b.slug))-Number(RentalInventory.isHot(a.slug))||(a.catalogOrder??1000000)-(b.catalogOrder??1000000));
   locationFilters.suggest(homes.filter(p=>RentalSharing.supportsTransaction(p,transaction)&&(area==='all'||p.area===area)));
-  window.RentalListingCounts?.render(selected.length,Math.max(0,selected.length-visibleLimit));
-  $('#properties').innerHTML=selected.length?selected.slice(0,visibleLimit).map(card).join(''):'<div class="empty"></div>';
-  $('#load-more').hidden=selected.length<=visibleLimit;
+  const pageCount=Math.ceil(selected.length/PAGE_SIZE);
+  currentPage=Math.max(1,Math.min(currentPage,pageCount||1));
+  window.RentalListingCounts?.render(selected.length,Math.max(0,selected.length-currentPage*PAGE_SIZE));
+  $('#properties').innerHTML=selected.length?selected.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE).map(card).join(''):'<div class="empty"></div>';
+  renderPagination(pageCount);
   // Count labels are controlled by the server-verified admin session.
   renderCategory(type,selected.length);
   document.querySelectorAll('[data-type]').forEach(button=>{button.classList.toggle('active',button.dataset.type===type);button.setAttribute('aria-pressed',String(button.dataset.type===type))});
 }
-$('#load-more').addEventListener('click',()=>{visibleLimit+=9;render()});
-$('#search').addEventListener('submit',e=>{e.preventDefault();visibleLimit=9;render();$('#bat-dong-san').scrollIntoView({behavior:'smooth'})});document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{$('#type').value=b.dataset.type;visibleLimit=9;render()}));
+function renderPagination(pageCount){
+  const nav=$('#listing-pagination');nav.hidden=pageCount<=1;
+  if(nav.hidden){nav.replaceChildren();return;}
+  const pages=[...new Set([1,pageCount,currentPage-1,currentPage,currentPage+1].filter(n=>n>=1&&n<=pageCount))].sort((a,b)=>a-b);
+  const button=(page,label,disabled=false)=>`<button type="button" data-page="${page}" aria-controls="properties" ${disabled?'disabled':''} ${page===currentPage&&label===String(page)?'aria-current="page"':''} aria-label="${label===String(page)?'Trang '+page:label}">${label}</button>`;
+  let markup=button(currentPage-1,'Trước',currentPage===1);
+  pages.forEach((page,index)=>{if(index&&page-pages[index-1]>1)markup+='<span aria-hidden="true">…</span>';markup+=button(page,String(page));});
+  nav.innerHTML=markup+button(currentPage+1,'Sau',currentPage===pageCount);
+}
+$('#listing-pagination').addEventListener('click',e=>{
+  const button=e.target.closest('button[data-page]');if(!button||button.disabled)return;
+  currentPage=Number(button.dataset.page);render();
+  $('#results-title').setAttribute('tabindex','-1');$('#results-title').focus({preventScroll:true});
+  $('#results-title').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+});
+$('#search').addEventListener('submit',e=>{e.preventDefault();currentPage=1;render();$('#bat-dong-san').scrollIntoView({behavior:'smooth'})});document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{$('#type').value=b.dataset.type;currentPage=1;render()}));
 $('#properties').addEventListener('click',e=>{const save=e.target.closest('[data-save]'),detail=e.target.closest('[data-detail]');if(save){const id=Number(save.dataset.save);saved.has(id)?saved.delete(id):saved.add(id);try{localStorage.setItem('rental-favorites',JSON.stringify([...saved]))}catch{}render();toast(saved.has(id)?'Đã lưu căn yêu thích trên trình duyệt này':'Đã bỏ lưu căn nhà')}if(detail)showDetail(Number(detail.dataset.detail))});
 function showDetail(id){
   const original=homes.find(record=>record.id===id),home=original?RentalSharing.transactionView(original,transaction):null;if(!home)return;
@@ -170,7 +186,7 @@ window.addEventListener('catalog-ready',event=>{
 window.addEventListener('availability-ready',()=>render());
 
 // Transaction tabs share categories and search, but keep sale budgets separate.
-(() => {const filter=document.createElement('div');filter.className='transaction-tabs';filter.setAttribute('role','group');filter.setAttribute('aria-label','Loại giao dịch');filter.innerHTML='<button type="button" data-transaction="rent">CHO THUÊ</button><button type="button" data-transaction="sale">MUA/BÁN</button>';document.querySelector('.search-wrap')?.prepend(filter);const original=document.querySelector('#budget').innerHTML;function select(value){transaction=value;const typeSelect=document.querySelector('#type'),typeLabel=typeSelect.closest('label'),labelText=[...typeLabel.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(labelText){typeLabel.dataset.rentalCategoryLabel||=labelText.textContent;labelText.textContent=value==='sale'?'DANH MỤC BĐS':typeLabel.dataset.rentalCategoryLabel;}typeSelect.querySelector('option[value=all]').textContent=value==='sale'?'Tất cả danh mục BĐS':'Tất cả BĐS cho thuê';filter.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.transaction===value)));document.querySelector('#budget').innerHTML=value==='sale'?'<option value="all">Tất cả giá bán</option><option value="sale-under-1000">Dưới 1 tỷ</option><option value="sale-1000-3000">1 đến dưới 3 tỷ</option><option value="sale-3000-5000">3 đến dưới 5 tỷ</option><option value="sale-5000-10000">5 đến 10 tỷ</option><option value="sale-over-10000">Trên 10 tỷ</option>':original;const note=document.querySelector('#budget-note');if(note)note.textContent=value==='sale'?'Giá bán tính theo tổng giá trị BĐS.':'Ngân sách tính bằng triệu đồng/tháng.';document.querySelectorAll('#type option,[data-type]').forEach(n=>{const type=n.dataset.type||n.value;if(type==='Đất cho thuê')n.textContent=value==='sale'?'Đất':'Đất cho thuê';});visibleLimit=9;render();const u=new URL(location.href);if(value==='sale')u.searchParams.set('transaction','sale');else u.searchParams.delete('transaction');history.replaceState(null,'',u);window.dispatchEvent(new CustomEvent('transaction-changed',{detail:value}));}filter.onclick=e=>{const b=e.target.closest('[data-transaction]');if(b)select(b.dataset.transaction);};select(transaction);})();
+(() => {const filter=document.createElement('div');filter.className='transaction-tabs';filter.setAttribute('role','group');filter.setAttribute('aria-label','Loại giao dịch');filter.innerHTML='<button type="button" data-transaction="rent">CHO THUÊ</button><button type="button" data-transaction="sale">MUA/BÁN</button>';document.querySelector('.search-wrap')?.prepend(filter);const original=document.querySelector('#budget').innerHTML;function select(value){transaction=value;const typeSelect=document.querySelector('#type'),typeLabel=typeSelect.closest('label'),labelText=[...typeLabel.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(labelText){typeLabel.dataset.rentalCategoryLabel||=labelText.textContent;labelText.textContent=value==='sale'?'DANH MỤC BĐS':typeLabel.dataset.rentalCategoryLabel;}typeSelect.querySelector('option[value=all]').textContent=value==='sale'?'Tất cả danh mục BĐS':'Tất cả BĐS cho thuê';filter.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.transaction===value)));document.querySelector('#budget').innerHTML=value==='sale'?'<option value="all">Tất cả giá bán</option><option value="sale-under-1000">Dưới 1 tỷ</option><option value="sale-1000-3000">1 đến dưới 3 tỷ</option><option value="sale-3000-5000">3 đến dưới 5 tỷ</option><option value="sale-5000-10000">5 đến 10 tỷ</option><option value="sale-over-10000">Trên 10 tỷ</option>':original;const note=document.querySelector('#budget-note');if(note)note.textContent=value==='sale'?'Giá bán tính theo tổng giá trị BĐS.':'Ngân sách tính bằng triệu đồng/tháng.';document.querySelectorAll('#type option,[data-type]').forEach(n=>{const type=n.dataset.type||n.value;if(type==='Đất cho thuê')n.textContent=value==='sale'?'Đất':'Đất cho thuê';});currentPage=1;render();const u=new URL(location.href);if(value==='sale')u.searchParams.set('transaction','sale');else u.searchParams.delete('transaction');history.replaceState(null,'',u);window.dispatchEvent(new CustomEvent('transaction-changed',{detail:value}));}filter.onclick=e=>{const b=e.target.closest('[data-transaction]');if(b)select(b.dataset.transaction);};select(transaction);})();
 
 function syncTransactionContact(){const form=document.querySelector('#lead-form');if(!form)return;const sale=form.dataset.transactionType==='sale';if(form.elements.intent.value==='tenant'){const title=document.querySelector('#lead-heading');if(title&&sale)title.textContent='Thông tin khách quan tâm mua BĐS';const info=document.querySelector('#lead-mode-description');if(info&&sale)info.textContent='Để lại thông tin BĐS muốn mua để được tư vấn xác nhận giá và hiện trạng.';}const criteria=document.querySelector('#tenant-criteria');if(criteria){criteria.hidden=form.elements.intent.value!=='tenant'||sale;criteria.disabled=criteria.hidden;}}
 window.addEventListener('transaction-changed',e=>{const f=document.querySelector('#lead-form');if(f){f.dataset.transactionType=e.detail;f.elements.intent.dispatchEvent(new Event('change'));}syncTransactionContact();});
