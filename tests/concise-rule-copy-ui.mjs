@@ -23,8 +23,10 @@ try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.p
   assert(!(await page.locator('#detail-content').textContent()).includes('Diện tích chính hiển thị'));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));
   await page.goto('https://concise.test/tin?slug='+p.slug);await page.locator('.property-description').waitFor();
-  assert.equal(await page.locator('.property-dimensions .property-key-frontage').count(),0);
+  assert.equal(await page.locator('.property-dimensions .property-key-frontage').count(),1);
+  assert.equal(await page.locator('.property-dimensions .property-key-area').count(),1);
+  assert.equal(await page.locator('.property-dimensions .property-key-rent').count(),1);
   assert(!(await page.locator('.property-content').textContent()).includes('Diện tích chính hiển thị'));
   assert(await page.locator('.property-contact a[href="tel:0906215365"]').isVisible());
- }assert.deepEqual(errors,[]);console.log('PASS browser: concise modal and standalone details on phone/desktop, no repeated frontage/floors/features or parser metadata, contact and layout intact.');
+ }assert.deepEqual(errors,[]);console.log('PASS browser: concise modal and standalone details on phone/desktop, concise prose/list facts, persistent primary summary metrics and no parser metadata, contact and layout intact.');
 }finally{await browser.close()}
