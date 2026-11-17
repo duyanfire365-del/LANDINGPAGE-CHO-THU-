@@ -6,6 +6,7 @@ import defaults from '../lib/site-content-defaults.json' with {type:'json'};
 const {chromium}=createRequire(import.meta.url)('playwright');
 const base=(await trustedDraft({text:'Cho thuê mặt bằng Thanh Xuân\nDiện tích 80m2\nMặt tiền 7m\nGiá thuê 14tr/tháng'})).public_data;
 const posts=['rent','sale'].flatMap((transactionType,t)=>Array.from({length:45},(_,i)=>({...base,type:"Khách sạn - Nhà nghỉ",categories:["Khách sạn - Nhà nghỉ"],id:1800000000000+t*100+i,slug:'live-'+(1800000000000+t*100+i),code:'TEST-'+transactionType+'-'+i,title:transactionType+' Listing '+i,transactionType,price:transactionType==='sale'?2000:14,salePrice:transactionType==='sale'?2000:null,href:'/tin?slug=test-'+transactionType+'-'+i})));
+defaults.layout ||= {};defaults.layout.categories=['all','Mặt bằng kinh doanh','Văn phòng','Kho xưởng','Nhà nguyên căn','Căn hộ chung cư','Căn hộ dịch vụ','Phòng trọ','Biệt thự, nhà liền kề','Ki-ốt','Đất cho thuê','Các Dự Án Lớn','Bất động sản khác'].map(id=>({id,label:id,hidden:false}));
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
 try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.route('**/*',async route=>{
  const u=new URL(route.request().url());if(u.origin!=='https://concise.test')return route.abort();
@@ -27,6 +28,7 @@ try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.p
    assert.equal(await page.locator('#type').inputValue(),'Khách sạn - Nhà nghỉ');
    assert.equal(await page.locator('#properties .card').count(),20);
    assert.equal(await page.locator('#category-title').textContent(),'Khách sạn - Nhà nghỉ');
+   await page.waitForFunction(()=>document.querySelector('[data-type="Căn hộ dịch vụ"]').nextElementSibling?.dataset.type==='Khách sạn - Nhà nghỉ');
    const titles=()=>page.locator('#properties .card h3').allTextContents();const first=await titles();
    assert.equal(await page.locator('#listing-pagination [aria-current="page"]').textContent(),'1');
    await page.locator('#listing-pagination [aria-label="Trang 2"]').click();assert.equal(await page.locator('#properties .card').count(),20);
