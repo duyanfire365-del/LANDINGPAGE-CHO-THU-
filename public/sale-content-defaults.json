@@ -240,6 +240,11 @@
         "hidden": false
       },
       {
+        "id": "Khách sạn - Nhà nghỉ",
+        "label": "Khách sạn - Nhà nghỉ",
+        "hidden": false
+      },
+      {
         "id": "Phòng trọ",
         "label": "Phòng trọ",
         "hidden": false

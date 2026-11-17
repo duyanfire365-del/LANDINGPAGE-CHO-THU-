@@ -61,6 +61,10 @@ const categoryContent = {
     description: 'Phù hợp với nhu cầu ở có kèm tiện ích hoặc dịch vụ hỗ trợ. Cần hỏi cụ thể hạng mục nào đã bao gồm trong giá và thời gian lưu trú tối thiểu.',
     checklist: ['Nội thất có sẵn', 'Dịch vụ và điện nước', 'Thời gian thuê tối thiểu']
   },
+  'Khách sạn - Nhà nghỉ': {
+    description: 'Tìm khách sạn, nhà nghỉ để thuê, mua hoặc tiếp nhận kinh doanh. Cần kiểm tra hiện trạng, công năng, hồ sơ pháp lý và điều kiện vận hành trước khi giao dịch.',
+    checklist: ['Số phòng và diện tích sử dụng', 'Trang thiết bị và hiện trạng bàn giao', 'Hồ sơ pháp lý, PCCC và điều kiện kinh doanh']
+  },
   'Phòng trọ': {
     description: 'Tìm phòng theo ngân sách và vị trí đi học, đi làm. Xem kỹ không gian sinh hoạt, điều kiện an ninh và cách tính các khoản phí hằng tháng.',
     checklist: ['Diện tích và số người ở', 'Giá điện, nước và Internet', 'Giờ giấc và chỗ để xe']
