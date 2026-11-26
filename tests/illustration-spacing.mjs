@@ -12,7 +12,7 @@ const result=allocateIllustrations(rows,{contexts:context}),last=new Map();
 for(const [i,r]of result.entries()){
  const p=r.public_data,key=p.illustrationOriginalId;
  assert(key,'Every illustration needs a tracked original or diagram style');
- assert(i-(last.get(key)??-Infinity)>IMAGE_REUSE_GAP,'No reuse inside 20 intervening listings: '+key);last.set(key,i);
+ assert(i-(last.get(key)??-Infinity)>IMAGE_REUSE_GAP,'No reuse inside 50 intervening listings: '+key);last.set(key,i);
  if(p.illustrationProcedural){assert.equal(p.illustrationAssetId,null);assert(pickIllustration(p).procedural);}
 }
 assert(result.some(r=>r.public_data.illustrationProcedural));
@@ -31,4 +31,4 @@ try{for(let i=0;i<8;i++){
  thumbs.push({input:await sharp(bytes).resize(420,280).toBuffer(),left:(i%2)*420,top:Math.floor(i/2)*280});
 }assert.equal(hashes.size,8);await writeFile('/tmp/telegram-free-illustrations-preview.jpg',await sharp({create:{width:840,height:1120,channels:3,background:'white'}}).composite(thumbs).jpeg().toBuffer());}finally{global.fetch=oldFetch;}
 const info=extractSourceInfo('Cho thuê kho 300m2 giá 35tr\nVui lòng xem các loại nguồn hàng cho thuê cần tìm: https://nguonchothue.vn\nThông tin nội bộ:\nNguồn: VA\nSĐT nguồn: 0987654321\nPhí môi giới: 50%');assert.equal(info.sourceName,'VA');assert(info.partnerPhones.includes('0987654321'));assert.match(info.commission,/50%/);
-console.log('PASS: 180 listings respect a strict 20-listing original/style gap, local fallback stays stable, real photos preserved, eight distinct compositions render at 1200×800 with zero API requests, source attribution correct.');
+console.log('PASS: 180 listings respect a strict 50-listing original/style gap, local fallback stays stable, real photos preserved, eight distinct compositions render at 1200×800 with zero API requests, source attribution correct.');

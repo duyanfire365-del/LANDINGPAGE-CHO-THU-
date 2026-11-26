@@ -15,7 +15,7 @@ Theo cấu hình của chủ website, luồng Telegram dùng bộ quy tắc cố
 
 - Ảnh Telegram được lưu bền vững trong Supabase. Không gửi ảnh sang dịch vụ vision để kiểm tra tính phí.
 - Ảnh chưa có chỉ dẫn được giữ riêng; bot hỏi chủ chọn công khai (1) hoặc giữ riêng (0). Chỉ dẫn công khai/giữ riêng rõ ràng vẫn có hiệu lực. Không tự xác nhận ảnh không có thông tin nhạy cảm.
-- Không có ảnh: dùng kho ảnh minh họa theo danh mục. Kho luân phiên theo ảnh gốc/nhóm hình tương tự, cách ít nhất 20 tin trong thứ tự danh sách chung và trong danh mục. Khi kho đúng bối cảnh thiếu ảnh, dùng đồ họa dựng tại máy chủ với 8 bố cục × 8 bảng màu, cũng theo giãn cách này. Ảnh thật do người đăng cung cấp được giữ nguyên.
+- Không có ảnh: dùng kho ảnh minh họa theo danh mục. Kho luân phiên theo ảnh gốc/nhóm hình tương tự, cách ít nhất 50 tin trong thứ tự danh sách chung và trong danh mục. Khi kho đúng bối cảnh thiếu ảnh, dùng đồ họa dựng tại máy chủ với 8 bố cục × 16 bảng màu, cũng theo giãn cách này. Ảnh thật do người đăng cung cấp được giữ nguyên.
 - Nhãn minh họa được ghi rõ; đồ họa không phải ảnh chụp BĐS thực tế. Dựng ảnh dùng Sharp/font nội bộ, không gọi dịch vụ AI.
 - Hồ sơ khách Telegram bằng ảnh được lưu riêng và yêu cầu gửi thêm văn bản; không tự chạy OCR AI dù biến OCR cũ đang bật.
 
@@ -27,4 +27,4 @@ Các nút AI thủ công ở nơi khác trên website và chat AI là tính năn
 
 `node tests/media-privacy.mjs`: Telegram giữ ảnh chưa duyệt, không gọi vision; lựa chọn công khai/riêng vẫn đúng quyền.
 
-`node tests/illustration-spacing.mjs`: 180 tin không lặp ảnh gốc/kiểu đồ họa trong vòng 20 tin; dựng nhiều bố cục 1200×800 không có cuộc gọi mạng.
+`node tests/illustration-spacing.mjs`: 180 tin không lặp ảnh gốc/kiểu đồ họa trong vòng 50 tin; dựng nhiều bố cục 1200×800 không có cuộc gọi mạng.
