@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {contextualPhotos} from '../lib/contextual-photo-catalog.mjs';
 import {illustrationProfile} from '../lib/illustration-profile.mjs';
-import {illustrationCandidates,stockForIllustration} from '../lib/stock-illustrations.mjs';
+import {illustrationCandidates,stockForIllustration,illustrationAssetSetting} from '../lib/stock-illustrations.mjs';
 import {allocateIllustrations,IMAGE_REUSE_GAP} from '../lib/illustration-allocation.mjs';
 import {pickIllustration} from '../lib/illustration-library.mjs';
 import {renderLibraryIllustration} from '../lib/illustration-library-build.mjs';
@@ -17,7 +17,7 @@ assert(!illustrationProfile(post('Cho thuê mặt bằng','', {description:'Khô
 assert.deepEqual(illustrationProfile(post('Cho thuê mặt bằng gần khách sạn',50,{description:'Gần spa, đối diện cafe.'})).sectors,[]);
 for(const [floors,frontage,corner]of [[3,4,false],[6,12,true]]){
  const pool=illustrationCandidates(post('Cho thuê nhà nguyên căn '+(corner?'lô góc':'lô thường'),100,{type:'Nhà nguyên căn',floors,frontage}));
- assert(pool.some(a=>a.depictedFloors===floors));assert(pool.every(a=>a.setting==='interior'||(a.depictedFloors===floors&&a.corner===corner)));
+ assert(pool.some(a=>a.depictedFloors===floors));assert(pool.every(a=>illustrationAssetSetting(a)==='interior'||(a.depictedFloors===floors&&a.corner===corner)));
 }
 const rows=Array.from({length:240},(_,i)=>({id:String(i),status:'published',created_at:String(99999-i),public_data:post('Sang nhượng cafe',50,{slug:'live-'+(1796000000000+i),type:i%3===0?'Nhà nguyên căn':'Mặt bằng kinh doanh'})}));
 const result=allocateIllustrations(rows),last=new Map(),byType=new Map(),pos=new Map();
@@ -25,7 +25,7 @@ for(const [i,{public_data:p}]of result.entries()){
  const key=p.illustrationOriginalId,type=p.type,n=pos.get(type)||0;pos.set(type,n+1);const history=byType.get(type)||new Map();byType.set(type,history);
  assert(i-(last.get(key)??-Infinity)>50);assert(n-(history.get(key)??-Infinity)>50);last.set(key,i);history.set(key,n);
  if(p.illustrationAssetId)assert.equal(contextualPhotos.find(a=>a.id===p.illustrationAssetId)?.sector,'cafe');
- assert(p.image.includes('spacing50-v4'));assert.equal(pickIllustration(p).scene,'cafe');
+ assert(p.image.includes('spacing50-v5'));assert.equal(pickIllustration(p).scene,'cafe');
 }
 assert.deepEqual(allocateIllustrations(rows),result);
 await mkdir('public/stock',{recursive:true});for(const a of contextualPhotos)await writeFile('public/stock/'+a.id+'.jpg',await readFile(new URL(a.localSource,new URL('../lib/',import.meta.url))));
