@@ -15,7 +15,7 @@ for(const [i,r]of result.entries()){
  assert(i-(last.get(key)??-Infinity)>IMAGE_REUSE_GAP,'No reuse inside 50 intervening listings: '+key);last.set(key,i);
  if(p.illustrationProcedural){assert.equal(p.illustrationAssetId,null);assert(pickIllustration(p).procedural);}
 }
-assert(result.some(r=>r.public_data.illustrationProcedural));
+const exhausted=allocateIllustrations(rows.map(r=>({...r,public_data:{...r.public_data,title:'Sang nhượng spa',size:50}})));assert(exhausted.some(r=>r.public_data.illustrationProcedural),'Small exact-context pools still use safe fallback');
 assert.deepEqual(allocateIllustrations(rows,{contexts:context}),result,'Stable repeat allocation');
 const real={...rows[0],public_data:{...rows[0].public_data,image:'/real.jpg',media:[{kind:'image',id:'photo'}]}};assert.equal(allocateIllustrations([real])[0].public_data.image,'/real.jpg');
 const held=rows.slice(0,60).map(r=>({...r,public_data:{...r.public_data,image:'/api/files?action=media&id=private',media:[{kind:'image',id:'private',visibility:'owner'}]}}));
