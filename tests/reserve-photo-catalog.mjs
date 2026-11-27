@@ -7,7 +7,7 @@ import {contextualPhotos} from '../lib/contextual-photo-catalog.mjs';
 import {illustrationCandidates} from '../lib/stock-illustrations.mjs';
 import {illustrationProfile} from '../lib/illustration-profile.mjs';
 import {allocateIllustrations} from '../lib/illustration-allocation.mjs';
-assert.equal(assets.length,108);assert.equal(contextualPhotos.length,128);
+assert.equal(assets.length,108);assert.equal(contextualPhotos.length,140);
 assert.equal(new Set(assets.map(a=>a.id)).size,108);
 const hashes=new Set();let bytes=0;
 for(const a of assets){const b=await readFile(new URL(a.localSource,new URL('../lib/',import.meta.url))),m=await sharp(b).metadata();assert.equal(m.format,'jpeg');assert(m.width>=400&&m.height>=400);bytes+=b.length;hashes.add(createHash('sha256').update(b).digest('hex'));assert.equal(a.distinctOriginal,a.id);}
@@ -22,4 +22,4 @@ const result=allocateIllustrations(rows),last=new Map(),byType=new Map(),positio
 for(const [i,{public_data:p}]of result.entries()){const n=positions.get(p.type)||0;positions.set(p.type,n+1);const h=byType.get(p.type)||new Map();byType.set(p.type,h);const key=p.illustrationOriginalId;assert(i-(last.get(key)??-Infinity)>50);assert(n-(h.get(key)??-Infinity)>50);last.set(key,i);h.set(key,n);}
 assert(result.some(r=>r.public_data.illustrationAssetId?.startsWith('context-reserve-')));
 assert.deepEqual(allocateIllustrations(rows),result);
-console.log('PASS 108 unique JPEGs / 128 contextual photos, all sector-scale combinations, public-copy semantics, 500 mixed-category 50-gap simulation. Added bytes:',bytes);
+console.log('PASS 108 unique JPEGs / 140 contextual photos, all sector-scale combinations, public-copy semantics, 500 mixed-category 50-gap simulation. Added bytes:',bytes);

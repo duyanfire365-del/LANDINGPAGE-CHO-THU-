@@ -1,0 +1,202 @@
+[
+  {
+    "id": "context-warehouse-extra-brick-vault",
+    "distinctOriginal": "context-warehouse-extra-brick-vault",
+    "visualFamily": "warehouse-brick-vault",
+    "localSource": "../public/reference-images/context-warehouse-extra-brick-vault.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-concrete-waffle",
+    "distinctOriginal": "context-warehouse-extra-concrete-waffle",
+    "visualFamily": "warehouse-concrete-waffle",
+    "localSource": "../public/reference-images/context-warehouse-extra-concrete-waffle.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-timber-truss",
+    "distinctOriginal": "context-warehouse-extra-timber-truss",
+    "visualFamily": "warehouse-timber-truss",
+    "localSource": "../public/reference-images/context-warehouse-extra-timber-truss.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-sawtooth-roof",
+    "distinctOriginal": "context-warehouse-extra-sawtooth-roof",
+    "visualFamily": "warehouse-sawtooth-roof",
+    "localSource": "../public/reference-images/context-warehouse-extra-sawtooth-roof.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-mezzanine-office",
+    "distinctOriginal": "context-warehouse-extra-mezzanine-office",
+    "visualFamily": "warehouse-mezzanine-office",
+    "localSource": "../public/reference-images/context-warehouse-extra-mezzanine-office.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-pallet-floor-lanes",
+    "distinctOriginal": "context-warehouse-extra-pallet-floor-lanes",
+    "visualFamily": "warehouse-pallet-floor-lanes",
+    "localSource": "../public/reference-images/context-warehouse-extra-pallet-floor-lanes.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-brick-flat-ceiling",
+    "distinctOriginal": "context-warehouse-extra-brick-flat-ceiling",
+    "visualFamily": "warehouse-brick-flat-ceiling",
+    "localSource": "../public/reference-images/context-warehouse-extra-brick-flat-ceiling.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-metal-barrel",
+    "distinctOriginal": "context-warehouse-extra-metal-barrel",
+    "visualFamily": "warehouse-metal-barrel",
+    "localSource": "../public/reference-images/context-warehouse-extra-metal-barrel.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-compact-shutter",
+    "distinctOriginal": "context-warehouse-extra-compact-shutter",
+    "visualFamily": "warehouse-compact-shutter",
+    "localSource": "../public/reference-images/context-warehouse-extra-compact-shutter.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "loading",
+    "setting": "street",
+    "depictedFloors": 1,
+    "corner": false,
+    "depictedFrontage": 6,
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-rainy-docks",
+    "distinctOriginal": "context-warehouse-extra-rainy-docks",
+    "visualFamily": "warehouse-exterior-loading-dock",
+    "localSource": "../public/reference-images/context-warehouse-extra-rainy-docks.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "loading",
+    "setting": "street",
+    "depictedFloors": 1,
+    "corner": false,
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-concrete-columns",
+    "distinctOriginal": "context-warehouse-extra-concrete-columns",
+    "visualFamily": "warehouse-concrete-columns",
+    "localSource": "../public/reference-images/context-warehouse-extra-concrete-columns.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "warehouse",
+    "setting": "interior",
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  },
+  {
+    "id": "context-warehouse-extra-red-facade",
+    "distinctOriginal": "context-warehouse-extra-red-facade",
+    "visualFamily": "warehouse-frontage",
+    "localSource": "../public/reference-images/context-warehouse-extra-red-facade.jpg",
+    "sector": "warehouse",
+    "scale": "large",
+    "category": "Kho xưởng",
+    "types": [
+      "Kho xưởng"
+    ],
+    "scene": "loading",
+    "setting": "street",
+    "depictedFloors": 1,
+    "corner": false,
+    "depictedFrontage": 10,
+    "author": "Nguonchothue.vn — generated illustration",
+    "license": "Generated fictional scene, not a photo of a listed property"
+  }
+]
