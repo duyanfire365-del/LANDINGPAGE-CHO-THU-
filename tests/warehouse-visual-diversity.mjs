@@ -9,7 +9,7 @@ const rows=specs.map(([code,size,frontage,illustrationAssetId],i)=>({id:code,sta
 const result=allocateIllustrations(rows,{contexts:Object.fromEntries(rows.map(r=>[r.id,'street']))});
 assert.equal(new Set(result.map(r=>r.public_data.illustrationOriginalId)).size,4);
 assert(result.filter(r=>r.public_data.illustrationOriginalId==='warehouse-racked-aisles').length<=1);
-assert(result.every(r=>r.public_data.image.includes('spacing50-v6')));
+assert(result.every(r=>r.public_data.image.includes('spacing50-v7')));
 const real={...rows[0],public_data:{...rows[0].public_data,image:'/real.jpg',media:[{kind:'image',id:'provided'}]}};assert.equal(allocateIllustrations([real])[0].public_data.image,'/real.jpg');
 assert.deepEqual(allocateIllustrations(rows,{contexts:Object.fromEntries(rows.map(r=>[r.id,'street']))}),result);
 console.log('PASS KX0030/0029/0028/0027 choose distinct visual families, related rack originals share spacing, supplied photos unchanged.');console.log(result.map(r=>[r.public_data.code,r.public_data.illustrationAssetId,r.public_data.illustrationOriginalId]));
