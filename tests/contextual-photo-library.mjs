@@ -25,7 +25,7 @@ for(const [i,{public_data:p}]of result.entries()){
  const key=p.illustrationOriginalId,type=p.type,n=pos.get(type)||0;pos.set(type,n+1);const history=byType.get(type)||new Map();byType.set(type,history);
  assert(i-(last.get(key)??-Infinity)>50);assert(n-(history.get(key)??-Infinity)>50);last.set(key,i);history.set(key,n);
  if(p.illustrationAssetId)assert.equal(contextualPhotos.find(a=>a.id===p.illustrationAssetId)?.sector,'cafe');
- assert(p.image.includes('spacing50-v5'));assert.equal(pickIllustration(p).scene,'cafe');
+ assert(p.image.includes('spacing50-v6'));assert.equal(pickIllustration(p).scene,'cafe');
 }
 assert.deepEqual(allocateIllustrations(rows),result);
 await mkdir('public/stock',{recursive:true});for(const a of contextualPhotos)await writeFile('public/stock/'+a.id+'.jpg',await readFile(new URL(a.localSource,new URL('../lib/',import.meta.url))));

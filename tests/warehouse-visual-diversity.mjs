@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {stockIllustrations} from '../lib/stock-illustrations.mjs';
+import {allocateIllustrations} from '../lib/illustration-allocation.mjs';
+const asset=id=>stockIllustrations.find(a=>a.id===id);
+assert.equal(asset('context-reserve-warehouse-07').visualFamily,asset('context-reserve-warehouse-09').visualFamily);
+assert.equal(asset('context-warehouse-large').visualFamily,asset('context-reserve-warehouse-07').visualFamily);
+const specs=[['0030',320,20,'context-reserve-warehouse-07'],['0029',198,10,'context-reserve-warehouse-08'],['0028',450,15,'context-reserve-warehouse-09'],['0027',1300,null,'context-reserve-warehouse-07']];
+const rows=specs.map(([code,size,frontage,illustrationAssetId],i)=>({id:code,status:'published',created_at:String(9999-i),public_data:{slug:'live-'+(1798000000000+i),code:'KX - '+code,type:'Kho xưởng',title:'Cho thuê kho xưởng',size,frontage,illustrationKind:'banner',image:'/banner.png',media:[],illustrationAssetId}}));
+const result=allocateIllustrations(rows,{contexts:Object.fromEntries(rows.map(r=>[r.id,'street']))});
+assert.equal(new Set(result.map(r=>r.public_data.illustrationOriginalId)).size,4);
+assert(result.filter(r=>r.public_data.illustrationOriginalId==='warehouse-racked-aisles').length<=1);
+assert(result.every(r=>r.public_data.image.includes('spacing50-v6')));
+const real={...rows[0],public_data:{...rows[0].public_data,image:'/real.jpg',media:[{kind:'image',id:'provided'}]}};assert.equal(allocateIllustrations([real])[0].public_data.image,'/real.jpg');
+assert.deepEqual(allocateIllustrations(rows,{contexts:Object.fromEntries(rows.map(r=>[r.id,'street']))}),result);
+console.log('PASS KX0030/0029/0028/0027 choose distinct visual families, related rack originals share spacing, supplied photos unchanged.');console.log(result.map(r=>[r.public_data.code,r.public_data.illustrationAssetId,r.public_data.illustrationOriginalId]));
